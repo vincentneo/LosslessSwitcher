@@ -15,7 +15,14 @@ struct ContentView: View {
             .onAppear {
                 AudioDeviceFinder.findDevices()
                 DispatchQueue.main.async {
-                    Console().getMusicEntries()
+                    do {
+                        let musicLog = try Console.getRecentEntries()
+                        let cmStats = CMPlayerParser.parseMusicConsoleLogs(musicLog)
+                        print(cmStats)
+                    }
+                    catch {
+                        print(error)
+                    }
                 }
             }
     }

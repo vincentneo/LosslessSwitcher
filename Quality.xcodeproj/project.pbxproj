@@ -14,6 +14,8 @@
 		1272AAA7280DBC0A00FD72BA /* AudioDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAA6280DBC0A00FD72BA /* AudioDevice.swift */; };
 		1272AAA9280DBC4500FD72BA /* AudioDeviceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAA8280DBC4500FD72BA /* AudioDeviceFinder.swift */; };
 		1272AAAC280DC5E900FD72BA /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAB280DC5E900FD72BA /* Console.swift */; };
+		1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */; };
+		1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */ = {isa = PBXBuildFile; productRef = 1272AAB0280DC71B00FD72BA /* Sweep */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,7 @@
 		1272AAA6280DBC0A00FD72BA /* AudioDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDevice.swift; sourceTree = "<group>"; };
 		1272AAA8280DBC4500FD72BA /* AudioDeviceFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceFinder.swift; sourceTree = "<group>"; };
 		1272AAAB280DC5E900FD72BA /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
+		1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMPlayerStuff.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +70,7 @@
 				1272AAA6280DBC0A00FD72BA /* AudioDevice.swift */,
 				1272AAA8280DBC4500FD72BA /* AudioDeviceFinder.swift */,
 				1272AAAB280DC5E900FD72BA /* Console.swift */,
+				1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */,
 			);
 			path = Quality;
 			sourceTree = "<group>";
@@ -94,6 +99,9 @@
 			dependencies = (
 			);
 			name = Quality;
+			packageProductDependencies = (
+				1272AAB0280DC71B00FD72BA /* Sweep */,
+			);
 			productName = Quality;
 			productReference = 1272AA94280DBB4900FD72BA /* Quality.app */;
 			productType = "com.apple.product-type.application";
@@ -123,6 +131,7 @@
 			);
 			mainGroup = 1272AA8B280DBB4900FD72BA;
 			packageReferences = (
+				1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */,
 			);
 			productRefGroup = 1272AA95280DBB4900FD72BA /* Products */;
 			projectDirPath = "";
@@ -150,6 +159,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAA9280DBC4500FD72BA /* AudioDeviceFinder.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
 				1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */,
@@ -352,6 +362,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/JohnSundell/Sweep.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1272AAB0280DC71B00FD72BA /* Sweep */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */;
+			productName = Sweep;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1272AA8C280DBB4900FD72BA /* Project object */;
 }
