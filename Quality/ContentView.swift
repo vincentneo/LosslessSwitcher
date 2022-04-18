@@ -6,11 +6,18 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct ContentView: View {
     var body: some View {
         Text("Hello, world!")
             .padding()
+            .onAppear {
+                AudioDeviceFinder.findDevices()
+                DispatchQueue.main.async {
+                    Console().getMusicEntries()
+                }
+            }
     }
 }
 
@@ -19,3 +26,5 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+
