@@ -12,7 +12,7 @@ import Cocoa
 class Console {
     static func getRecentEntries() throws -> [OSLogEntry] {
         let store = try OSLogStore.local()
-        let fiveMinutesAgo = store.position(timeIntervalSinceEnd: -60.0 * 3)
+        let fiveMinutesAgo = store.position(timeIntervalSinceEnd: -60.0 * 5)
         let entries = try store.getEntries(with: [], at: fiveMinutesAgo, matching: nil)
         
         return entries.reversed()

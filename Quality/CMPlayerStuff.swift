@@ -12,6 +12,7 @@ import Sweep
 struct CMPlayerStats {
     let sampleRate: Double // in kHz
     let bitDepth: Int
+    let date: Date
 }
 
 class CMPlayerParser {
@@ -43,13 +44,17 @@ class CMPlayerParser {
                         let strBitDepth = String(subBitDepth)
                         bitDepth = Int(strBitDepth)
                     }
+                    else if rawMessage.contains("sdBitRate") { // lossy
+                        bitDepth = 16
+                    }
                     
                     if let sr = sampleRate,
                        let bd = bitDepth {
-                        let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd)
+                        let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date)
                         stats.append(stat)
                         sampleRate = nil
                         bitDepth = nil
+                        print(rawMessage)
                     }
                     
                     lastDate = date
