@@ -9,12 +9,23 @@
 import OSLog
 import Cocoa
 
+struct SimpleConsole {
+    let date: Date
+    let message: String
+}
+
 class Console {
-    static func getRecentEntries() throws -> [OSLogEntry] {
+    static func getRecentEntries() throws -> [SimpleConsole] {
+        var messages = [SimpleConsole]()
         let store = try OSLogStore.local()
-        let fiveMinutesAgo = store.position(timeIntervalSinceEnd: -60.0 * 5)
-        let entries = try store.getEntries(with: [], at: fiveMinutesAgo, matching: nil)
+        let duration = store.position(timeIntervalSinceEnd: -5.0)
+        let entries = try store.getEntries(with: [], at: duration, matching: NSPredicate(format: "subsystem = %@", "com.apple.Music"))
+        // for some reason AnySequence to Array turns it into a empty array?
+        for entry in entries {
+            let consoleMessage = SimpleConsole(date: entry.date, message: entry.composedMessage)
+            messages.append(consoleMessage)
+        }
         
-        return entries.reversed()
+        return messages.reversed()//entries.reversed()
     }
 }

@@ -10,13 +10,13 @@ import OSLog
 import Sweep
 
 struct CMPlayerStats {
-    let sampleRate: Double // in kHz
+    let sampleRate: Double // Hz
     let bitDepth: Int
     let date: Date
 }
 
 class CMPlayerParser {
-    static func parseMusicConsoleLogs(_ entries: [OSLogEntry]) -> [CMPlayerStats] {
+    static func parseMusicConsoleLogs(_ entries: [SimpleConsole]) -> [CMPlayerStats] {
         let kTimeDifferenceAcceptance = 5.0 // seconds
         var lastDate: Date?
         var sampleRate: Double?
@@ -25,10 +25,10 @@ class CMPlayerParser {
         var stats = [CMPlayerStats]()
         
         for entry in entries {
-            if let log = entry as? OSLogEntryLog {
-                if log.subsystem == "com.apple.Music" {
+            //if let log = entry as? OSLogEntryLog {
+             //   if log.subsystem == "com.apple.Music" {
                     let date = entry.date
-                    let rawMessage = entry.composedMessage
+                    let rawMessage = entry.message
                     
                     if let lastDate = lastDate, date.timeIntervalSince(lastDate) > kTimeDifferenceAcceptance {
                         sampleRate = nil
@@ -50,7 +50,7 @@ class CMPlayerParser {
                     
                     if let sr = sampleRate,
                        let bd = bitDepth {
-                        let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date)
+                        let stat = CMPlayerStats(sampleRate: sr * 1000, bitDepth: bd, date: date)
                         stats.append(stat)
                         sampleRate = nil
                         bitDepth = nil
@@ -60,8 +60,8 @@ class CMPlayerParser {
                     lastDate = date
                     
                 }
-            }
-        }
+            //}
+        //}
         return stats
     }
 }
