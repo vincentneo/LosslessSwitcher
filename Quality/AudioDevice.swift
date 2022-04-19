@@ -81,4 +81,28 @@ class AudioDevice {
             return name as String?
         }
     }
+    
+    var bit: CFArray? {
+        get {
+            var address:AudioObjectPropertyAddress = AudioObjectPropertyAddress(
+                mSelector:AudioObjectPropertySelector(kAudioStreamPropertyAvailablePhysicalFormats),
+                mScope:AudioObjectPropertyScope(kAudioObjectPropertyScopeGlobal),
+                mElement:AudioObjectPropertyElement(kAudioObjectPropertyElementMaster))
+
+            //var sampleRate: Any? = nil
+            var propsize:UInt32 = UInt32(MemoryLayout<AudioStreamRangedDescription?>.size)
+            var s = UInt32.zero
+            var size = AudioObjectGetPropertyDataSize(self.audioDeviceID, &address, 0, nil, &s)
+            print(s)
+            s = s * propsize
+            var size2 = [AudioStreamRangedDescription]() as CFArray
+            let result:OSStatus = AudioObjectGetPropertyData(self.audioDeviceID, &address, 0, nil, &s, &size2)
+            print(size2)
+            if (result != 0) {
+                return nil
+            }
+
+            return size2//name as String?
+        }
+    }
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */; };
 		1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA97280DBB4900FD72BA /* QualityApp.swift */; };
 		1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA99280DBB4900FD72BA /* ContentView.swift */; };
 		1272AA9C280DBB4B00FD72BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1272AA9B280DBB4B00FD72BA /* Assets.xcassets */; };
@@ -36,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */,
 				1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,6 +103,7 @@
 			name = Quality;
 			packageProductDependencies = (
 				1272AAB0280DC71B00FD72BA /* Sweep */,
+				1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */,
 			);
 			productName = Quality;
 			productReference = 1272AA94280DBB4900FD72BA /* Quality.app */;
@@ -132,6 +135,7 @@
 			mainGroup = 1272AA8B280DBB4900FD72BA;
 			packageReferences = (
 				1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */,
+				1221F3F7280F10A3003E8B77 /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */,
 			);
 			productRefGroup = 1272AA95280DBB4900FD72BA /* Products */;
 			projectDirPath = "";
@@ -364,6 +368,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1221F3F7280F10A3003E8B77 /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rnine/SimplyCoreAudio.git";
+			requirement = {
+				branch = develop;
+				kind = branch;
+			};
+		};
 		1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/JohnSundell/Sweep.git";
@@ -375,6 +387,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1221F3F7280F10A3003E8B77 /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */;
+			productName = SimplyCoreAudio;
+		};
 		1272AAB0280DC71B00FD72BA /* Sweep */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */;

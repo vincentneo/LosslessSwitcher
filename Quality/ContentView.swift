@@ -7,13 +7,16 @@
 
 import SwiftUI
 import OSLog
+import SimplyCoreAudio
 
 struct ContentView: View {
     var body: some View {
         Text("Hello, world!")
             .padding()
             .onAppear {
-                AudioDeviceFinder.findDevices()
+                let coreAudio = SimplyCoreAudio()
+                print(coreAudio.allOutputDevices.first?.nominalSampleRates)
+                //AudioDeviceFinder.findDevices()
                 DispatchQueue.main.async {
                     do {
                         let musicLog = try Console.getRecentEntries()

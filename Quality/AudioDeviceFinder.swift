@@ -43,7 +43,7 @@ mSelector:AudioObjectPropertySelector(kAudioHardwarePropertyDevices),
             if (audioDevice.hasOutput) {
                 if let name = audioDevice.name,
                     let uid = audioDevice.uid {
-                    print("Found device \"\(name)\", uid=\(uid)")
+                    print("Found device \"\(name)\", uid=\(uid), bit=\(audioDevice.bit)")
                 }
             }
         }
