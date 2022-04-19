@@ -8,26 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */; };
+		1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */; };
 		1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA97280DBB4900FD72BA /* QualityApp.swift */; };
 		1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA99280DBB4900FD72BA /* ContentView.swift */; };
 		1272AA9C280DBB4B00FD72BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1272AA9B280DBB4B00FD72BA /* Assets.xcassets */; };
 		1272AA9F280DBB4B00FD72BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1272AA9E280DBB4B00FD72BA /* Preview Assets.xcassets */; };
-		1272AAA7280DBC0A00FD72BA /* AudioDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAA6280DBC0A00FD72BA /* AudioDevice.swift */; };
-		1272AAA9280DBC4500FD72BA /* AudioDeviceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAA8280DBC4500FD72BA /* AudioDeviceFinder.swift */; };
 		1272AAAC280DC5E900FD72BA /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAB280DC5E900FD72BA /* Console.swift */; };
 		1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */; };
 		1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */ = {isa = PBXBuildFile; productRef = 1272AAB0280DC71B00FD72BA /* Sweep */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputDevices.swift; sourceTree = "<group>"; };
 		1272AA94280DBB4900FD72BA /* Quality.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quality.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1272AA97280DBB4900FD72BA /* QualityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualityApp.swift; sourceTree = "<group>"; };
 		1272AA99280DBB4900FD72BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1272AA9B280DBB4B00FD72BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1272AA9E280DBB4B00FD72BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1272AAA0280DBB4B00FD72BA /* Quality.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quality.entitlements; sourceTree = "<group>"; };
-		1272AAA6280DBC0A00FD72BA /* AudioDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDevice.swift; sourceTree = "<group>"; };
-		1272AAA8280DBC4500FD72BA /* AudioDeviceFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceFinder.swift; sourceTree = "<group>"; };
 		1272AAAB280DC5E900FD72BA /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
 		1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMPlayerStuff.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,10 +67,9 @@
 				1272AA9B280DBB4B00FD72BA /* Assets.xcassets */,
 				1272AAA0280DBB4B00FD72BA /* Quality.entitlements */,
 				1272AA9D280DBB4B00FD72BA /* Preview Content */,
-				1272AAA6280DBC0A00FD72BA /* AudioDevice.swift */,
-				1272AAA8280DBC4500FD72BA /* AudioDeviceFinder.swift */,
 				1272AAAB280DC5E900FD72BA /* Console.swift */,
 				1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */,
+				1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */,
 			);
 			path = Quality;
 			sourceTree = "<group>";
@@ -163,12 +160,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
-				1272AAA9280DBC4500FD72BA /* AudioDeviceFinder.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
 				1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */,
 				1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */,
-				1272AAA7280DBC0A00FD72BA /* AudioDevice.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
