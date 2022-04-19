@@ -26,6 +26,6 @@ class Console {
             messages.append(consoleMessage)
         }
         
-        return messages.reversed()//entries.reversed()
+        return messages.reversed()
     }
 }
