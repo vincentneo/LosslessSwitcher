@@ -14,8 +14,16 @@ struct ContentView: View {
     let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
     
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            Picker("Picker", selection: $outputDevices.selectedDevice) {
+                ForEach(outputDevices.pickableDevices, id: \.id) { item in
+                    Text(item.name)
+                }
+            }
+            .onAppear {
+                print(outputDevices.pickableDevices)
+            }
+        }
             .onReceive(timer) { input in
                 DispatchQueue.main.async {
                     self.switchLatestSampleRate()

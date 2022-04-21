@@ -16,6 +16,7 @@
 		1272AAAC280DC5E900FD72BA /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAB280DC5E900FD72BA /* Console.swift */; };
 		1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */; };
 		1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */ = {isa = PBXBuildFile; productRef = 1272AAB0280DC71B00FD72BA /* Sweep */; };
+		12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AFF5C02811AD40001CC6ED /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		1272AAA0280DBB4B00FD72BA /* Quality.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quality.entitlements; sourceTree = "<group>"; };
 		1272AAAB280DC5E900FD72BA /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
 		1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMPlayerStuff.swift; sourceTree = "<group>"; };
+		12AFF5C02811AD40001CC6ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 		1272AA96280DBB4900FD72BA /* Quality */ = {
 			isa = PBXGroup;
 			children = (
+				12AFF5C02811AD40001CC6ED /* AppDelegate.swift */,
 				1272AA97280DBB4900FD72BA /* QualityApp.swift */,
 				1272AA99280DBB4900FD72BA /* ContentView.swift */,
 				1272AA9B280DBB4B00FD72BA /* Assets.xcassets */,
@@ -160,6 +163,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
