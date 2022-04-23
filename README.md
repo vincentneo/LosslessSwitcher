@@ -11,6 +11,15 @@ Let's say if the next song that you are playing, is a Hi-Res Lossless track with
 
 The opposite happens, when the next track happens to have a lower sample rate. 
 
+## Installation
+Simply go to the Releases page of this repository. [(Link to latest release)](https://github.com/vincentneo/LosslessSwitcher/releases/latest)
+
+Drag the app to your Applications folder. If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Preferences:
+
+```
+> User & Groups > Login Items > Add LosslessSwitcher app
+``` 
+
 ## App details
 
 There isn't much going on, when it comes to the UI of the app, as most of the logic is to:
@@ -29,8 +38,6 @@ If you wish, the sample rate can also be directly visible as the menu bar item.
 Do also note that:
 - There may be short interuptions to your audio playback, during the time where the app attempts to switch the sample rates.
 - Prolonged use on MacBooks may accelerate battery usages, due to the frequent querying of the latest sample rate.
-
-You can go the releases page, to get the latest version.
 
 ### Why make this?
 Ever since Apple Music Lossless launched along with macOS 11.4, the app would never switch the sample rates according to the song that was playing. A trip down to the Audio MIDI Setup app was required.
