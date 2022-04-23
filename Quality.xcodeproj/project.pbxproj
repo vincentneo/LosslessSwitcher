@@ -24,7 +24,8 @@
 /* Begin PBXFileReference section */
 		1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputDevices.swift; sourceTree = "<group>"; };
 		1254A79B2813FB9400241107 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
-		1272AA94280DBB4900FD72BA /* Quality.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quality.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1254A79D2814024300241107 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1272AA94280DBB4900FD72BA /* LosslessSwitcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LosslessSwitcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1272AA97280DBB4900FD72BA /* QualityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualityApp.swift; sourceTree = "<group>"; };
 		1272AA99280DBB4900FD72BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1272AA9B280DBB4B00FD72BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -60,7 +61,7 @@
 		1272AA95280DBB4900FD72BA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1272AA94280DBB4900FD72BA /* Quality.app */,
+				1272AA94280DBB4900FD72BA /* LosslessSwitcher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,6 +69,7 @@
 		1272AA96280DBB4900FD72BA /* Quality */ = {
 			isa = PBXGroup;
 			children = (
+				1254A79D2814024300241107 /* Info.plist */,
 				12AFF5C02811AD40001CC6ED /* AppDelegate.swift */,
 				1272AA97280DBB4900FD72BA /* QualityApp.swift */,
 				1272AA99280DBB4900FD72BA /* ContentView.swift */,
@@ -94,9 +96,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1272AA93280DBB4900FD72BA /* Quality */ = {
+		1272AA93280DBB4900FD72BA /* LosslessSwitcher */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1272AAA3280DBB4B00FD72BA /* Build configuration list for PBXNativeTarget "Quality" */;
+			buildConfigurationList = 1272AAA3280DBB4B00FD72BA /* Build configuration list for PBXNativeTarget "LosslessSwitcher" */;
 			buildPhases = (
 				1272AA90280DBB4900FD72BA /* Sources */,
 				1272AA91280DBB4900FD72BA /* Frameworks */,
@@ -106,13 +108,13 @@
 			);
 			dependencies = (
 			);
-			name = Quality;
+			name = LosslessSwitcher;
 			packageProductDependencies = (
 				1272AAB0280DC71B00FD72BA /* Sweep */,
 				1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */,
 			);
 			productName = Quality;
-			productReference = 1272AA94280DBB4900FD72BA /* Quality.app */;
+			productReference = 1272AA94280DBB4900FD72BA /* LosslessSwitcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -147,7 +149,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1272AA93280DBB4900FD72BA /* Quality */,
+				1272AA93280DBB4900FD72BA /* LosslessSwitcher */,
 			);
 		};
 /* End PBXProject section */
@@ -310,15 +312,16 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.Quality";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
+				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -338,15 +341,16 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.Quality";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
+				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -364,7 +368,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1272AAA3280DBB4B00FD72BA /* Build configuration list for PBXNativeTarget "Quality" */ = {
+		1272AAA3280DBB4B00FD72BA /* Build configuration list for PBXNativeTarget "LosslessSwitcher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1272AAA4280DBB4B00FD72BA /* Debug */,
