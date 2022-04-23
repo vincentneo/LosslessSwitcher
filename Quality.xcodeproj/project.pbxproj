@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */; };
 		1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */; };
+		1254A79C2813FB9400241107 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1254A79B2813FB9400241107 /* Defaults.swift */; };
 		1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA97280DBB4900FD72BA /* QualityApp.swift */; };
 		1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA99280DBB4900FD72BA /* ContentView.swift */; };
 		1272AA9C280DBB4B00FD72BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1272AA9B280DBB4B00FD72BA /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 
 /* Begin PBXFileReference section */
 		1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputDevices.swift; sourceTree = "<group>"; };
+		1254A79B2813FB9400241107 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		1272AA94280DBB4900FD72BA /* Quality.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quality.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1272AA97280DBB4900FD72BA /* QualityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualityApp.swift; sourceTree = "<group>"; };
 		1272AA99280DBB4900FD72BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 				1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */,
 				1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */,
 				1293436A28131591002E19A8 /* CurrentUser.swift */,
+				1254A79B2813FB9400241107 /* Defaults.swift */,
 			);
 			path = Quality;
 			sourceTree = "<group>";
@@ -167,6 +170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */,
+				1254A79C2813FB9400241107 /* Defaults.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,

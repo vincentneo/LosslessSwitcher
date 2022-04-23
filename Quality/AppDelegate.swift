@@ -13,8 +13,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // https://stackoverflow.com/a/66160164
     static private(set) var instance: AppDelegate! = nil
     private var outputDevices: OutputDevices!
+    private let defaults = Defaults.shared
     
     var statusItem: NSStatusItem?
+    
+    private var _statusItemTitle = "Loading..."
+    var statusItemTitle: String {
+        get {
+            return _statusItemTitle
+        }
+        set {
+            _statusItemTitle = newValue
+            statusItemDisplay()
+        }
+    }
     
     func checkPermissions() {
         do {
@@ -53,13 +65,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
+        let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
+        menu.addItem(showSampleRateItem)
+        
         let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApp.terminate(_:)), keyEquivalent: "")
         menu.addItem(quitItem)
 
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         self.statusItem?.menu = menu
-        self.statusItem?.button?.title = "Test"
-        //self.statusItem?.button?.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "")
+        self.statusItem?.button?.title = "Loading..."
+        self.statusItemDisplay()
+    }
+    
+    func statusItemDisplay() {
+        if defaults.userPreferIconStatusBarItem {
+            self.statusItem?.button?.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "")
+            self.statusItem?.button?.title = ""
+        }
+        else {
+            self.statusItem?.button?.image = nil
+            self.statusItem?.button?.title = statusItemTitle
+        }
+    }
+    
+    @objc func toggleSampleRate(item: NSMenuItem) {
+        defaults.userPreferIconStatusBarItem = !defaults.userPreferIconStatusBarItem
+        self.statusItemDisplay()
+        item.title = defaults.statusBarItemTitle
     }
     
 }

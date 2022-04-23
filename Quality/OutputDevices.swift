@@ -90,8 +90,8 @@ class OutputDevices: ObservableObject {
             let readableSampleRate = sampleRate / 1000
             self.currentSampleRate = readableSampleRate
             
-            let statusBarItem = AppDelegate.instance.statusItem
-            statusBarItem?.button?.title = String(format: "%.1f kHz", readableSampleRate)
+            let delegate = AppDelegate.instance
+            delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
         }
     }
 }
