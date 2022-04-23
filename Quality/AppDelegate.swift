@@ -10,37 +10,56 @@ import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     
+    // https://stackoverflow.com/a/66160164
+    static private(set) var instance: AppDelegate! = nil
+    private var outputDevices: OutputDevices!
+    
     var statusItem: NSStatusItem?
-    var popup: NSPopover?
+    
+    func checkPermissions() {
+        do {
+            if try !User.current.isAdmin() {
+                let alert = NSAlert()
+                alert.messageText = "Requires Privileges"
+                alert.informativeText = "LosslessSwitcher requires Administrator privileges in order to detect each song's lossless sample rate in the Music app."
+                alert.alertStyle = .critical
+                alert.runModal()
+                NSApp.terminate(self)
+            }
+        }
+        catch {
+            let alert = NSAlert()
+            alert.messageText = "Requires Privileges"
+            alert.informativeText = "LosslessSwitcher could not check if your account has Administrator privileges. If your account lacks Administrator privileges, sample rate detection will not work."
+            alert.alertStyle = .warning
+            alert.runModal()
+        }
+    }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let suiView = ContentView()
-        let view = NSHostingView(rootView: suiView)
-       view.frame = NSRect(x: 0, y: 0, width: 200, height: 150)
-        let menuItem = NSMenuItem()
-        menuItem.view = view
-
+        AppDelegate.instance = self
+        outputDevices = OutputDevices()
+        
+        checkPermissions()
+        
         let menu = NSMenu()
-        menu.addItem(menuItem)
 
-//        popup = NSPopover()
-//        popup!.contentSize = NSSize(width: 150, height: 100)
-//        popup!.behavior = .transient
-//        popup!.contentViewController = NSHostingController(rootView: ContentView())
-//
+        let sampleRateView = ContentView().environmentObject(outputDevices)
+        let view = NSHostingView(rootView: sampleRateView)
+        view.frame = NSRect(x: 0, y: 0, width: 200, height: 100)
+        let sampleRateItem = NSMenuItem()
+        sampleRateItem.view = view
+        menu.addItem(sampleRateItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApp.terminate(_:)), keyEquivalent: "")
+        menu.addItem(quitItem)
+
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         self.statusItem?.menu = menu
-        self.statusItem?.button?.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "")
+        self.statusItem?.button?.title = "Test"
+        //self.statusItem?.button?.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "")
     }
     
-    @objc func showPopup(sender: NSStatusBarButton?) {
-        guard let popup = popup, let sender = sender else { return }
-        
-        if popup.isShown {
-            popup.performClose(sender)
-        }
-        else {
-            popup.show(relativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.minY)
-        }
-    }
 }

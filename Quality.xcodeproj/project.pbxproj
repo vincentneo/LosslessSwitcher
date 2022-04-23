@@ -16,6 +16,7 @@
 		1272AAAC280DC5E900FD72BA /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAB280DC5E900FD72BA /* Console.swift */; };
 		1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */; };
 		1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */ = {isa = PBXBuildFile; productRef = 1272AAB0280DC71B00FD72BA /* Sweep */; };
+		1293436B28131591002E19A8 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1293436A28131591002E19A8 /* CurrentUser.swift */; };
 		12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AFF5C02811AD40001CC6ED /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,7 @@
 		1272AAA0280DBB4B00FD72BA /* Quality.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quality.entitlements; sourceTree = "<group>"; };
 		1272AAAB280DC5E900FD72BA /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
 		1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMPlayerStuff.swift; sourceTree = "<group>"; };
+		1293436A28131591002E19A8 /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 		12AFF5C02811AD40001CC6ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,6 +75,7 @@
 				1272AAAB280DC5E900FD72BA /* Console.swift */,
 				1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */,
 				1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */,
+				1293436A28131591002E19A8 /* CurrentUser.swift */,
 			);
 			path = Quality;
 			sourceTree = "<group>";
@@ -168,6 +171,7 @@
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
 				1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */,
+				1293436B28131591002E19A8 /* CurrentUser.swift in Sources */,
 				1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
