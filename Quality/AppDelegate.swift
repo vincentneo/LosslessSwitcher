@@ -7,6 +7,7 @@
 
 import Cocoa
 import SwiftUI
+import PrivateMediaRemote
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     
@@ -14,6 +15,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     static private(set) var instance: AppDelegate! = nil
     private var outputDevices: OutputDevices!
     private let defaults = Defaults.shared
+    private var mrController: MediaRemoteController!
     
     var statusItem: NSStatusItem?
     
@@ -51,6 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
         outputDevices = OutputDevices()
+        mrController = MediaRemoteController(outputDevices: outputDevices)
         
         checkPermissions()
         
@@ -75,8 +78,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.statusItem?.menu = menu
         self.statusItem?.button?.title = "Loading..."
         self.statusItemDisplay()
+        
+
     }
-    
+
     func statusItemDisplay() {
         if defaults.userPreferIconStatusBarItem {
             self.statusItem?.button?.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "")

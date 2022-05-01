@@ -23,6 +23,8 @@ class OutputDevices: ObservableObject {
     private var timerCancellable: AnyCancellable?
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
+    private var previousSampleRate: Float64?
+    
     init() {
         self.outputDevices = self.coreAudio.allOutputDevices
         self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
@@ -41,7 +43,7 @@ class OutputDevices: ObservableObject {
         
         timerCancellable = timer.sink(receiveValue: { _ in
             self.consoleQueue.async {
-                self.switchLatestSampleRate()
+                //self.switchLatestSampleRate()
             }
         })
     }
@@ -61,11 +63,16 @@ class OutputDevices: ObservableObject {
     
     func switchLatestSampleRate() {
         do {
-            let musicLog = try Console.getRecentEntries()
-            let cmStats = CMPlayerParser.parseMusicConsoleLogs(musicLog)
+            var allStats = [CMPlayerStats]()
+            let musicLogs = try Console.getRecentEntries(type: .music)
+            let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
+            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+            allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
             
+            allStats.sort(by: {$0.priority > $1.priority})
+            print(allStats)
             let defaultDevice = self.defaultOutputDevice
-            if let first = cmStats.first, let supported = defaultDevice?.nominalSampleRates {
+            if let first = allStats.first, let supported = defaultDevice?.nominalSampleRates {
                 let sampleRate = Float64(first.sampleRate)
                 // https://stackoverflow.com/a/65060134
                 let nearest = supported.enumerated().min(by: {
@@ -73,7 +80,7 @@ class OutputDevices: ObservableObject {
                 })
                 if let nearest = nearest {
                     let nearestSampleRate = nearest.element
-                    if nearestSampleRate != defaultDevice?.nominalSampleRate {
+                    if nearestSampleRate != previousSampleRate {
                         defaultDevice?.setNominalSampleRate(nearestSampleRate)
                         self.updateSampleRate(nearestSampleRate)
                     }
@@ -86,6 +93,7 @@ class OutputDevices: ObservableObject {
     }
     
     func updateSampleRate(_ sampleRate: Float64) {
+        self.previousSampleRate = sampleRate
         DispatchQueue.main.async {
             let readableSampleRate = sampleRate / 1000
             self.currentSampleRate = readableSampleRate
