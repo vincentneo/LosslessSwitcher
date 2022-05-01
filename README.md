@@ -61,10 +61,11 @@ I did not test on any Macs running macOS 11, ~~or any Apple Silicon based Macs (
 
 UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comment/i69v5fe/?utm_source=share&utm_medium=web2x&context=3) has updated to me that LosslessSwitcher is working on Apple Silicon Macs! Thanks!
 
-| Mac Model | macOS Version | Audio Device |
-| -------------------------- | --------------- | ------------ |
-| Mac Mini (2018)            | 12.2            | Denon PMA-50 |
-| MacBook Pro 13 inch (2018) | 12.3.1          | Denon PMA-50 |
+| Mac Model                                            | macOS Version   | Audio Device.   |
+| ---------------------------------------------------- | --------------- | --------------- |
+| Mac Mini (2018)                                      | 12.2            | Denon PMA-50    |
+| MacBook Pro 13 inch (2018)                           | 12.3.1          | Denon PMA-50    |
+| MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | Topping DX7 Pro |
 
 ## License
 LosslessSwitcher is licensed under GPL-3.0.
