@@ -14,6 +14,8 @@ The opposite happens, when the next track happens to have a lower sample rate.
 ## Installation
 Simply go to the Releases page of this repository. [(Link to latest release)](https://github.com/vincentneo/LosslessSwitcher/releases/latest)
 
+### Alternatively, try the beta! [(link)](https://github.com/vincentneo/LosslessSwitcher/releases/tag/1.1.0-beta1)
+
 Drag the app to your Applications folder. If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Preferences:
 
 ```
@@ -61,14 +63,20 @@ I did not test on any Macs running macOS 11, ~~or any Apple Silicon based Macs (
 
 UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comment/i69v5fe/?utm_source=share&utm_medium=web2x&context=3) has updated to me that LosslessSwitcher is working on Apple Silicon Macs! Thanks!
 
-| Mac Model                                            | macOS Version   | Audio Device.   |
-| ---------------------------------------------------- | --------------- | --------------- |
-| Mac Mini (2018)                                      | 12.2            | Denon PMA-50    |
-| MacBook Pro 13 inch (2018)                           | 12.3.1          | Denon PMA-50    |
-| MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | Topping DX7 Pro |
+| CPU    | Mac Model                                            | macOS Version   | Audio Device    |
+| ------ | ---------------------------------------------------- | --------------- | --------------- |
+| Intel  | Mac Mini (2018)                                      | 12.2            | Denon PMA-50    |
+| Intel  | MacBook Pro 13 inch (2018)                           | 12.3.1          | Denon PMA-50    |
+| Intel  | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | Topping DX7 Pro |
+
+You can add to this list by modifying this README and opening a new pull request!
 
 ## License
 LosslessSwitcher is licensed under GPL-3.0.
+
+## Love the idea of this?
+If you appreciate the development of this application, feel free to spread the word around so more people get to know about LosslessSwitcher. 
+You can also show your support by [sponsoring](https://github.com/sponsors/vincentneo) this project!
 
 ## Dependencies
 - [Sweep](https://github.com/JohnSundell/Sweep), by @JohnSundell, a easy to use Swift `String` scanner.
