@@ -19,7 +19,7 @@ class OutputDevices: ObservableObject {
     private var changesCancellable: AnyCancellable?
     private var defaultChangesCancellable: AnyCancellable?
     
-    private let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 2, on: .main, in: .common)//.autoconnect()
     private var timerCancellable: AnyCancellable?
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
@@ -52,7 +52,7 @@ class OutputDevices: ObservableObject {
         changesCancellable?.cancel()
         defaultChangesCancellable?.cancel()
         timerCancellable?.cancel()
-        timer.upstream.connect().cancel()
+        //timer.upstream.connect().cancel()
     }
     
     func getDeviceSampleRate() {
@@ -61,13 +61,14 @@ class OutputDevices: ObservableObject {
         self.updateSampleRate(sampleRate)
     }
     
-    func switchLatestSampleRate() {
+    func switchLatestSampleRate(recursion: Bool = false) {
         do {
             var allStats = [CMPlayerStats]()
             let musicLogs = try Console.getRecentEntries(type: .music)
-            let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
+            //let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
+            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
             allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-            allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
+            allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
             
             allStats.sort(by: {$0.priority > $1.priority})
             print(allStats)
@@ -84,6 +85,11 @@ class OutputDevices: ObservableObject {
                         defaultDevice?.setNominalSampleRate(nearestSampleRate)
                         self.updateSampleRate(nearestSampleRate)
                     }
+                }
+            }
+            else if !recursion {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.switchLatestSampleRate(recursion: true)
                 }
             }
         }
