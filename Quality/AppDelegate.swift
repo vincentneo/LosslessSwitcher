@@ -71,6 +71,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
         menu.addItem(showSampleRateItem)
         
+        
+        let aboutItem = NSMenuItem(title: "About", action: nil, keyEquivalent: "")
+        let versionItem = NSMenuItem(title: "Version - \(currentVersion)", action: nil, keyEquivalent: "")
+        let buildItem = NSMenuItem(title: "Build - \(currentBuild)", action: nil, keyEquivalent: "")
+        
+        aboutItem.submenu = NSMenu()
+        aboutItem.submenu?.addItem(versionItem)
+        aboutItem.submenu?.addItem(buildItem)
+        menu.addItem(aboutItem)
+        
         let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApp.terminate(_:)), keyEquivalent: "")
         menu.addItem(quitItem)
 

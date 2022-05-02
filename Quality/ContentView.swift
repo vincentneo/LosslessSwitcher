@@ -21,7 +21,7 @@ struct ContentView: View {
             }
             if let device = outputDevices.defaultOutputDevice {
                 Text(device.name)
-                    .font(.system(size: 16, weight: .regular, design: .default))
+                    .font(.system(size: 14.5, weight: .regular, design: .default))
                     .foregroundColor(.secondary)
             }
         }

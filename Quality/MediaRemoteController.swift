@@ -27,26 +27,23 @@ class MediaRemoteController {
                         if let info = info as? [String : Any] {
                             let currentTrack = MediaTrack(mediaRemote: info)
                             if currentTrack != self.previousTrack {
-                                self.send(command: MRMediaRemoteCommandPause, ifBundleMatches: kMusicAppBundle) {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                        outputDevices.switchLatestSampleRate()
-                                        self.send(command: MRMediaRemoteCommandPlay, ifBundleMatches: kMusicAppBundle) {}
-                                    }
+                                //self.send(command: MRMediaRemoteCommandPause, ifBundleMatches: kMusicAppBundle) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                    outputDevices.switchLatestSampleRate()
+                                    //self.send(command: MRMediaRemoteCommandPlay, ifBundleMatches: kMusicAppBundle) {}
                                 }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+                                    outputDevices.switchLatestSampleRate()
+                                    //self.send(command: MRMediaRemoteCommandPlay, ifBundleMatches: kMusicAppBundle) {}
+                                }
+                                //}
                             }
                             self.previousTrack = currentTrack
                         }
                     }
                 })
-//        queueChangedCancellable = NotificationCenter.default.publisher(for: NSNotification.Name.mrNowPlayingPlaybackQueueChanged)
-//                //.throttle(for: .seconds(3), scheduler: DispatchQueue.main, latest: false)
-//                .removeDuplicates()
-//                .sink(receiveValue: { notification in
-//                    print("Queue Changed Notification Received")
-//                })
         
         MRMediaRemoteRegisterForNowPlayingNotifications(.main)
-        //NotificationCenter.default.addObserver(self, selector: #selector(x(notification:)), name: NSNotification.Name.mrMediaRemoteNowPlayingInfoDidChange, object: nil)
     }
     
     func send(command: MRMediaRemoteCommand, ifBundleMatches bundleId: String, completion: @escaping () -> ()) {
