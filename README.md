@@ -69,6 +69,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 | Intel  | MacBook Pro 13 inch (2018)                           | 12.3.1          | Denon PMA-50    |
 | Intel  | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | Topping DX7 Pro |
 | Apple Silicon | MacBook Pro 13 inch (M1, 2020)                | 12.3.1          | FX Audio DAC-X6 |
+| Intel  | MacBook Pro 15 inch (2016)                           | 12.4            | Topping D30Pro  |
 
 You can add to this list by modifying this README and opening a new pull request!
 
