@@ -14,7 +14,7 @@ The opposite happens, when the next track happens to have a lower sample rate.
 ## Installation
 Simply go to the Releases page of this repository. [(Link to latest release)](https://github.com/vincentneo/LosslessSwitcher/releases/latest)
 
-### Alternatively, try the beta! [(link)](https://github.com/vincentneo/LosslessSwitcher/releases/tag/1.1.0-beta1)
+### Alternatively, try the beta! [(link)](https://github.com/vincentneo/LosslessSwitcher/releases/)
 
 Drag the app to your Applications folder. If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Preferences:
 
