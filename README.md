@@ -65,7 +65,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 
 | CPU    | Mac Model                                            | macOS Version   | Audio Device    |
 | ------ | ---------------------------------------------------- | --------------- | --------------- |
-| Intel  | Mac Mini (2018)                                      | 12.2            | Denon PMA-50    |
+| Intel  | Mac Mini (2018)                                      | 12.2 / 12.4     | Denon PMA-50    |
 | Intel  | MacBook Pro 13 inch (2018)                           | 12.3.1          | Denon PMA-50    |
 | Intel  | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | Topping DX7 Pro |
 | Apple Silicon | MacBook Pro 13 inch (M1, 2020)                | 12.3.1          | FX Audio DAC-X6 |
