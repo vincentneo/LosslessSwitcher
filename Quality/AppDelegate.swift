@@ -88,8 +88,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.statusItem?.menu = menu
         self.statusItem?.button?.title = "Loading..."
         self.statusItemDisplay()
-        
-
     }
 
     func statusItemDisplay() {

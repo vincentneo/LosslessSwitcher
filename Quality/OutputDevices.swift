@@ -18,12 +18,16 @@ class OutputDevices: ObservableObject {
     
     private var changesCancellable: AnyCancellable?
     private var defaultChangesCancellable: AnyCancellable?
-    
-    private let timer = Timer.publish(every: 2, on: .main, in: .common)//.autoconnect()
     private var timerCancellable: AnyCancellable?
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
     private var previousSampleRate: Float64?
+    var trackAndSample = [MediaTrack : Float64]()
+    var previousTrack: MediaTrack?
+    var currentTrack: MediaTrack?
+    
+    var timerActive = false
+    var timerCalls = 0
     
     init() {
         self.outputDevices = self.coreAudio.allOutputDevices
@@ -41,11 +45,6 @@ class OutputDevices: ObservableObject {
                 self.getDeviceSampleRate()
             })
         
-        timerCancellable = timer.sink(receiveValue: { _ in
-            self.consoleQueue.async {
-                //self.switchLatestSampleRate()
-            }
-        })
     }
     
     deinit {
@@ -53,6 +52,27 @@ class OutputDevices: ObservableObject {
         defaultChangesCancellable?.cancel()
         timerCancellable?.cancel()
         //timer.upstream.connect().cancel()
+    }
+    
+    func renewTimer() {
+        if timerCancellable != nil { return }
+        timerCancellable = Timer
+            .publish(every: 2, on: .main, in: .default)
+            .autoconnect()
+            .sink { _ in
+                print("cancellable \(self.timerCancellable), times \(self.timerCalls)")
+                if self.timerCalls == 5 {
+                    self.timerCalls = 0
+                    self.timerCancellable?.cancel()
+                    self.timerCancellable = nil
+                }
+                else {
+                    self.timerCalls += 1
+                    self.consoleQueue.async {
+                        self.switchLatestSampleRate()
+                    }
+                }
+            }
     }
     
     func getDeviceSampleRate() {
@@ -68,6 +88,7 @@ class OutputDevices: ObservableObject {
             //let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
             let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
             allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+            //allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
             allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
             
             allStats.sort(by: {$0.priority > $1.priority})
@@ -75,6 +96,18 @@ class OutputDevices: ObservableObject {
             let defaultDevice = self.defaultOutputDevice
             if let first = allStats.first, let supported = defaultDevice?.nominalSampleRates {
                 let sampleRate = Float64(first.sampleRate)
+                
+                if self.currentTrack == self.previousTrack, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate {
+                    print("same track, prev sample rate is higher")
+                    return
+                }
+                
+                if sampleRate == 48000 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.switchLatestSampleRate(recursion: true)
+                    }
+                }
+                
                 // https://stackoverflow.com/a/65060134
                 let nearest = supported.enumerated().min(by: {
                     abs($0.element - sampleRate) < abs($1.element - sampleRate)
@@ -84,12 +117,29 @@ class OutputDevices: ObservableObject {
                     if nearestSampleRate != previousSampleRate {
                         defaultDevice?.setNominalSampleRate(nearestSampleRate)
                         self.updateSampleRate(nearestSampleRate)
+                        if let currentTrack = currentTrack {
+                            self.trackAndSample[currentTrack] = nearestSampleRate
+                        }
                     }
                 }
             }
             else if !recursion {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.switchLatestSampleRate(recursion: true)
+                }
+            }
+            else {
+//                print("cache \(self.trackAndSample)")
+                if self.currentTrack == self.previousTrack {
+                    print("same track, ignore cache")
+                    return
+                }
+                if let currentTrack = currentTrack, let cachedSampleRate = trackAndSample[currentTrack] {
+                    print("using cached data")
+                    if cachedSampleRate != previousSampleRate {
+                        defaultDevice?.setNominalSampleRate(cachedSampleRate)
+                        self.updateSampleRate(cachedSampleRate)
+                    }
                 }
             }
         }

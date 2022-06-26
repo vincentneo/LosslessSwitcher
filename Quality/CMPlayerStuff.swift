@@ -91,7 +91,7 @@ class CMPlayerParser {
             
             if let sr = sampleRate,
                let bd = bitDepth {
-                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date, priority: 10)
+                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date, priority: 5)
                 stats.append(stat)
                 sampleRate = nil
                 bitDepth = nil
