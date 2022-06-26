@@ -10,6 +10,7 @@ import Foundation
 import SimplyCoreAudio
 
 class OutputDevices: ObservableObject {
+    @Published var selectedOutputDevice: AudioDevice? // auto if nil
     @Published var defaultOutputDevice: AudioDevice?
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
@@ -19,6 +20,8 @@ class OutputDevices: ObservableObject {
     private var changesCancellable: AnyCancellable?
     private var defaultChangesCancellable: AnyCancellable?
     private var timerCancellable: AnyCancellable?
+    private var outputSelectionCancellable: AnyCancellable?
+    
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
     private var previousSampleRate: Float64?
@@ -45,6 +48,10 @@ class OutputDevices: ObservableObject {
                 self.getDeviceSampleRate()
             })
         
+        outputSelectionCancellable = selectedOutputDevice.publisher.sink(receiveValue: { _ in
+            self.getDeviceSampleRate()
+        })
+        
     }
     
     deinit {
@@ -60,7 +67,6 @@ class OutputDevices: ObservableObject {
             .publish(every: 2, on: .main, in: .default)
             .autoconnect()
             .sink { _ in
-                print("cancellable \(self.timerCancellable), times \(self.timerCalls)")
                 if self.timerCalls == 5 {
                     self.timerCalls = 0
                     self.timerCancellable?.cancel()
@@ -76,7 +82,7 @@ class OutputDevices: ObservableObject {
     }
     
     func getDeviceSampleRate() {
-        let defaultDevice = self.defaultOutputDevice
+        let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
         guard let sampleRate = defaultDevice?.nominalSampleRate else { return }
         self.updateSampleRate(sampleRate)
     }
@@ -93,7 +99,7 @@ class OutputDevices: ObservableObject {
             
             allStats.sort(by: {$0.priority > $1.priority})
             print(allStats)
-            let defaultDevice = self.defaultOutputDevice
+            let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
             if let first = allStats.first, let supported = defaultDevice?.nominalSampleRates {
                 let sampleRate = Float64(first.sampleRate)
                 
