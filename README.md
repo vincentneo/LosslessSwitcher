@@ -63,14 +63,15 @@ I did not test on any Macs running macOS 11, ~~or any Apple Silicon based Macs (
 
 UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comment/i69v5fe/?utm_source=share&utm_medium=web2x&context=3) has updated to me that LosslessSwitcher is working on Apple Silicon Macs! Thanks!
 
-| CPU             | Mac Model                                            | macOS Version   | Beta?                       | Audio Device    |
-| --------------- | ---------------------------------------------------- | --------------- | --------------------------- | --------------- |
-|      Intel      | Mac Mini (2018)                                      | 12.2 / 12.4     | No                          | Denon PMA-50    |
-|      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1          | No                          | Denon PMA-50    |
-|      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | No                          | Topping DX7 Pro |
-|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 12.3.1          | No                          | FX Audio DAC-X6 |
-|      Intel      | MacBook Pro 15 inch (2016)                           | 12.4            | No                          | Topping D30Pro  |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | Developer Beta 2 (22A5286j) | Topping D50s    |
+| CPU             | Mac Model                                            | macOS Version   | Beta?                       | Audio Device        |
+| --------------- | ---------------------------------------------------- | --------------- | --------------------------- | ------------------- |
+|      Intel      | Mac Mini (2018)                                      | 12.2 / 12.4     | No                          | Denon PMA-50        |
+|      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1          | No                          | Denon PMA-50        |
+|      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | No                          | Topping DX7 Pro     |
+|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 12.3.1          | No                          | FX Audio DAC-X6     |
+|      Intel      | MacBook Pro 15 inch (2016)                           | 12.4            | No                          | Topping D30Pro      |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | Developer Beta 2 (22A5286j) | Topping D50s        |
+|  Apple Silicon  | Mac mini (M1, 2022)                                  | 12.4            | No                          | Meridian Explorer 2 |
 
 You can add to this list by modifying this README and opening a new pull request!
 
