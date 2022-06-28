@@ -70,7 +70,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 |      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | No                          | Topping DX7 Pro |
 |  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 12.3.1          | No                          | FX Audio DAC-X6 |
 |      Intel      | MacBook Pro 15 inch (2016)                           | 12.4            | No                          | Topping D30Pro  |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | Developer Beta 2 (22A5286j) | Topping D50     |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | Developer Beta 2 (22A5286j) | Topping D50s    |
 
 You can add to this list by modifying this README and opening a new pull request!
 
