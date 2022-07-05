@@ -6,7 +6,10 @@
 //
 
 import Cocoa
+import Combine
 import SwiftUI
+import SimplyCoreAudio
+import PrivateMediaRemote
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     
@@ -14,9 +17,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     static private(set) var instance: AppDelegate! = nil
     private var outputDevices: OutputDevices!
     private let defaults = Defaults.shared
+    private var mrController: MediaRemoteController!
+    private var devicesMenu: NSMenu!
     
     var statusItem: NSStatusItem?
-    
+    var cancellable: AnyCancellable?
+
     private var _statusItemTitle = "Loading..."
     var statusItemTitle: String {
         get {
@@ -51,6 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
         outputDevices = OutputDevices()
+        mrController = MediaRemoteController(outputDevices: outputDevices)
         
         checkPermissions()
         
@@ -68,6 +75,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
         menu.addItem(showSampleRateItem)
         
+        let selectedDeviceItem = NSMenuItem(title: "Selected Device", action: nil, keyEquivalent: "")
+        self.devicesMenu = NSMenu()
+        selectedDeviceItem.submenu = self.devicesMenu
+        menu.addItem(selectedDeviceItem)
+        self.handleDevicesMenu()
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        let aboutItem = NSMenuItem(title: "About", action: nil, keyEquivalent: "")
+        let versionItem = NSMenuItem(title: "Version - \(currentVersion)", action: nil, keyEquivalent: "")
+        let buildItem = NSMenuItem(title: "Build - \(currentBuild)", action: nil, keyEquivalent: "")
+        
+        aboutItem.submenu = NSMenu()
+        aboutItem.submenu?.addItem(versionItem)
+        aboutItem.submenu?.addItem(buildItem)
+        menu.addItem(aboutItem)
+        
         let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApp.terminate(_:)), keyEquivalent: "")
         menu.addItem(quitItem)
 
@@ -75,8 +99,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.statusItem?.menu = menu
         self.statusItem?.button?.title = "Loading..."
         self.statusItemDisplay()
+        
+        cancellable = NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
+            self.handleDevicesMenu()
+        })
+
     }
     
+    func handleDevicesMenu() {
+        self.devicesMenu.removeAllItems()
+        let autoItem = DeviceMenuItem(title: "Default Device", action: #selector(deviceSelection(_:)), keyEquivalent: "", device: nil)
+        self.devicesMenu.addItem(autoItem)
+        autoItem.tag = -1
+        autoItem.state = .on
+        outputDevices.selectedOutputDevice = nil
+        
+        var idx = 0
+        for device in outputDevices.outputDevices {
+            let name = device.name
+            let item = DeviceMenuItem(title: name, action: #selector(deviceSelection(_:)), keyEquivalent: "", device: device)
+            item.tag = idx
+            item.state = .off
+            idx += 1
+            self.devicesMenu.addItem(item)
+        }
+    }
+    
+    @objc func deviceSelection(_ sender: DeviceMenuItem) {
+        self.devicesMenu.items.forEach({$0.state = .off})
+        sender.state = .on
+        outputDevices.selectedOutputDevice = sender.device
+    }
+
     func statusItemDisplay() {
         if defaults.userPreferIconStatusBarItem {
             self.statusItem?.button?.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "")
