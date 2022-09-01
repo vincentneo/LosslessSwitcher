@@ -87,15 +87,45 @@ class OutputDevices: ObservableObject {
         self.updateSampleRate(sampleRate)
     }
     
+    func getSampleRateFromAppleScript() -> Double? {
+        let scriptContents = "tell application \"Music\" to get sample rate of current track"
+        var error: NSDictionary?
+        
+        if let script = NSAppleScript(source: scriptContents) {
+            let output = script.executeAndReturnError(&error).stringValue
+            
+            if let error = error {
+                print("[APPLESCRIPT] - \(error)")
+            }
+            guard let output = output else { return nil }
+
+            if output == "missing value" {
+                return nil
+            }
+            else {
+                return Double(output)
+            }
+        }
+        
+        return nil
+    }
+    
     func switchLatestSampleRate(recursion: Bool = false) {
         do {
             var allStats = [CMPlayerStats]()
-            let musicLogs = try Console.getRecentEntries(type: .music)
-            //let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
-            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-            //allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-            allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
+            let appleScriptRate = getSampleRateFromAppleScript()
+            
+            if let appleScriptRate = appleScriptRate {
+                allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
+            }
+            else {
+                let musicLogs = try Console.getRecentEntries(type: .music)
+                //let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
+                let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
+                allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+                //allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
+                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
+            }
             
             allStats.sort(by: {$0.priority > $1.priority})
             print(allStats)
