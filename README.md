@@ -65,7 +65,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 
 | CPU             | Mac Model                                            | macOS Version  | Beta? | Audio Device    |
 | --------------- | ---------------------------------------------------- | -------------- | ----- | --------------- |
-|      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2           | No    | - |
+|      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2         | No    | Denon AVR-X4400H |
 |      Intel      | Mac Mini (2018)                                      | 12.2 / 12.4    | No    | Denon PMA-50    |
 |      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1         | No    | Denon PMA-50    |
 |      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1         | No    | Topping DX7 Pro |
