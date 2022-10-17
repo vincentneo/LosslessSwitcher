@@ -78,6 +78,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4           | No    | iFi Zen DAC V2  |
 |      Intel      | MacBook Pro 15 inch (2018)                           | 12.4           | No    | PS Audio Sprout |
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6           | No    | Focusrite Scarlett 18i8 (2nd Gen) | 
+|      Intel      | MacBook Pro 16 inch (2019)                           | 12.6           | No    | Mytek Brooklyn+ DAC |
 
 
 You can add to this list by modifying this README and opening a new pull request!
