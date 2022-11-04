@@ -66,20 +66,20 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 | CPU             | Mac Model                                            | macOS Version  | Beta? | Audio Device    |
 | --------------- | ---------------------------------------------------- | -------------- | ----- | --------------- |
 |      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2         | No    | Denon AVR-X4400H |
-|      Intel      | Mac Mini (2018)                                      | 12.2 / 12.4    | No    | Denon PMA-50    |
+|      Intel      | Mac mini (2018)                                      | 12.2 / 12.4    | No    | Denon PMA-50    |
 |      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1         | No    | Denon PMA-50    |
 |      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1         | No    | Topping DX7 Pro |
 |  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 12.3.1         | No    | FX Audio DAC-X6 |
 |      Intel      | MacBook Pro 15 inch (2016)                           | 12.4           | No    | Topping D30Pro  |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4           | No    | Meridian Explorer 2 |
 |      Intel      | Hackintosh (XPS 9570, i7-8750H)                      | 12.4           | No    | Universal Audio Apollo X4 & FiiO Q3 & FiiO M5 (DAC mode) |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | Developer Beta 2 (22A5286j) | Topping D50s    |
 |      Intel      | MacBook Pro 13 inch (2016)                           | 12.4           | No    | AudioQuest Dragonfly Cobalt  |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4           | No    | iFi Zen DAC V2  |
 |      Intel      | MacBook Pro 15 inch (2018)                           | 12.4           | No    | PS Audio Sprout |
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6           | No    | Focusrite Scarlett 18i8 (2nd Gen) | 
 |      Intel      | MacBook Pro 16 inch (2019)                           | 12.6           | No    | Mytek Brooklyn+ DAC |
-|  Apple Silicon  | Mac Mini M1                                          | 13.0 (GA)      | No    | iBasso DC06, Khadass Tone 2 Pro |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (22A5286j)| Developer Beta 2 | Topping D50s    |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (GA)      | No    | iBasso DC06, Khadass Tone 2 Pro |
 
 You can add to this list by modifying this README and opening a new pull request!
 
