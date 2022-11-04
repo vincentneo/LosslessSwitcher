@@ -79,7 +79,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 |      Intel      | MacBook Pro 15 inch (2018)                           | 12.4           | No    | PS Audio Sprout |
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6           | No    | Focusrite Scarlett 18i8 (2nd Gen) | 
 |      Intel      | MacBook Pro 16 inch (2019)                           | 12.6           | No    | Mytek Brooklyn+ DAC |
-
+|  Apple Silicon  | Mac Mini M1                                          | 13.0 (GA)      | No    | iBasso DC06, Khadass Tone 2 Pro |
 
 You can add to this list by modifying this README and opening a new pull request!
 
