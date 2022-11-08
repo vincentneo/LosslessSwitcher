@@ -80,6 +80,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 |      Intel      | MacBook Pro 16 inch (2019)                           | 12.6           | No    | Mytek Brooklyn+ DAC |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (22A5286j)| Developer Beta 2 | Topping D50s    |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (GA)      | No    | iBasso DC06, Khadass Tone 2 Pro |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.0           | Beta 5 | Topping D10 Balanced |
 
 You can add to this list by modifying this README and opening a new pull request!
 
