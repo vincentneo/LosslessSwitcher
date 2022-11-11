@@ -81,6 +81,7 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (22A5286j)| Developer Beta 2 | Topping D50s    |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (GA)      | No    | iBasso DC06, Khadass Tone 2 Pro |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0.1         | No    | Fiio K7, Fiio K5 Pro (AKM DAC), Topping EX5 |
+
 You can add to this list by modifying this README and opening a new pull request!
 
 ## License
