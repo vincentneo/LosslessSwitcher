@@ -116,10 +116,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         var idx = 0
         for device in outputDevices.outputDevices {
+            let uid = device.uid
             let name = device.name
             let item = DeviceMenuItem(title: name, action: #selector(deviceSelection(_:)), keyEquivalent: "", device: device)
             item.tag = idx
-            item.state = .off
+            if let uid, uid == Defaults.shared.selectedDeviceUID {
+                item.state = .on
+            }
+            else {
+                item.state = .off
+            }
             idx += 1
             self.devicesMenu.addItem(item)
         }
@@ -129,6 +135,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.devicesMenu.items.forEach({$0.state = .off})
         sender.state = .on
         outputDevices.selectedOutputDevice = sender.device
+        Defaults.shared.selectedDeviceUID = sender.device?.uid
     }
 
     func statusItemDisplay() {
