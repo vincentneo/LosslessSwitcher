@@ -76,6 +76,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | MacBook Pro 13 inch (2016)                           | 12.4           | No    | AudioQuest Dragonfly Cobalt  |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4           | No    | iFi Zen DAC V2  |
 |      Intel      | MacBook Pro 15 inch (2018)                           | 12.4           | No    | PS Audio Sprout |
+|  Apple Silicon  | MacBook Air 13 inch (2020)                           | 12.5.1         | No    | Shanling M8 |
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6           | No    | Focusrite Scarlett 18i8 (2nd Gen) | 
 |      Intel      | MacBook Pro 16 inch (2019)                           | 12.6           | No    | Mytek Brooklyn+ DAC |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (22A5286j)| Developer Beta 2 | Topping D50s    |
