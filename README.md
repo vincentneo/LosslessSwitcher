@@ -63,8 +63,8 @@ By using LosslessSwitcher, you agree that under no circumstances will the develo
 Here are some device combinations tested to be working, by users of LosslessSwitcher.
 Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 
-| CPU             | Mac Model                                            | macOS Version  | Beta? | Audio Device    |
-| --------------- | ---------------------------------------------------- | -------------- | ----- | --------------- |
+| CPU             | Mac Model                                            | macOS Version  | macOS Beta? | Audio Device    |
+| --------------- | ---------------------------------------------------- | -------------- | ----------- | --------------- |
 |      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2         | No    | Denon AVR-X4400H |
 |      Intel      | Mac mini (2018)                                      | 12.2 / 12.4    | No    | Denon PMA-50    |
 |      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1         | No    | Denon PMA-50    |
@@ -80,6 +80,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | MacBook Pro 16 inch (2019)                           | 12.6           | No    | Mytek Brooklyn+ DAC |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (22A5286j)| Developer Beta 2 | Topping D50s    |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (GA)      | No    | iBasso DC06, Khadass Tone 2 Pro |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.0 / 13.0.1  | No    | Topping D10 Balanced |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0.1         | No    | Fiio K7, Fiio K5 Pro (AKM DAC), Topping EX5 |
 |  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.0.1         | No    | AudioQuest Dragonfly Black v1.5|
 
