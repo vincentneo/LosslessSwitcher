@@ -59,9 +59,9 @@ Other than that, it should run on any Mac running macOS 11.4 or later.
 By using LosslessSwitcher, you agree that under no circumstances will the developer or any contributors be held responsible or liable in any way for any claims, damages, losses, expenses, costs or liabilities whatsoever or any other consequences suffered by you or incurred by you directly or indirectly in connection with any form of usages of LosslessSwitcher.
 
 ## Devices tested
-I did not test on any Macs running macOS 11, ~~or any Apple Silicon based Macs (I don't have one 😢)~~  Use at your own risk.
 
-UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comment/i69v5fe/?utm_source=share&utm_medium=web2x&context=3) has updated to me that LosslessSwitcher is working on Apple Silicon Macs! Thanks!
+Here are some device combinations tested to be working, by users of LosslessSwitcher.
+Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 
 | CPU             | Mac Model                                            | macOS Version  | Beta? | Audio Device    |
 | --------------- | ---------------------------------------------------- | -------------- | ----- | --------------- |
@@ -81,6 +81,8 @@ UPDATE: A [reddit user](https://www.reddit.com/r/audiophile/comments/t6l3pb/comm
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (22A5286j)| Developer Beta 2 | Topping D50s    |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0 (GA)      | No    | iBasso DC06, Khadass Tone 2 Pro |
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.0           | Beta 5 | Topping D10 Balanced |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0.1         | No    | Fiio K7, Fiio K5 Pro (AKM DAC), Topping EX5 |
+|  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.0.1         | No    | AudioQuest Dragonfly Black v1.5|
 
 You can add to this list by modifying this README and opening a new pull request!
 
