@@ -111,13 +111,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let autoItem = DeviceMenuItem(title: "Default Device", action: #selector(deviceSelection(_:)), keyEquivalent: "", device: nil)
         self.devicesMenu.addItem(autoItem)
         autoItem.tag = -1
-        if Defaults.shared.selectedDeviceUID == nil {
+        let selectedUID = Defaults.shared.selectedDeviceUID
+        if selectedUID == nil || (selectedUID != nil && !self.doesDeviceUID(selectedUID, existsIn: outputDevices.outputDevices)) {
             autoItem.state = .on
         }
         outputDevices.selectedOutputDevice = nil
         
         var idx = 0
         for device in outputDevices.outputDevices {
+
             let uid = device.uid
             let name = device.name
             let item = DeviceMenuItem(title: name, action: #selector(deviceSelection(_:)), keyEquivalent: "", device: device)
@@ -132,6 +134,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             idx += 1
             self.devicesMenu.addItem(item)
         }
+    }
+    
+    private func doesDeviceUID(_ uid: String?, existsIn outputDevices: [AudioDevice]) -> Bool {
+        return !outputDevices.filter({$0.uid == uid}).isEmpty
     }
     
     @objc func deviceSelection(_ sender: DeviceMenuItem) {
