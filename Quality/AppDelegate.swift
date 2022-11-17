@@ -111,7 +111,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let autoItem = DeviceMenuItem(title: "Default Device", action: #selector(deviceSelection(_:)), keyEquivalent: "", device: nil)
         self.devicesMenu.addItem(autoItem)
         autoItem.tag = -1
-        autoItem.state = .on
+        if Defaults.shared.selectedDeviceUID == nil {
+            autoItem.state = .on
+        }
         outputDevices.selectedOutputDevice = nil
         
         var idx = 0
@@ -122,6 +124,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             item.tag = idx
             if let uid, uid == Defaults.shared.selectedDeviceUID {
                 item.state = .on
+                outputDevices.selectedOutputDevice = device
             }
             else {
                 item.state = .off
