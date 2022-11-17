@@ -113,19 +113,19 @@ class OutputDevices: ObservableObject {
     func switchLatestSampleRate(recursion: Bool = false) {
         do {
             var allStats = [CMPlayerStats]()
-//            let appleScriptRate = getSampleRateFromAppleScript()
-//
-//            if let appleScriptRate = appleScriptRate {
-//                allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
-//            }
-//            else {
+            let appleScriptRate = getSampleRateFromAppleScript()
+            
+            if let appleScriptRate = appleScriptRate {
+                allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
+            }
+            else {
                 let musicLogs = try Console.getRecentEntries(type: .music)
                 //let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
                 let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
                 allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
                 //allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
                 allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
-            //}
+            }
             
             allStats.sort(by: {$0.priority > $1.priority})
             print(allStats)
