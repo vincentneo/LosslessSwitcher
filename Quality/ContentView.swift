@@ -23,6 +23,7 @@ struct ContentView: View {
                 Text(device.name)
                     .font(.system(size: 14.5, weight: .regular, design: .default))
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
             }
         }
     }
