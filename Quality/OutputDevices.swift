@@ -15,6 +15,8 @@ class OutputDevices: ObservableObject {
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
     
+    var enableAppleScript = Defaults.shared.userPreferAppleScript
+    
     private let coreAudio = SimplyCoreAudio()
     
     private var changesCancellable: AnyCancellable?
@@ -113,11 +115,11 @@ class OutputDevices: ObservableObject {
     func switchLatestSampleRate(recursion: Bool = false) {
         do {
             var allStats = [CMPlayerStats]()
-            let enableAppleScript = false // TODO: Do something about it
             
             let appleScriptRate = getSampleRateFromAppleScript()
 
             if enableAppleScript, let appleScriptRate = appleScriptRate {
+                print("AppleScript ran")
                 allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
             }
             else {

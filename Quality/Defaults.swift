@@ -10,10 +10,14 @@ import Foundation
 class Defaults {
     static let shared = Defaults()
     private let kUserPreferIconStatusBarItem = "com.vincent-neo.LosslessSwitcher-Key-UserPreferIconStatusBarItem"
+    private let kUserPreferAppleScript = "com.vincent-neo.LosslessSwitcher-Key-UserPreferAppleScript"
     private let kSelectedDeviceUID = "com.vincent-neo.LosslessSwitcher-Key-SelectedDeviceUID"
     
     private init() {
-        UserDefaults.standard.register(defaults: [kUserPreferIconStatusBarItem : true])
+        UserDefaults.standard.register(defaults: [
+            kUserPreferIconStatusBarItem : true,
+            kUserPreferAppleScript : true
+        ])
     }
     
     var userPreferIconStatusBarItem: Bool {
@@ -22,6 +26,15 @@ class Defaults {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: kUserPreferIconStatusBarItem)
+        }
+    }
+    
+    var userPreferAppleScript: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: kUserPreferAppleScript)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: kUserPreferAppleScript)
         }
     }
     
