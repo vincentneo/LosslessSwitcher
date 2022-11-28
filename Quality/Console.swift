@@ -20,7 +20,7 @@ enum EntryType: String {
     case coreMedia = "com.apple.coremedia"
     
     var predicate: NSPredicate {
-        NSPredicate(format: "subsystem = %@", rawValue)
+        NSPredicate(format: "(subsystem = %@) AND (process = %@)", argumentArray: [rawValue, "Music"])
     }
 }
 
