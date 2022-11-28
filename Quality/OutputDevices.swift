@@ -113,9 +113,11 @@ class OutputDevices: ObservableObject {
     func switchLatestSampleRate(recursion: Bool = false) {
         do {
             var allStats = [CMPlayerStats]()
-            let appleScriptRate = getSampleRateFromAppleScript()
+            let enableAppleScript = false // TODO: Do something about it
             
-            if let appleScriptRate = appleScriptRate {
+            let appleScriptRate = getSampleRateFromAppleScript()
+
+            if enableAppleScript, let appleScriptRate = appleScriptRate {
                 allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
             }
             else {
