@@ -73,7 +73,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | MacBook Pro 15 inch (2016)                           | 12.4           | No    | Topping D30Pro  |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4           | No    | Meridian Explorer 2 |
 |      Intel      | Hackintosh (XPS 9570, i7-8750H)                      | 12.4           | No    | Universal Audio Apollo X4 & FiiO Q3 & FiiO M5 (DAC mode) |
-|      Intel      | MacBook Pro 13 inch (2016)                           | 12.4           | No    | AudioQuest Dragonfly Cobalt  |
+|      Intel      | MacBook Pro 13 inch (2016)                           | 12.6.1         | No    | AudioQuest Dragonfly Cobalt  |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4           | No    | iFi Zen DAC V2  |
 |      Intel      | MacBook Pro 15 inch (2018)                           | 12.4           | No    | PS Audio Sprout |
 |  Apple Silicon  | MacBook Air 13 inch (2020)                           | 12.5.1         | No    | Shanling M8 |
