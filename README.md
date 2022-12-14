@@ -85,6 +85,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0.1          | No    | Fiio K7<br/>Fiio K5 Pro (AKM DAC)<br/>Topping EX5 |
 |  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.0.1          | No    | AudioQuest Dragonfly Black v1.5 |
 |  Apple Silicon  | MacBook Air (M1, 2020)                               | 13.1            | No    | Schiit Bifrost 2 |
+|      Intel      | MacBook Pro 15 inch (2018)                           | 13.1            | No    | Apogee Groove |
 
 
 You can add to this list by modifying this README and opening a new pull request!
