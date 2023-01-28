@@ -86,6 +86,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.0.1          | No    | AudioQuest Dragonfly Black v1.5 |
 |  Apple Silicon  | MacBook Air (M1, 2020)                               | 13.1            | No    | Schiit Bifrost 2 |
 |      Intel      | MacBook Pro 15 inch (2018)                           | 13.1            | No    | Apogee Groove |
+|  Apple Silicon  | iMac 24 inch (M1, 2021)                              | 13.1            | No    | SMSL PO100 |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2            | No    | RME ADI-2 DAC FS |
 
 
