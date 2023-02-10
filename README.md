@@ -89,6 +89,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | iMac 24 inch (M1, 2021)                              | 13.1            | No    | SMSL PO100 |
 |  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.1            | No    | Chord Mojo |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2            | No    | RME ADI-2 DAC FS |
+|  Apple Silicon  | MacBook Pro 16" (M1 Max, 2021)                       | 13.2            | No    | M-Audio Fast Track |
 
 You can add to this list by modifying this README and opening a new pull request!
 
