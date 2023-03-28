@@ -16,6 +16,9 @@ class OutputDevices: ObservableObject {
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
     
+    private var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
+    private var enableBitDepthDetectionCancellable: AnyCancellable?
+    
     private let coreAudio = SimplyCoreAudio()
     
     private var changesCancellable: AnyCancellable?
@@ -53,12 +56,18 @@ class OutputDevices: ObservableObject {
             self.getDeviceSampleRate()
         })
         
+        enableBitDepthDetectionCancellable = Defaults.shared.$userPreferBitDepthDetection.sink(receiveValue: { newValue in
+            self.enableBitDepthDetection = newValue
+        })
+
+        
     }
     
     deinit {
         changesCancellable?.cancel()
         defaultChangesCancellable?.cancel()
         timerCancellable?.cancel()
+        enableBitDepthDetectionCancellable?.cancel()
         //timer.upstream.connect().cancel()
     }
     
@@ -118,10 +127,15 @@ class OutputDevices: ObservableObject {
             let musicLogs = try Console.getRecentEntries(type: .music)
             let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
             let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
-            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-            //allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-            allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
             
+            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+            if enableBitDepthDetection {
+                allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
+            }
+            else {
+                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
+            }
+
             allStats.sort(by: {$0.priority > $1.priority})
             print("[getAllStats] \(allStats)")
         }
@@ -140,7 +154,7 @@ class OutputDevices: ObservableObject {
             let sampleRate = Float64(first.sampleRate)
             let bitDepth = Int32(first.bitDepth)
             
-            if self.currentTrack == self.previousTrack/*, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate */ {
+            if self.currentTrack == self.previousTrack, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate {
                 print("same track, prev sample rate is higher")
                 return
             }

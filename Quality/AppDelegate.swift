@@ -75,6 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
         menu.addItem(showSampleRateItem)
         
+        let enableBitDepthItem = NSMenuItem(title: "Bit Depth Switching", action: #selector(toggleBitDepthDetection(item:)), keyEquivalent: "")
+        menu.addItem(enableBitDepthItem)
+        enableBitDepthItem.state = defaults.userPreferBitDepthDetection ? .on : .off
+        
         let selectedDeviceItem = NSMenuItem(title: "Selected Device", action: nil, keyEquivalent: "")
         self.devicesMenu = NSMenu()
         selectedDeviceItem.submenu = self.devicesMenu
@@ -162,6 +166,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         defaults.userPreferIconStatusBarItem = !defaults.userPreferIconStatusBarItem
         self.statusItemDisplay()
         item.title = defaults.statusBarItemTitle
+    }
+    
+    @objc func toggleBitDepthDetection(item: NSMenuItem) {
+        Task {
+            await defaults.setPreferBitDepthDetection(newValue: !defaults.userPreferBitDepthDetection)
+            item.state = defaults.userPreferBitDepthDetection ? .on : .off
+        }
     }
     
 }
