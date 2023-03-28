@@ -111,36 +111,6 @@ class OutputDevices: ObservableObject {
         return nil
     }
     
-    let appleScriptQueue = DispatchQueue(label: "AppleScriptQueue")
-    
-    func getSampleRateFromAppleScript(_ completion: @escaping (Double?) -> ()) {
-        let scriptContents = "tell application \"Music\" to get sample rate of current track"
-        var error: NSDictionary?
-        
-        self.appleScriptQueue.async {
-            if let script = NSAppleScript(source: scriptContents) {
-                let output = script.executeAndReturnError(&error).stringValue
-                var dOutput: Double?
-                
-                defer {
-                    completion(dOutput)
-                }
-                
-                if let error = error {
-                    print("[APPLESCRIPT] - \(error)")
-                }
-                guard let output = output else { return }
-
-                if output == "missing value" {
-                    return
-                }
-                else {
-                    dOutput = Double(output)
-                }
-            }
-        }
-    }
-    
     func getAllStats() -> [CMPlayerStats] {
         var allStats = [CMPlayerStats]()
         
