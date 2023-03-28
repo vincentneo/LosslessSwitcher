@@ -16,8 +16,6 @@ class OutputDevices: ObservableObject {
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
     
-    var enableAppleScript = Defaults.shared.userPreferAppleScript
-    
     private let coreAudio = SimplyCoreAudio()
     
     private var changesCancellable: AnyCancellable?
@@ -147,20 +145,12 @@ class OutputDevices: ObservableObject {
         var allStats = [CMPlayerStats]()
         
         do {
-            if enableAppleScript {
-                if let appleScriptRate = getSampleRateFromAppleScript() {
-                    print("AppleScript ran")
-                    allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
-                }
-            }
-            else {
-                let musicLogs = try Console.getRecentEntries(type: .music)
-                let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-                //let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
-                allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-                allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-                //allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
-            }
+            let musicLogs = try Console.getRecentEntries(type: .music)
+            let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
+            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
+            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+            //allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
+            allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
             
             allStats.sort(by: {$0.priority > $1.priority})
             print("[getAllStats] \(allStats)")

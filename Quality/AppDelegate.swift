@@ -75,10 +75,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
         menu.addItem(showSampleRateItem)
         
-        let useAppleScriptItem = NSMenuItem(title: "Detect Local Track Rates", action: #selector(toggleAppleScript(item:)), keyEquivalent: "")
-        menu.addItem(useAppleScriptItem)
-        useAppleScriptItem.state = Defaults.shared.userPreferAppleScript ? .on : .off
-        
         let selectedDeviceItem = NSMenuItem(title: "Selected Device", action: nil, keyEquivalent: "")
         self.devicesMenu = NSMenu()
         selectedDeviceItem.submenu = self.devicesMenu
@@ -166,12 +162,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         defaults.userPreferIconStatusBarItem = !defaults.userPreferIconStatusBarItem
         self.statusItemDisplay()
         item.title = defaults.statusBarItemTitle
-    }
-    
-    @objc func toggleAppleScript(item: NSMenuItem) {
-        defaults.userPreferAppleScript = !defaults.userPreferAppleScript
-        outputDevices.enableAppleScript = defaults.userPreferAppleScript
-        item.state = defaults.userPreferAppleScript ? .on : .off
     }
     
 }
