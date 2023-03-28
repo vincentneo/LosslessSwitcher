@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import SimplyCoreAudio
+import CoreAudioTypes
 
 class OutputDevices: ObservableObject {
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
@@ -112,80 +113,155 @@ class OutputDevices: ObservableObject {
         return nil
     }
     
-    func switchLatestSampleRate(recursion: Bool = false) {
-        do {
-            var allStats = [CMPlayerStats]()
-            
-            let appleScriptRate = getSampleRateFromAppleScript()
+    let appleScriptQueue = DispatchQueue(label: "AppleScriptQueue")
+    
+    func getSampleRateFromAppleScript(_ completion: @escaping (Double?) -> ()) {
+        let scriptContents = "tell application \"Music\" to get sample rate of current track"
+        var error: NSDictionary?
+        
+        self.appleScriptQueue.async {
+            if let script = NSAppleScript(source: scriptContents) {
+                let output = script.executeAndReturnError(&error).stringValue
+                var dOutput: Double?
+                
+                defer {
+                    completion(dOutput)
+                }
+                
+                if let error = error {
+                    print("[APPLESCRIPT] - \(error)")
+                }
+                guard let output = output else { return }
 
-            if enableAppleScript, let appleScriptRate = appleScriptRate {
-                print("AppleScript ran")
-                allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
+                if output == "missing value" {
+                    return
+                }
+                else {
+                    dOutput = Double(output)
+                }
+            }
+        }
+    }
+    
+    func getAllStats() -> [CMPlayerStats] {
+        var allStats = [CMPlayerStats]()
+        
+        do {
+            if enableAppleScript {
+                if let appleScriptRate = getSampleRateFromAppleScript() {
+                    print("AppleScript ran")
+                    allStats.append(CMPlayerStats(sampleRate: appleScriptRate, bitDepth: 0, date: .init(), priority: 100))
+                }
             }
             else {
                 let musicLogs = try Console.getRecentEntries(type: .music)
-                //let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-                let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
+                let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
+                //let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
                 allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-                //allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
+                allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
+                //allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
             }
             
             allStats.sort(by: {$0.priority > $1.priority})
-            print(allStats)
-            let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
-            if let first = allStats.first, let supported = defaultDevice?.nominalSampleRates {
-                let sampleRate = Float64(first.sampleRate)
-                
-                if self.currentTrack == self.previousTrack, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate {
-                    print("same track, prev sample rate is higher")
-                    return
-                }
-                
-                if sampleRate == 48000 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.switchLatestSampleRate(recursion: true)
-                    }
-                }
-                
-                // https://stackoverflow.com/a/65060134
-                let nearest = supported.enumerated().min(by: {
-                    abs($0.element - sampleRate) < abs($1.element - sampleRate)
-                })
-                if let nearest = nearest {
-                    let nearestSampleRate = nearest.element
-                    if nearestSampleRate != previousSampleRate {
-                        defaultDevice?.setNominalSampleRate(nearestSampleRate)
-                        self.updateSampleRate(nearestSampleRate)
-                        if let currentTrack = currentTrack {
-                            self.trackAndSample[currentTrack] = nearestSampleRate
-                        }
-                    }
-                }
+            print("[getAllStats] \(allStats)")
+        }
+        catch {
+            print("[getAllStats, error] \(error)")
+        }
+        
+        return allStats
+    }
+    
+    func switchLatestSampleRate(recursion: Bool = false) {
+        let allStats = self.getAllStats()
+        let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
+        
+        if let first = allStats.first, let supported = defaultDevice?.nominalSampleRates {
+            let sampleRate = Float64(first.sampleRate)
+            let bitDepth = Int32(first.bitDepth)
+            
+            if self.currentTrack == self.previousTrack/*, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate */ {
+                print("same track, prev sample rate is higher")
+                return
             }
-            else if !recursion {
+            
+            if sampleRate == 48000 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.switchLatestSampleRate(recursion: true)
                 }
             }
-            else {
-//                print("cache \(self.trackAndSample)")
-                if self.currentTrack == self.previousTrack {
-                    print("same track, ignore cache")
-                    return
-                }
-                if let currentTrack = currentTrack, let cachedSampleRate = trackAndSample[currentTrack] {
-                    print("using cached data")
-                    if cachedSampleRate != previousSampleRate {
-                        defaultDevice?.setNominalSampleRate(cachedSampleRate)
-                        self.updateSampleRate(cachedSampleRate)
+            
+            let formats = self.getFormats(bestStat: first, device: defaultDevice!)!
+            
+            // https://stackoverflow.com/a/65060134
+            let nearest = supported.min(by: {
+                abs($0 - sampleRate) < abs($1 - sampleRate)
+            })
+            
+            let nearestBitDepth = formats.min(by: {
+                abs(Int32($0.mBitsPerChannel) - bitDepth) < abs(Int32($1.mBitsPerChannel) - bitDepth)
+            })
+            
+            let nearestFormat = formats.filter({
+                $0.mSampleRate == nearest && $0.mBitsPerChannel == nearestBitDepth?.mBitsPerChannel
+            })
+            
+            print("NEAREST FORMAT \(nearestFormat)")
+            
+            if let suitableFormat = nearestFormat.first {
+                //if suitableFormat.mSampleRate != previousSampleRate {
+                    self.setFormats(device: defaultDevice, format: suitableFormat)
+                    self.updateSampleRate(suitableFormat.mSampleRate)
+                    if let currentTrack = currentTrack {
+                        self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
                     }
-                }
+                //}
+            }
+
+//            if let nearest = nearest {
+//                let nearestSampleRate = nearest.element
+//                if nearestSampleRate != previousSampleRate {
+//                    defaultDevice?.setNominalSampleRate(nearestSampleRate)
+//                    self.updateSampleRate(nearestSampleRate)
+//                    if let currentTrack = currentTrack {
+//                        self.trackAndSample[currentTrack] = nearestSampleRate
+//                    }
+//                }
+//            }
+        }
+        else if !recursion {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.switchLatestSampleRate(recursion: true)
             }
         }
-        catch {
-            print(error)
+        else {
+//                print("cache \(self.trackAndSample)")
+            if self.currentTrack == self.previousTrack {
+                print("same track, ignore cache")
+                return
+            }
+//            if let currentTrack = currentTrack, let cachedSampleRate = trackAndSample[currentTrack] {
+//                print("using cached data")
+//                if cachedSampleRate != previousSampleRate {
+//                    defaultDevice?.setNominalSampleRate(cachedSampleRate)
+//                    self.updateSampleRate(cachedSampleRate)
+//                }
+//            }
         }
+
+    }
+    
+    func getFormats(bestStat: CMPlayerStats, device: AudioDevice) -> [AudioStreamBasicDescription]? {
+        // new sample rate + bit depth detection route
+        let streams = device.streams(scope: .output)
+        let availableFormats = streams?.first?.availablePhysicalFormats?.compactMap({$0.mFormat})
+        return availableFormats
+    }
+    
+    func setFormats(device: AudioDevice?, format: AudioStreamBasicDescription?) {
+        guard let device, let format else { return }
+        let streams = device.streams(scope: .output)
+        streams?.first?.physicalFormat = format
     }
     
     func updateSampleRate(_ sampleRate: Float64) {

@@ -80,13 +80,16 @@ class CMPlayerParser {
                 bitDepth = nil
             }
             
-            if rawMessage.contains("Input format: ") {
+            if rawMessage.contains("ACAppleLosslessDecoder") && rawMessage.contains("Input format: ") {
                 if let subSampleRate = rawMessage.firstSubstring(between: "ch, ", and: " Hz") {
                     let strSampleRate = String(subSampleRate)
                     sampleRate = Double(strSampleRate)
                 }
                 
-                bitDepth = 24 // not important anymore, just putting as placeholder, at least until there's a way to set bit depth with Core Audio.
+                if let subBitDepth = rawMessage.firstSubstring(between: "from ", and: "-bit source") {
+                    let strBitDepth = String(subBitDepth)
+                    bitDepth = Int(strBitDepth)
+                }
             }
             
             if let sr = sampleRate,
@@ -109,7 +112,7 @@ class CMPlayerParser {
         let kTimeDifferenceAcceptance = 5.0 // seconds
         var lastDate: Date?
         var sampleRate: Double?
-        let bitDepth = 24 // not important anymore, just putting as placeholder, at least until there's a way to set bit depth with Core Audio.
+        let bitDepth = 24 // Core Media don't provide bit depth, but I am keeping this for now, since it seems to be the first to deliver accurate bitrate data, fairly consistently.
         
         var stats = [CMPlayerStats]()
         
@@ -129,7 +132,7 @@ class CMPlayerParser {
             }
             
             if let sr = sampleRate {
-                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bitDepth, date: date, priority: 10)
+                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bitDepth, date: date, priority: 2)
                 stats.append(stat)
                 sampleRate = nil
                 print("detected stat \(stat)")
