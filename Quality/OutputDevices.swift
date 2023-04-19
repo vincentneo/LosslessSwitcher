@@ -15,8 +15,20 @@ class OutputDevices: ObservableObject {
     @Published var defaultOutputDevice: AudioDevice?
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
+    @Published var currentBitDepth: UInt32?
+    @Published var detectedSampleRate: Float64?
+    @Published var detectedBitDepth: UInt32?
+    @Published var sampleRatesForCurrentBitDepth: [AudioStreamBasicDescription] = []
+    @Published var bitDepthsForCurrentSampleRate: [AudioStreamBasicDescription] = []
+    @Published var supportedSampleRates: [Float64] = []
     
-    private var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
+    private var currentFormatFlags: AudioFormatFlags?
+    private var lastNearestFormat: AudioStreamBasicDescription?
+    
+    @Published var enableAutoSwitch = Defaults.shared.userPreferAutoSwitch
+    private var enableAutoSwitchCancellable: AnyCancellable?
+    
+    @Published var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
     private var enableBitDepthDetectionCancellable: AnyCancellable?
     
     private let coreAudio = SimplyCoreAudio()
@@ -28,7 +40,6 @@ class OutputDevices: ObservableObject {
     
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
-    private var previousSampleRate: Float64?
     var trackAndSample = [MediaTrack : Float64]()
     var previousTrack: MediaTrack?
     var currentTrack: MediaTrack?
@@ -39,27 +50,41 @@ class OutputDevices: ObservableObject {
     init() {
         self.outputDevices = self.coreAudio.allOutputDevices
         self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
-        self.getDeviceSampleRate()
+        self.getDeviceFormat()
+        self.updateSupportedSampleRates()
         
         changesCancellable =
-            NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
-                self.outputDevices = self.coreAudio.allOutputDevices
-            })
+        NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
+            self.outputDevices = self.coreAudio.allOutputDevices
+        })
         
         defaultChangesCancellable =
-            NotificationCenter.default.publisher(for: .defaultOutputDeviceChanged).sink(receiveValue: { _ in
-                self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
-                self.getDeviceSampleRate()
-            })
+        NotificationCenter.default.publisher(for: .defaultOutputDeviceChanged).sink(receiveValue: { _ in
+            self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
+            self.getDeviceFormat()
+            self.updateSupportedSampleRates()
+            AppDelegate.instance.updateClients()
+        })
         
         outputSelectionCancellable = selectedOutputDevice.publisher.sink(receiveValue: { _ in
-            self.getDeviceSampleRate()
+            self.getDeviceFormat()
         })
         
         enableBitDepthDetectionCancellable = Defaults.shared.$userPreferBitDepthDetection.sink(receiveValue: { newValue in
             self.enableBitDepthDetection = newValue
+            if self.enableAutoSwitch {
+                self.setCurrentToDetected()
+            }
+            self.updateStatusItemTitleText()
         })
-
+        
+        enableAutoSwitchCancellable = Defaults.shared.$userPreferAutoSwitch.sink(receiveValue: { newValue in
+            self.enableAutoSwitch = newValue
+            if self.enableAutoSwitch {
+                self.setCurrentToDetected()
+            }
+            AppDelegate.instance.updateClients()
+        })
         
     }
     
@@ -68,6 +93,7 @@ class OutputDevices: ObservableObject {
         defaultChangesCancellable?.cancel()
         timerCancellable?.cancel()
         enableBitDepthDetectionCancellable?.cancel()
+        enableAutoSwitchCancellable?.cancel()
         //timer.upstream.connect().cancel()
     }
     
@@ -91,10 +117,14 @@ class OutputDevices: ObservableObject {
             }
     }
     
-    func getDeviceSampleRate() {
-        let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
-        guard let sampleRate = defaultDevice?.nominalSampleRate else { return }
-        self.updateSampleRate(sampleRate)
+    func getDeviceFormat() {
+        guard let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice,
+              let format = defaultDevice.streams(scope: .output)?.first?.physicalFormat else { return }
+        self.currentSampleRate = format.mSampleRate
+        self.currentBitDepth = format.mBitsPerChannel
+        self.currentFormatFlags = format.mFormatFlags
+        self.updateStatusItemTitleText()
+        self.refreshSampeRatesAndBitDepths(defaultDevice)
     }
     
     func getSampleRateFromAppleScript() -> Double? {
@@ -126,16 +156,10 @@ class OutputDevices: ObservableObject {
         do {
             let musicLogs = try Console.getRecentEntries(type: .music)
             let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
             
             allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-            if enableBitDepthDetection {
-                allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-            }
-            else {
-                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
-            }
-
+            allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
+            
             allStats.sort(by: {$0.priority > $1.priority})
             print("[getAllStats] \(allStats)")
         }
@@ -183,15 +207,15 @@ class OutputDevices: ObservableObject {
             print("NEAREST FORMAT \(nearestFormat)")
             
             if let suitableFormat = nearestFormat.first {
-                //if suitableFormat.mSampleRate != previousSampleRate {
+                self.lastNearestFormat = suitableFormat
+                if enableAutoSwitch {
                     self.setFormats(device: defaultDevice, format: suitableFormat)
-                    self.updateSampleRate(suitableFormat.mSampleRate)
-                    if let currentTrack = currentTrack {
-                        self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
-                    }
-                //}
+                }
+                self.updateStatusItemTitleText()
+                if let currentTrack = currentTrack {
+                    self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
+                }
             }
-
 //            if let nearest = nearest {
 //                let nearestSampleRate = nearest.element
 //                if nearestSampleRate != previousSampleRate {
@@ -233,19 +257,127 @@ class OutputDevices: ObservableObject {
     }
     
     func setFormats(device: AudioDevice?, format: AudioStreamBasicDescription?) {
-        guard let device, let format else { return }
-        let streams = device.streams(scope: .output)
-        streams?.first?.physicalFormat = format
+        guard let device, let format, format.mSampleRate > 1000 else { return }
+        DispatchQueue.main.async {
+            if self.enableBitDepthDetection {
+                if format != device.streams(scope: .output)?.first?.physicalFormat {
+                    device.streams(scope: .output)?.first?.physicalFormat = format
+                    self.currentSampleRate = format.mSampleRate
+                    self.currentBitDepth = format.mBitsPerChannel
+                    self.currentFormatFlags = format.mFormatFlags
+                }
+            } else if device.nominalSampleRate != format.mSampleRate {
+                device.setNominalSampleRate(format.mSampleRate)
+                self.currentSampleRate = format.mSampleRate
+            }
+        }
+        refreshSampeRatesAndBitDepths(device)
     }
     
-    func updateSampleRate(_ sampleRate: Float64) {
-        self.previousSampleRate = sampleRate
+    func updateStatusItemTitleText() {
         DispatchQueue.main.async {
-            let readableSampleRate = sampleRate / 1000
-            self.currentSampleRate = readableSampleRate
+            let currentBitDepth = self.currentBitDepth ?? 0
+            let currentSampleRate = self.currentSampleRate ?? 1.0
+            let detectedBitDepth = self.lastNearestFormat?.mBitsPerChannel ?? 0
+            let detectedSampleRate = self.lastNearestFormat?.mSampleRate ?? 1.0
+            self.detectedSampleRate = detectedSampleRate
+            self.detectedBitDepth = detectedBitDepth
             
-            let delegate = AppDelegate.instance
-            delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
+            var statusItemTitle = "C:\(self.kHzString(currentSampleRate))/\(currentBitDepth) | D:\(self.kHzString(detectedSampleRate))"
+            if self.enableBitDepthDetection {
+                statusItemTitle += "/\(detectedBitDepth)"
+            }
+            AppDelegate.instance.statusItemTitle = statusItemTitle
+            AppDelegate.instance.updateClients()
+        }
+    }
+    
+    func kHzString(_ frequency: Float64) -> String {
+        // A small frequency value indicate its unset, return zero
+        if frequency < 1000 {
+            return "0"
+        }
+        let readableFrequency = frequency / 1000
+        if floor(readableFrequency) == readableFrequency {
+            // The frequency is an integer, so format without a decimal point
+            return String(format: "%.0f", readableFrequency)
+        } else {
+            // The value has a decimal part, so format with one decimal place
+            return  String(format: "%.1f", readableFrequency)
+        }
+    }
+    
+    func setCurrentToDetected() {
+        let defaultDevice = selectedOutputDevice ?? defaultOutputDevice
+        if let targetFormat = lastNearestFormat {
+            setFormats(device: defaultDevice, format: targetFormat)
+            updateStatusItemTitleText()
+        }
+    }
+    
+    func manualSetFormat(_ format: AudioStreamBasicDescription) {
+        if let device = selectedOutputDevice ?? defaultOutputDevice {
+            if format != device.streams(scope: .output)?.first?.physicalFormat {
+                device.streams(scope: .output)?.first?.physicalFormat = format
+                currentSampleRate = format.mSampleRate
+                currentBitDepth = format.mBitsPerChannel
+                currentFormatFlags = format.mFormatFlags
+                updateStatusItemTitleText()
+                refreshSampeRatesAndBitDepths(device)
+            }
+        }
+    }
+    
+    //TODO replace, legacy just here to get networking running
+    func setDeviceSampleRate(_ sampleRate: Float64?) {
+        if let targetSampleRate = sampleRate ?? lastNearestFormat?.mSampleRate {
+            if targetSampleRate > 1000 {
+                if defaultOutputDevice?.nominalSampleRate != targetSampleRate {
+                    //print("Setting device sample rate to \(targetSampleRate)")
+                    defaultOutputDevice?.setNominalSampleRate(targetSampleRate)
+                    self.currentSampleRate = targetSampleRate
+                }
+                updateStatusItemTitleText()
+            }
+        }
+    }
+        
+    func refreshSampeRatesAndBitDepths(_ device: AudioDevice) {
+        guard let outputStream = device.streams(scope: .output)?.first else { return }
+        
+        var bitDepthFormatsForSampleRate: [AudioStreamBasicDescription] = []
+        var sampleRateFormatsForBitDepth: [AudioStreamBasicDescription] = []
+        
+        if let availableFormats = outputStream.availablePhysicalFormats {
+            for formatRange in availableFormats {
+                if formatRange.mFormat.mFormatFlags == currentFormatFlags {
+                    if formatRange.mFormat.mSampleRate == currentSampleRate {
+                        bitDepthFormatsForSampleRate.append(formatRange.mFormat)
+                    }
+                    if formatRange.mFormat.mBitsPerChannel == currentBitDepth {
+                        sampleRateFormatsForBitDepth.append(formatRange.mFormat)
+                    }
+                }
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.bitDepthsForCurrentSampleRate = bitDepthFormatsForSampleRate
+            self.sampleRatesForCurrentBitDepth = sampleRateFormatsForBitDepth
+            NotificationCenter.default.post(name: .refreshedSampleRatesAndBitDepths, object: self)
+        }
+    }
+    
+    func updateSupportedSampleRates() {
+        if let device = defaultOutputDevice, let rates = device.nominalSampleRates {
+            supportedSampleRates = rates.map { Double($0) / 1000 }
+        } else {
+            supportedSampleRates = []
         }
     }
 }
+    
+extension Notification.Name {
+    static let refreshedSampleRatesAndBitDepths = Notification.Name("refreshedSampleRatesAndBitDepths")
+}
+
