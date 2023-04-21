@@ -51,7 +51,6 @@ class OutputDevices: ObservableObject {
         self.outputDevices = self.coreAudio.allOutputDevices
         self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
         self.getDeviceFormat()
-        self.updateSupportedSampleRates()
         
         changesCancellable =
         NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
@@ -62,8 +61,6 @@ class OutputDevices: ObservableObject {
         NotificationCenter.default.publisher(for: .defaultOutputDeviceChanged).sink(receiveValue: { _ in
             self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
             self.getDeviceFormat()
-            self.updateSupportedSampleRates()
-            AppDelegate.instance.updateClients()
         })
         
         outputSelectionCancellable = selectedOutputDevice.publisher.sink(receiveValue: { _ in
@@ -76,6 +73,7 @@ class OutputDevices: ObservableObject {
                 self.setCurrentToDetected()
             }
             self.updateStatusItemTitleText()
+            AppDelegate.instance.updateClients()
         })
         
         enableAutoSwitchCancellable = Defaults.shared.$userPreferAutoSwitch.sink(receiveValue: { newValue in
@@ -210,6 +208,8 @@ class OutputDevices: ObservableObject {
                 self.lastNearestFormat = suitableFormat
                 if enableAutoSwitch {
                     self.setFormats(device: defaultDevice, format: suitableFormat)
+                } else {
+                    AppDelegate.instance.updateClients()
                 }
                 self.updateStatusItemTitleText()
                 if let currentTrack = currentTrack {
@@ -270,8 +270,8 @@ class OutputDevices: ObservableObject {
                 device.setNominalSampleRate(format.mSampleRate)
                 self.currentSampleRate = format.mSampleRate
             }
+            self.refreshSampeRatesAndBitDepths(device)
         }
-        refreshSampeRatesAndBitDepths(device)
     }
     
     func updateStatusItemTitleText() {
@@ -288,7 +288,6 @@ class OutputDevices: ObservableObject {
                 statusItemTitle += "/\(detectedBitDepth)"
             }
             AppDelegate.instance.statusItemTitle = statusItemTitle
-            AppDelegate.instance.updateClients()
         }
     }
     
@@ -328,20 +327,6 @@ class OutputDevices: ObservableObject {
         }
     }
     
-    //TODO replace, legacy just here to get networking running
-    func setDeviceSampleRate(_ sampleRate: Float64?) {
-        if let targetSampleRate = sampleRate ?? lastNearestFormat?.mSampleRate {
-            if targetSampleRate > 1000 {
-                if defaultOutputDevice?.nominalSampleRate != targetSampleRate {
-                    //print("Setting device sample rate to \(targetSampleRate)")
-                    defaultOutputDevice?.setNominalSampleRate(targetSampleRate)
-                    self.currentSampleRate = targetSampleRate
-                }
-                updateStatusItemTitleText()
-            }
-        }
-    }
-        
     func refreshSampeRatesAndBitDepths(_ device: AudioDevice) {
         guard let outputStream = device.streams(scope: .output)?.first else { return }
         
@@ -365,14 +350,7 @@ class OutputDevices: ObservableObject {
             self.bitDepthsForCurrentSampleRate = bitDepthFormatsForSampleRate
             self.sampleRatesForCurrentBitDepth = sampleRateFormatsForBitDepth
             NotificationCenter.default.post(name: .refreshedSampleRatesAndBitDepths, object: self)
-        }
-    }
-    
-    func updateSupportedSampleRates() {
-        if let device = defaultOutputDevice, let rates = device.nominalSampleRates {
-            supportedSampleRates = rates.map { Double($0) / 1000 }
-        } else {
-            supportedSampleRates = []
+            AppDelegate.instance.updateClients()
         }
     }
 }

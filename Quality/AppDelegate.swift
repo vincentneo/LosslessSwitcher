@@ -264,6 +264,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    func updateBitDepthDetectionMenuItemState() {
+        if let menu = statusItem?.menu,
+           let enableBitDepthDetectionItem = menu.item(withTitle: "Bit Depth Detection") {
+            enableBitDepthDetectionItem.state = outputDevices.enableBitDepthDetection ? .on : .off
+        }
+    }
+    
     func updateClients() {
         if let networkServer = self.networkServer {
             networkServer.updateClients()
