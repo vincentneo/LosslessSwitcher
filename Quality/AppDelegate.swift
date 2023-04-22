@@ -18,10 +18,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var outputDevices: OutputDevices!
     private let defaults = Defaults.shared
     private var mrController: MediaRemoteController!
+    private var networkServer: NetworkServer!
     private var devicesMenu: NSMenu!
+    private var rateMenu: NSMenu!
+    private var bitDepthMenu: NSMenu!
     
     var statusItem: NSStatusItem?
     var cancellable: AnyCancellable?
+    private var refreshedSampleRatesAndBitDepths: AnyCancellable?
 
     private var _statusItemTitle = "Loading..."
     var statusItemTitle: String {
@@ -58,6 +62,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppDelegate.instance = self
         outputDevices = OutputDevices()
         mrController = MediaRemoteController(outputDevices: outputDevices)
+        networkServer = NetworkServer(outputDevices)
         
         checkPermissions()
         
@@ -72,18 +77,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
-        menu.addItem(showSampleRateItem)
+        let setSampleRateItem = NSMenuItem(title: "Set Current to Detected", action: #selector(setCurrentToDetected), keyEquivalent: "")
+        menu.addItem(setSampleRateItem)
         
-        let enableBitDepthItem = NSMenuItem(title: "Bit Depth Switching", action: #selector(toggleBitDepthDetection(item:)), keyEquivalent: "")
+        let enableAutoSwitchItem = NSMenuItem(title: "Auto Switching", action: #selector(toggleAutoSwitching(item:)), keyEquivalent: "")
+        menu.addItem(enableAutoSwitchItem)
+        enableAutoSwitchItem.state = defaults.userPreferAutoSwitch ? .on : .off
+     
+        let enableBitDepthItem = NSMenuItem(title: "Bit Depth Detection", action: #selector(toggleBitDepthDetection(item:)), keyEquivalent: "")
         menu.addItem(enableBitDepthItem)
         enableBitDepthItem.state = defaults.userPreferBitDepthDetection ? .on : .off
+        
+        let setRateItem = NSMenuItem(title: "Set Rate", action: nil, keyEquivalent: "")
+        self.rateMenu = NSMenu()
+        setRateItem.submenu = self.rateMenu
+        menu.addItem(setRateItem)
+        self.handleRateMenu()
+        
+        let setBitDepthItem = NSMenuItem(title: "Set Bit Depth", action: nil, keyEquivalent: "")
+        self.bitDepthMenu = NSMenu()
+        setBitDepthItem.submenu = self.bitDepthMenu
+        menu.addItem(setBitDepthItem)
+        self.handleBitDepthMenu()
         
         let selectedDeviceItem = NSMenuItem(title: "Selected Device", action: nil, keyEquivalent: "")
         self.devicesMenu = NSMenu()
         selectedDeviceItem.submenu = self.devicesMenu
         menu.addItem(selectedDeviceItem)
         self.handleDevicesMenu()
+        
+        let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
+        menu.addItem(showSampleRateItem)
         
         menu.addItem(NSMenuItem.separator())
         
@@ -107,7 +131,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         cancellable = NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
             self.handleDevicesMenu()
         })
-
+       
+        refreshedSampleRatesAndBitDepths = NotificationCenter.default.publisher(for: .refreshedSampleRatesAndBitDepths).sink(receiveValue: { _ in
+            self.handleRateMenu()
+            self.handleBitDepthMenu()
+        })
+        
+        networkServer.startListener()
+    }
+    
+    func handleRateMenu() {
+        self.rateMenu.removeAllItems()
+        var idx = 0
+        for rate in outputDevices.sampleRatesForCurrentBitDepth {
+            //let rateTitle = "\(rate.mSampleRate / 1000) kHz - \(rate.mBitsPerChannel) bit"
+            let rateTitle = "\(rate.mSampleRate / 1000) kHz"
+            let rateItem = NSMenuItem(title: rateTitle, action: #selector(sampleRateSelected(_:)), keyEquivalent: "")
+            rateItem.tag = idx
+            rateItem.target = self
+            self.rateMenu.addItem(rateItem)
+            idx += 1
+        }
+    }
+    
+    func handleBitDepthMenu() {
+        self.bitDepthMenu.removeAllItems()
+        var idx = 0
+        for format in outputDevices.bitDepthsForCurrentSampleRate {
+            //let formatTitle = "\(format.mBitsPerChannel) bit - \(format.mSampleRate / 1000) kHz"
+            let formatTitle = "\(format.mBitsPerChannel) bit"
+            let formatItem = NSMenuItem(title: formatTitle, action: #selector(formatSelected(_:)), keyEquivalent: "")
+            formatItem.tag = idx
+            formatItem.target = self
+            self.bitDepthMenu.addItem(formatItem)
+            idx += 1
+        }
     }
     
     func handleDevicesMenu() {
@@ -173,6 +231,55 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             await defaults.setPreferBitDepthDetection(newValue: !defaults.userPreferBitDepthDetection)
             item.state = defaults.userPreferBitDepthDetection ? .on : .off
         }
+    }
+    
+    @objc func toggleAutoSwitching(item: NSMenuItem) {
+        Task {
+            await defaults.setPreferAutoSwitch(newValue: !defaults.userPreferAutoSwitch)
+            item.state = defaults.userPreferAutoSwitch ? .on : .off
+        }
+    }
+    
+    @objc func setCurrentToDetected() {
+        outputDevices.setCurrentToDetected()
+    }
+    
+    
+    @objc func sampleRateSelected(_ sender: NSMenuItem) {
+        let selectedIndex = sender.tag
+        let selectedRate = outputDevices.sampleRatesForCurrentBitDepth[selectedIndex]
+        outputDevices.manualSetFormat(selectedRate)
+    }
+    
+    @objc func formatSelected(_ sender: NSMenuItem) {
+        let selectedIndex = sender.tag
+        let selectedFormat = outputDevices.bitDepthsForCurrentSampleRate[selectedIndex]
+        outputDevices.manualSetFormat(selectedFormat)
+    }
+    
+    func updateAutoSwitchingMenuItemState() {
+        if let menu = statusItem?.menu,
+           let enableAutoSwitchItem = menu.item(withTitle: "Auto Switching") {
+            enableAutoSwitchItem.state = outputDevices.enableAutoSwitch ? .on : .off
+        }
+    }
+    
+    func updateBitDepthDetectionMenuItemState() {
+        if let menu = statusItem?.menu,
+           let enableBitDepthDetectionItem = menu.item(withTitle: "Bit Depth Detection") {
+            enableBitDepthDetectionItem.state = outputDevices.enableBitDepthDetection ? .on : .off
+        }
+    }
+    
+    func updateClients() {
+        if let networkServer = self.networkServer {
+            networkServer.updateClients()
+        }
+    }
+
+    deinit {
+        cancellable?.cancel()
+        refreshedSampleRatesAndBitDepths?.cancel()
     }
     
 }
