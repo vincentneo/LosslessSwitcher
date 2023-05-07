@@ -79,6 +79,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | MacBook Air 13 inch (2020)                           | 12.5.1          | No    | Shanling M8 |
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6            | No    | Focusrite Scarlett 18i8 (2nd Gen) | 
 |      Intel      | MacBook Pro 16 inch (2019)                           | 12.6            | No    | Mytek Brooklyn+ DAC |
+|      Intel      | Mac mini (Late 2014)                                 | 12.6.3          | No    | NAD C658  |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | 22A5286j | Topping D50s    |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | No    | iBasso DC06<br/>Khadass Tone 2 Pro |
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.0<br/>13.0.1 | No    | Topping D10 Balanced |
