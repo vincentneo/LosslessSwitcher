@@ -12,9 +12,9 @@ Let's say if the next song that you are playing, is a Hi-Res Lossless track with
 The opposite happens, when the next track happens to have a lower sample rate. 
 
 ## Installation
-Simply go to the Releases page of this repository. [(Link to latest release)](https://github.com/vincentneo/LosslessSwitcher/releases/latest)
+~~Simply go to the Releases page of this repository. [(Link to latest release)](https://github.com/vincentneo/LosslessSwitcher/releases/latest)~~
 
-### Alternatively, try the beta! [(link)](https://github.com/vincentneo/LosslessSwitcher/releases/)
+Try the beta! [(link to beta release)](https://github.com/vincentneo/LosslessSwitcher/releases/). The original v1.0 release is not recommended.
 
 Drag the app to your Applications folder. If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Preferences:
 
