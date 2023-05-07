@@ -94,6 +94,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 13.2.1          | No    | RME ADI-2 PRO FS R (Black Edition) |
 |      Intel      | 27-inch iMac (2017)                                  | 13.2.1          | No    | Chord Hugo M Scaler + TT2 Combo |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2.1          | No    | Moondrop Moonriver 2 |
+|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 13.3.1          | No    | Gustard X18 |            
 
 You can add to this list by modifying this README and opening a new pull request!
 
