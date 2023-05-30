@@ -90,12 +90,13 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | iMac 24 inch (M1, 2021)                              | 13.1            | No    | SMSL PO100 |
 |  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.1            | No    | Chord Mojo |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2            | No    | RME ADI-2 DAC FS |
-|  Apple Silicon  | MacBook Pro 16" (M1 Max, 2021)                       | 13.2            | No    | M-Audio Fast Track |
+|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 13.2            | No    | M-Audio Fast Track |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.2            | No    | Topping D10s |    
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 13.2.1          | No    | RME ADI-2 PRO FS R (Black Edition) |
 |      Intel      | 27-inch iMac (2017)                                  | 13.2.1          | No    | Chord Hugo M Scaler + TT2 Combo |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2.1          | No    | Moondrop Moonriver 2 |
 |  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 13.3.1          | No    | Gustard X18 |            
-|  Apple Silicon  | MacBook Pro 14 inch (M1 pro, 2021)                       | 13.2          | No    | Topping D10s |            
+|      Intel      | 27-inch iMac (Late 2014)                             | 13.3.1 (a)      | No    | SMSL M500 |  
 
 You can add to this list by modifying this README and opening a new pull request!
 
