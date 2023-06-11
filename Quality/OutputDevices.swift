@@ -183,13 +183,16 @@ class OutputDevices: ObservableObject {
             print("NEAREST FORMAT \(nearestFormat)")
             
             if let suitableFormat = nearestFormat.first {
-                //if suitableFormat.mSampleRate != previousSampleRate {
+                if enableBitDepthDetection {
                     self.setFormats(device: defaultDevice, format: suitableFormat)
-                    self.updateSampleRate(suitableFormat.mSampleRate)
-                    if let currentTrack = currentTrack {
-                        self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
-                    }
-                //}
+                }
+                else if suitableFormat.mSampleRate != previousSampleRate { // bit depth disabled
+                    defaultDevice?.setNominalSampleRate(suitableFormat.mSampleRate)
+                }
+                self.updateSampleRate(suitableFormat.mSampleRate)
+                if let currentTrack = currentTrack {
+                    self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
+                }
             }
 
 //            if let nearest = nearest {
