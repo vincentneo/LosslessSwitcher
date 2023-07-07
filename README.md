@@ -100,6 +100,8 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 
 You can add to this list by modifying this README and opening a new pull request!
 
+Do note that Steven Slate Audio VSX software may not be fully compatible with LosslessSwitcher, and both software may interfere with each other. Please refer to discussion https://github.com/vincentneo/LosslessSwitcher/discussions/100 for more information.
+
 ## License
 LosslessSwitcher is licensed under GPL-3.0.
 
