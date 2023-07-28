@@ -97,6 +97,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2.1          | No    | Moondrop Moonriver 2 |
 |  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 13.3.1          | No    | Gustard X18 |            
 |      Intel      | 27-inch iMac (Late 2014)                             | 13.3.1 (a)      | No    | SMSL M500 |  
+|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5            | No    | FiiO K5 Pro |  
 
 You can add to this list by modifying this README and opening a new pull request!
 
