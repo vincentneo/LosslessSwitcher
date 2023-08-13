@@ -99,6 +99,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | 27-inch iMac (Late 2014)                             | 13.3.1 (a)      | No    | SMSL M500 |  
 |  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5            | No    | FiiO K5 Pro |  
 |  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5            | No    | JDS Labs Element III MK 2 |  
+|      Intel      | Mac mini (Late 2014)                                 | 13.5 (Opencore) | No    | VLink192 to Rega DAC |
 
 You can add to this list by modifying this README and opening a new pull request!
 
