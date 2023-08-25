@@ -26,6 +26,11 @@ class CMPlayerParser {
         var stats = [CMPlayerStats]()
         
         for entry in entries {
+            // ignore useless log messages for faster swithcing
+            if !entry.message.contains("audioCapabilities:") {
+                continue
+            }
+            
             let date = entry.date
             let rawMessage = entry.message
             
