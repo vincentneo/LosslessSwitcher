@@ -26,7 +26,7 @@ class CMPlayerParser {
         var stats = [CMPlayerStats]()
         
         for entry in entries {
-            // ignore useless log messages for faster swithcing
+            // ignore useless log messages for faster switching
             if !entry.message.contains("audioCapabilities:") {
                 continue
             }
