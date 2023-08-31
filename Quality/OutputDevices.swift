@@ -238,7 +238,9 @@ class OutputDevices: ObservableObject {
     func setFormats(device: AudioDevice?, format: AudioStreamBasicDescription?) {
         guard let device, let format else { return }
         let streams = device.streams(scope: .output)
-        streams?.first?.physicalFormat = format
+        if streams?.first?.physicalFormat != format {
+            streams?.first?.physicalFormat = format
+        }
     }
     
     func updateSampleRate(_ sampleRate: Float64) {
