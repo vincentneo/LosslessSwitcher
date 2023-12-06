@@ -25,6 +25,8 @@
 		1293436B28131591002E19A8 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1293436A28131591002E19A8 /* CurrentUser.swift */; };
 		12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AFF5C02811AD40001CC6ED /* AppDelegate.swift */; };
 		12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */; };
+		BF0C90C82B20BFD6002F99C9 /* LosslessSwitcher.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */; };
+		BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */; };
 		BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +49,8 @@
 		1293436A28131591002E19A8 /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 		12AFF5C02811AD40001CC6ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMenuItem.swift; sourceTree = "<group>"; };
+		BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = LosslessSwitcher.sdef; sourceTree = "<group>"; };
+		BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptableApplicationCommand.swift; sourceTree = "<group>"; };
 		BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioStreamBasicDescription+Equatable.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -110,6 +114,8 @@
 				127C972C281FCF000087313B /* AppVersion.swift */,
 				12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */,
 				BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */,
+				BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */,
+				BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */,
 			);
 			path = Quality;
 			sourceTree = "<group>";
@@ -191,6 +197,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1272AA9F280DBB4B00FD72BA /* Preview Assets.xcassets in Resources */,
+				BF0C90C82B20BFD6002F99C9 /* LosslessSwitcher.sdef in Resources */,
 				1272AA9C280DBB4B00FD72BA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -203,6 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */,
+				BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */,
 				1254A79C2813FB9400241107 /* Defaults.swift in Sources */,
 				BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */,
 				1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */,

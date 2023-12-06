@@ -15,7 +15,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // https://stackoverflow.com/a/66160164
     static private(set) var instance: AppDelegate! = nil
-    private var outputDevices: OutputDevices!
+    var outputDevices: OutputDevices!
     private let defaults = Defaults.shared
     private var mrController: MediaRemoteController!
     private var devicesMenu: NSMenu!
