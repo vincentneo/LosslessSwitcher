@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="LosslessSwitcher Terminology">
+    <suite name="LS Suite" code="sdse" description="Standard commands for this application">
+        <command name="get latest sample rate" code="getlrate" description="returns the last known sample rate">
+            <cocoa class="LosslessSwitcher.ScriptableApplicationCommand"/>
+            <result type="integer" description="sample rate"/>
+        </command>
+    </suite>
+</dictionary>

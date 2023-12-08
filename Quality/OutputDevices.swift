@@ -252,5 +252,24 @@ class OutputDevices: ObservableObject {
             let delegate = AppDelegate.instance
             delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
         }
+        self.runUserScript(sampleRate)
+    }
+    
+    func runUserScript(_ sampleRate: Float64) {
+        guard let scriptPath = Defaults.shared.shellScriptPath else { return }
+        let argumentSampleRate = String(Int(sampleRate))
+        Task.detached {
+            let scriptURL = URL(fileURLWithPath: scriptPath)
+            do {
+                let task = try NSUserUnixTask(url: scriptURL)
+                let arguments = [
+                    argumentSampleRate
+                ]
+                try await task.execute(withArguments: arguments)
+            }
+            catch {
+                print("TASK ERR \(error)")
+            }
+        }
     }
 }

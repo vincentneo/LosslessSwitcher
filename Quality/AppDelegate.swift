@@ -15,13 +15,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // https://stackoverflow.com/a/66160164
     static private(set) var instance: AppDelegate! = nil
-    private var outputDevices: OutputDevices!
+    var outputDevices: OutputDevices!
     private let defaults = Defaults.shared
     private var mrController: MediaRemoteController!
     private var devicesMenu: NSMenu!
     
     var statusItem: NSStatusItem?
     var cancellable: AnyCancellable?
+    
+    var currentScriptSelectionMenuItem: NSMenuItem?
 
     private var _statusItemTitle = "Loading..."
     var statusItemTitle: String {
@@ -62,6 +64,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         checkPermissions()
         
         let menu = NSMenu()
+        
+        menu.delegate = self
 
         let sampleRateView = ContentView().environmentObject(outputDevices)
         let view = NSHostingView(rootView: sampleRateView)
@@ -95,6 +99,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         aboutItem.submenu?.addItem(versionItem)
         aboutItem.submenu?.addItem(buildItem)
         menu.addItem(aboutItem)
+        
+        let scriptMenu = NSMenuItem(title: "Scripting", action: nil, keyEquivalent: "")
+        let selectScript = NSMenuItem(title: "Select Script...", action: #selector(selectScript(_:)), keyEquivalent: "")
+        let resetScript = NSMenuItem(title: "Clear selection", action: #selector(resetScript(_:)), keyEquivalent: "")
+        let currentScriptSelectionMenuItem = NSMenuItem(title: "No selection", action: nil, keyEquivalent: "")
+        self.currentScriptSelectionMenuItem = currentScriptSelectionMenuItem
+        scriptMenu.submenu = NSMenu()
+        scriptMenu.submenu?.addItem(selectScript)
+        scriptMenu.submenu?.addItem(resetScript)
+        scriptMenu.submenu?.addItem(currentScriptSelectionMenuItem)
+        menu.addItem(scriptMenu)
         
         let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApp.terminate(_:)), keyEquivalent: "")
         menu.addItem(quitItem)
@@ -175,4 +190,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    @objc func selectScript(_ item: NSMenuItem) {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.message = "Select a script that should be invoked when sample rate changes."
+        
+        panel.begin { response in
+            Defaults.shared.shellScriptPath = panel.url?.path
+        }
+    }
+    
+    @objc func resetScript(_ item: NSMenuItem) {
+        Defaults.shared.shellScriptPath = nil
+    }
+    
+}
+
+extension AppDelegate: NSMenuDelegate {
+    func menuWillOpen(_ menu: NSMenu) {
+        currentScriptSelectionMenuItem?.title = Defaults.shared.shellScriptPath ?? "No selection"
+    }
 }

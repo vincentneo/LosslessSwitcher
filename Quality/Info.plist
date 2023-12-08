@@ -6,5 +6,9 @@
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>This permission is required for local file sample rate detection.</string>
+	<key>NSAppleScriptEnabled</key>
+	<true/>
+	<key>OSAScriptingDefinition</key>
+	<string>LosslessSwitcher.sdef</string>
 </dict>
 </plist>

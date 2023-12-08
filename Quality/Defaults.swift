@@ -12,6 +12,7 @@ class Defaults: ObservableObject {
     private let kUserPreferIconStatusBarItem = "com.vincent-neo.LosslessSwitcher-Key-UserPreferIconStatusBarItem"
     private let kSelectedDeviceUID = "com.vincent-neo.LosslessSwitcher-Key-SelectedDeviceUID"
     private let kUserPreferBitDepthDetection = "com.vincent-neo.LosslessSwitcher-Key-BitDepthDetection"
+    private let kShellScriptPath = "KeyShellScriptPath"
     
     private init() {
         UserDefaults.standard.register(defaults: [
@@ -37,6 +38,15 @@ class Defaults: ObservableObject {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: kSelectedDeviceUID)
+        }
+    }
+    
+    var shellScriptPath: String? {
+        get {
+            return UserDefaults.standard.string(forKey: kShellScriptPath)
+        }
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: kShellScriptPath)
         }
     }
     
