@@ -100,6 +100,8 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5            | No    | FiiO K5 Pro |  
 |  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5            | No    | JDS Labs Element III MK 2 |  
 |      Intel      | Mac mini (Late 2014)                                 | 13.5 (Opencore) | No    | VLink192 to Rega DAC |
+|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4          | No    | VMV D1SE |
+|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4          | No    | Denon AVR-X6700H |
 |  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 14.0            | 23A5328b | Focusrite Scarlett 2i2 3rd Gen, Internal MacBook DAC |
 |      Intel      | MacBook Air 13 inch (2020 i5 1.1 Ghz Quad-Core)       | 14.0         | 23A5328d    | PreSonus Studio 1810c |
 
