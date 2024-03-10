@@ -12,11 +12,9 @@ Let's say if the next song that you are playing, is a Hi-Res Lossless track with
 The opposite happens, when the next track happens to have a lower sample rate. 
 
 ## Installation
-~~Simply go to the Releases page of this repository. [(Link to latest release)](https://github.com/vincentneo/LosslessSwitcher/releases/latest)~~
+Simply go to the Releases page of this repository or via [link to latest release](https://github.com/vincentneo/LosslessSwitcher/releases/latest)
 
-Try the beta! [(link to beta release)](https://github.com/vincentneo/LosslessSwitcher/releases/). The original v1.0 release is not recommended.
-
-Drag the app to your Applications folder. If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Preferences:
+Drag the app to your Applications folder. If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Settings:
 
 ```
 > User & Groups > Login Items > Add LosslessSwitcher app
@@ -41,6 +39,8 @@ Do also note that:
 - There may be short interuptions to your audio playback, during the time where the app attempts to switch the sample rates.
 - Prolonged use on MacBooks may accelerate battery usages, due to the frequent querying of the latest sample rate.
 
+Bit Depth switching is also supported, although, enabling it will reduce detection accuracy, hence, it is not recommended.
+
 ### Why make this?
 Ever since Apple Music Lossless launched along with macOS 11.4, the app would never switch the sample rates according to the song that was playing. A trip down to the Audio MIDI Setup app was required.
 This still happens today, with macOS 12.3.1, despite iOS's Music app having such an ability.
@@ -50,7 +50,7 @@ I think this improvement might be well appreciated by many, hence this project i
 ## Prerequisites
 Due to how the app works, this app is not, and cannot be sandboxed.
 It also has the following requirement, due to the use of `OSLog` API: 
-- The user running LosslessSwitcher must be an admin. This is not tested and assumed due to this [Apple Developer Forums thread](https://developer.apple.com/forums/thread/677068).
+- The user running LosslessSwitcher must be an **admin**. This is not tested and assumed due to this [Apple Developer Forums thread](https://developer.apple.com/forums/thread/677068).
 - Apple Music app must have Lossless mode on. (well, of course)
 
 Other than that, it should run on any Mac running macOS 11.4 or later.
@@ -117,6 +117,6 @@ If you appreciate the development of this application, feel free to spread the w
 You can also show your support by [sponsoring](https://github.com/sponsors/vincentneo) this project!
 
 ## Dependencies
-- [Sweep](https://github.com/JohnSundell/Sweep), by @JohnSundell, a easy to use Swift `String` scanner.
+- [Sweep](https://github.com/JohnSundell/Sweep), by @JohnSundell, an easy to use Swift `String` scanner.
 - [SimplyCoreAudio](https://github.com/rnine/SimplyCoreAudio), by @rnine, a framework that makes `CoreAudio` so much easier to use.
-
+- [PrivateMediaRemote](https://github.com/PrivateFrameworks/MediaRemote), by @DimitarNestorov, in order to use private media remote framework.
