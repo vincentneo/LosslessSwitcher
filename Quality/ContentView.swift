@@ -19,10 +19,11 @@ struct ContentView: View {
                 Text(formattedSampleRate)
                     .font(.system(size: 23, weight: .semibold, design: .default))
             }
-            if let device = outputDevices.defaultOutputDevice {
+            if let device = outputDevices.selectedOutputDevice ?? outputDevices.defaultOutputDevice {
                 Text(device.name)
-                    .font(.system(size: 16, weight: .regular, design: .default))
+                    .font(.system(size: 14.5, weight: .regular, design: .default))
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
             }
         }
     }

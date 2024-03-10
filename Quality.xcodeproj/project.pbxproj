@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */; };
 		1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */; };
+		1234F508281E8372007EC9F5 /* PrivateMediaRemote in Frameworks */ = {isa = PBXBuildFile; productRef = 1234F507281E8372007EC9F5 /* PrivateMediaRemote */; };
+		1234F50A281E83D1007EC9F5 /* MediaRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1234F509281E83D1007EC9F5 /* MediaRemote.framework */; };
+		1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1234F50D281E8F07007EC9F5 /* MediaTrack.swift */; };
+		1234F510281E9520007EC9F5 /* MediaRemoteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1234F50F281E9520007EC9F5 /* MediaRemoteController.swift */; };
 		1254A79C2813FB9400241107 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1254A79B2813FB9400241107 /* Defaults.swift */; };
 		1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA97280DBB4900FD72BA /* QualityApp.swift */; };
 		1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AA99280DBB4900FD72BA /* ContentView.swift */; };
@@ -17,12 +21,20 @@
 		1272AAAC280DC5E900FD72BA /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAB280DC5E900FD72BA /* Console.swift */; };
 		1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */; };
 		1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */ = {isa = PBXBuildFile; productRef = 1272AAB0280DC71B00FD72BA /* Sweep */; };
+		127C972D281FCF000087313B /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 127C972C281FCF000087313B /* AppVersion.swift */; };
 		1293436B28131591002E19A8 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1293436A28131591002E19A8 /* CurrentUser.swift */; };
 		12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AFF5C02811AD40001CC6ED /* AppDelegate.swift */; };
+		12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */; };
+		BF0C90C82B20BFD6002F99C9 /* LosslessSwitcher.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */; };
+		BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */; };
+		BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputDevices.swift; sourceTree = "<group>"; };
+		1234F509281E83D1007EC9F5 /* MediaRemote.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaRemote.framework; path = ../../../../../System/Library/PrivateFrameworks/MediaRemote.framework; sourceTree = "<group>"; };
+		1234F50D281E8F07007EC9F5 /* MediaTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTrack.swift; sourceTree = "<group>"; };
+		1234F50F281E9520007EC9F5 /* MediaRemoteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRemoteController.swift; sourceTree = "<group>"; };
 		1254A79B2813FB9400241107 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		1254A79D2814024300241107 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1272AA94280DBB4900FD72BA /* LosslessSwitcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LosslessSwitcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -33,8 +45,13 @@
 		1272AAA0280DBB4B00FD72BA /* Quality.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quality.entitlements; sourceTree = "<group>"; };
 		1272AAAB280DC5E900FD72BA /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
 		1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMPlayerStuff.swift; sourceTree = "<group>"; };
+		127C972C281FCF000087313B /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		1293436A28131591002E19A8 /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 		12AFF5C02811AD40001CC6ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMenuItem.swift; sourceTree = "<group>"; };
+		BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = LosslessSwitcher.sdef; sourceTree = "<group>"; };
+		BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptableApplicationCommand.swift; sourceTree = "<group>"; };
+		BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioStreamBasicDescription+Equatable.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,17 +61,28 @@
 			files = (
 				1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */,
 				1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */,
+				1234F50A281E83D1007EC9F5 /* MediaRemote.framework in Frameworks */,
+				1234F508281E8372007EC9F5 /* PrivateMediaRemote in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1234F4FD281E80A2007EC9F5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1234F509281E83D1007EC9F5 /* MediaRemote.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1272AA8B280DBB4900FD72BA = {
 			isa = PBXGroup;
 			children = (
 				1272AA96280DBB4900FD72BA /* Quality */,
 				1272AA95280DBB4900FD72BA /* Products */,
+				1234F4FD281E80A2007EC9F5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -81,6 +109,13 @@
 				1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */,
 				1293436A28131591002E19A8 /* CurrentUser.swift */,
 				1254A79B2813FB9400241107 /* Defaults.swift */,
+				1234F50D281E8F07007EC9F5 /* MediaTrack.swift */,
+				1234F50F281E9520007EC9F5 /* MediaRemoteController.swift */,
+				127C972C281FCF000087313B /* AppVersion.swift */,
+				12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */,
+				BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */,
+				BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */,
+				BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */,
 			);
 			path = Quality;
 			sourceTree = "<group>";
@@ -112,6 +147,7 @@
 			packageProductDependencies = (
 				1272AAB0280DC71B00FD72BA /* Sweep */,
 				1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */,
+				1234F507281E8372007EC9F5 /* PrivateMediaRemote */,
 			);
 			productName = Quality;
 			productReference = 1272AA94280DBB4900FD72BA /* LosslessSwitcher.app */;
@@ -144,6 +180,7 @@
 			packageReferences = (
 				1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */,
 				1221F3F7280F10A3003E8B77 /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */,
+				1234F504281E8372007EC9F5 /* XCRemoteSwiftPackageReference "MediaRemote" */,
 			);
 			productRefGroup = 1272AA95280DBB4900FD72BA /* Products */;
 			projectDirPath = "";
@@ -160,6 +197,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1272AA9F280DBB4B00FD72BA /* Preview Assets.xcassets in Resources */,
+				BF0C90C82B20BFD6002F99C9 /* LosslessSwitcher.sdef in Resources */,
 				1272AA9C280DBB4B00FD72BA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -172,13 +210,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				12AFF5C12811AD40001CC6ED /* AppDelegate.swift in Sources */,
+				BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */,
 				1254A79C2813FB9400241107 /* Defaults.swift in Sources */,
+				BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */,
+				1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */,
+				12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
+				1234F510281E9520007EC9F5 /* MediaRemoteController.swift in Sources */,
 				1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */,
 				1293436B28131591002E19A8 /* CurrentUser.swift in Sources */,
 				1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */,
+				127C972D281FCF000087313B /* AppVersion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,24 +350,29 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
-				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.4;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
 			};
 			name = Debug;
 		};
@@ -335,24 +384,29 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
-				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.4;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
 			};
 			name = Release;
 		};
@@ -388,6 +442,14 @@
 				kind = branch;
 			};
 		};
+		1234F504281E8372007EC9F5 /* XCRemoteSwiftPackageReference "MediaRemote" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PrivateFrameworks/MediaRemote";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 		1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/JohnSundell/Sweep.git";
@@ -403,6 +465,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1221F3F7280F10A3003E8B77 /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */;
 			productName = SimplyCoreAudio;
+		};
+		1234F507281E8372007EC9F5 /* PrivateMediaRemote */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1234F504281E8372007EC9F5 /* XCRemoteSwiftPackageReference "MediaRemote" */;
+			productName = PrivateMediaRemote;
 		};
 		1272AAB0280DC71B00FD72BA /* Sweep */ = {
 			isa = XCSwiftPackageProductDependency;
