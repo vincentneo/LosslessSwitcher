@@ -104,10 +104,11 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4          | No    | Denon AVR-X6700H |
 |  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 14.0            | 23A5328b | Focusrite Scarlett 2i2 3rd Gen, Internal MacBook DAC |
 |      Intel      | MacBook Air 13 inch (2020 i5 1.1 Ghz Quad-Core)      | 14.0            | 23A5328d | PreSonus Studio 1810c |
+|  Apple Silicon  | MacBoox Air 13 inch (M1, 2020)                       | 14.0            | No    | Cambridge Audio DacMagic 100 |
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 14.4.1          | No    | Hidizs S9 PRO |
 |  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.4.1          | No    | Cambridge Audio DacMagic XS |
-|      Intel      | Mac Pro 6.1  (2013)                                  | 14.4.1(Opencore)| No    | Cambridge Audio Edge NQ |
-
+|  Apple Silicon  | MacBook Pro 14 inch (M3 Pro, 2024)                   | 14.4.1          | No    | RME ADI-2 PRO FS R (Black Edition) |
+|      Intel      | Mac Pro 6.1 (2013)                                   | 14.4.1 (Opencore)| No   | Cambridge Audio Edge NQ |
 
 You can add to this list by modifying this README and opening a new pull request!
 
