@@ -108,6 +108,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 14.4.1          | No    | Hidizs S9 PRO |
 |  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.4.1          | No    | Cambridge Audio DacMagic XS |
 |  Apple Silicon  | MacBook Pro 14 inch (M3 Pro, 2024)                   | 14.4.1          | No    | RME ADI-2 PRO FS R (Black Edition) |
+|      Intel      | Mac Pro 6.1 (2013)                                   | 14.4.1 (Opencore)| No   | Cambridge Audio Edge NQ |
 
 You can add to this list by modifying this README and opening a new pull request!
 
