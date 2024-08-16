@@ -18,7 +18,7 @@ Drag the app to your Applications folder. If you wish to have it running when lo
 
 ```
 > User & Groups > Login Items > Add LosslessSwitcher app
-``` 
+```
 
 ## App details
 
