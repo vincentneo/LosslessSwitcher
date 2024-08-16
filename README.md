@@ -111,6 +111,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | Mac Pro 6.1 (2013)                                   | 14.4.1 (Opencore)  | No          | Cambridge Audio Edge NQ                                      |
 |      Intel      | MacBook Pro 15 inch (2012)                           | 14.5 (Opencore)    | 23F5074a    | Fiio KA3                                                     |
 |  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0               | 24A5264n    | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2 |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 14.6.1             | No          | FiiO BTR15                                                   |
 
 You can add to this list by modifying this README and opening a new pull request!
 
