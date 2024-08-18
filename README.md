@@ -110,6 +110,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | MacBook Pro 14 inch (M3 Pro, 2024)                   | 14.4.1             | No          | RME ADI-2 PRO FS R (Black Edition)                           |
 |      Intel      | Mac Pro 6.1 (2013)                                   | 14.4.1 (Opencore)  | No          | Cambridge Audio Edge NQ                                      |
 |      Intel      | MacBook Pro 15 inch (2012)                           | 14.5 (Opencore)    | 23F5074a    | Fiio KA3                                                     |
+|  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.5               | No          | HiBy FD3                                                     |
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 14.6.1             | No          | FiiO BTR15                                                   |
 |  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0               | 24A5264n    | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2 |
 
