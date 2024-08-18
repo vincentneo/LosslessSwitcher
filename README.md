@@ -18,7 +18,7 @@ Drag the app to your Applications folder. If you wish to have it running when lo
 
 ```
 > User & Groups > Login Items > Add LosslessSwitcher app
-``` 
+```
 
 ## App details
 
@@ -63,55 +63,56 @@ By using LosslessSwitcher, you agree that under no circumstances will the develo
 Here are some device combinations tested to be working, by users of LosslessSwitcher.
 Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 
-| CPU             | Mac Model                                            | macOS Version   | Beta macOS? | Audio Device    |
-| --------------- | ---------------------------------------------------- | --------------- | ----------- | --------------- |
-|      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2          | No    | Denon AVR-X4400H |
-|      Intel      | Mac mini (2018)                                      | 12.2<br/>12.4   | No    | Denon PMA-50    |
-|      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1          | No    | Denon PMA-50    |
-|      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1          | No    | Topping DX7 Pro |
-|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 12.3.1          | No    | FX Audio DAC-X6 |
-|      Intel      | MacBook Pro 15 inch (2016)                           | 12.4            | No    | Topping D30Pro  |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4            | No    | Meridian Explorer 2 |
-|      Intel      | Hackintosh (XPS 9570, i7-8750H)                      | 12.4            | No    | Universal Audio Apollo X4<br/>FiiO Q3<br/>FiiO M5 (DAC mode) |
-|      Intel      | MacBook Pro 13 inch (2016)                           | 12.4<br/>12.6.1 | No    | AudioQuest Dragonfly Cobalt  |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4            | No    | iFi Zen DAC V2  |
-|      Intel      | MacBook Pro 15 inch (2018)                           | 12.4            | No    | PS Audio Sprout |
-|  Apple Silicon  | MacBook Air 13 inch (2020)                           | 12.5.1          | No    | Shanling M8 |
-|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6            | No    | Focusrite Scarlett 18i8 (2nd Gen) | 
-|      Intel      | MacBook Pro 16 inch (2019)                           | 12.6            | No    | Mytek Brooklyn+ DAC |
-|      Intel      | Mac mini (Late 2014)                                 | 12.6.3          | No    | NAD C658  |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | 22A5286j | Topping D50s    |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0            | No    | iBasso DC06<br/>Khadass Tone 2 Pro |
-|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.0<br/>13.0.1 | No    | Topping D10 Balanced |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0.1          | No    | Fiio K7<br/>Fiio K5 Pro (AKM DAC)<br/>Topping EX5 |
-|  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.0.1          | No    | AudioQuest Dragonfly Black v1.5 |
-|  Apple Silicon  | MacBook Air (M1, 2020)                               | 13.1            | No    | Schiit Bifrost 2 |
-|      Intel      | MacBook Pro 15 inch (2018)                           | 13.1            | No    | Apogee Groove |
-|  Apple Silicon  | iMac 24 inch (M1, 2021)                              | 13.1            | No    | SMSL PO100 |
-|  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.1            | No    | Chord Mojo |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2            | No    | RME ADI-2 DAC FS |
-|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 13.2            | No    | M-Audio Fast Track |
-|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.2            | No    | Topping D10s |    
-|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 13.2.1          | No    | RME ADI-2 PRO FS R (Black Edition) |
-|      Intel      | 27-inch iMac (2017)                                  | 13.2.1          | No    | Chord Hugo M Scaler + TT2 Combo |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2.1          | No    | Moondrop Moonriver 2 |
-|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 13.3.1          | No    | Gustard X18 |            
-|      Intel      | 27-inch iMac (Late 2014)                             | 13.3.1 (a)      | No    | SMSL M500 |  
-|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5            | No    | FiiO K5 Pro |  
-|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5            | No    | JDS Labs Element III MK 2 |  
-|      Intel      | Mac mini (Late 2014)                                 | 13.5 (Opencore) | No    | VLink192 to Rega DAC |
-|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4          | No    | VMV D1SE |
-|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4          | No    | Denon AVR-X6700H |
-|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 14.0            | 23A5328b | Focusrite Scarlett 2i2 3rd Gen, Internal MacBook DAC |
-|      Intel      | MacBook Air 13 inch (2020 i5 1.1 Ghz Quad-Core)      | 14.0            | 23A5328d | PreSonus Studio 1810c |
-|  Apple Silicon  | MacBoox Air 13 inch (M1, 2020)                       | 14.0            | No    | Cambridge Audio DacMagic 100 |
-|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 14.4.1          | No    | Hidizs S9 PRO |
-|  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.4.1          | No    | Cambridge Audio DacMagic XS |
-|  Apple Silicon  | MacBook Pro 14 inch (M3 Pro, 2024)                   | 14.4.1          | No    | RME ADI-2 PRO FS R (Black Edition) |
-|      Intel      | Mac Pro 6.1 (2013)                                   | 14.4.1 (Opencore)| No   | Cambridge Audio Edge NQ |
-|      Intel      | MacBook Pro 15 inch (2012)                           | 14.5 (Opencore) | 23F5074a   | Fiio KA3 |
-|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0            | 24A5264n | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2
-|  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.5            | No    | HiBy FD3 |
+| CPU             | Mac Model                                            | macOS Version      | Beta macOS? | Audio Device                                                 |
+| --------------- | ---------------------------------------------------- | ------------------ | ----------- | ------------------------------------------------------------ |
+|      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2             | No          | Denon AVR-X4400H                                             |
+|      Intel      | Mac mini (2018)                                      | 12.2<br/>12.4      | No          | Denon PMA-50                                                 |
+|      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1             | No          | Denon PMA-50                                                 |
+|      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1             | No          | Topping DX7 Pro                                              |
+|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 12.3.1             | No          | FX Audio DAC-X6                                              |
+|      Intel      | MacBook Pro 15 inch (2016)                           | 12.4               | No          | Topping D30Pro                                               |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4               | No          | Meridian Explorer 2                                          |
+|      Intel      | Hackintosh (XPS 9570, i7-8750H)                      | 12.4               | No          | Universal Audio Apollo X4<br/>FiiO Q3<br/>FiiO M5 (DAC mode) |
+|      Intel      | MacBook Pro 13 inch (2016)                           | 12.4<br/>12.6.1    | No          | AudioQuest Dragonfly Cobalt                                  |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4               | No          | iFi Zen DAC V2                                               |
+|      Intel      | MacBook Pro 15 inch (2018)                           | 12.4               | No          | PS Audio Sprout                                              |
+|  Apple Silicon  | MacBook Air 13 inch (2020)                           | 12.5.1             | No          | Shanling M8                                                  |
+|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6               | No          | Focusrite Scarlett 18i8 (2nd Gen)                            | 
+|      Intel      | MacBook Pro 16 inch (2019)                           | 12.6               | No          | Mytek Brooklyn+ DAC                                          |
+|      Intel      | Mac mini (Late 2014)                                 | 12.6.3             | No          | NAD C658                                                     |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0               | 22A5286j    | Topping D50s                                                 |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0               | No          | iBasso DC06<br/>Khadass Tone 2 Pro                           |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.0<br/>13.0.1    | No          | Topping D10 Balanced                                         |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0.1             | No          | Fiio K7<br/>Fiio K5 Pro (AKM DAC)<br/>Topping EX5            |
+|  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.0.1             | No          | AudioQuest Dragonfly Black v1.5                              |
+|  Apple Silicon  | MacBook Air (M1, 2020)                               | 13.1               | No          | Schiit Bifrost 2                                             |
+|      Intel      | MacBook Pro 15 inch (2018)                           | 13.1               | No          | Apogee Groove                                                |
+|  Apple Silicon  | iMac 24 inch (M1, 2021)                              | 13.1               | No          | SMSL PO100                                                   |
+|  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.1               | No          | Chord Mojo                                                   |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2               | No          | RME ADI-2 DAC FS                                             |
+|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 13.2               | No          | M-Audio Fast Track                                           |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.2               | No          | Topping D10s                                                 |
+|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 13.2.1             | No          | RME ADI-2 PRO FS R (Black Edition)                           |
+|      Intel      | 27-inch iMac (2017)                                  | 13.2.1             | No          | Chord Hugo M Scaler + TT2 Combo                              |
+|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2.1             | No          | Moondrop Moonriver 2                                         |
+|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 13.3.1             | No          | Gustard X18                                                  |
+|      Intel      | 27-inch iMac (Late 2014)                             | 13.3.1 (a)         | No          | SMSL M500                                                    |
+|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5               | No          | FiiO K5 Pro                                                  |
+|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5               | No          | JDS Labs Element III MK 2                                    |  
+|      Intel      | Mac mini (Late 2014)                                 | 13.5 (Opencore)    | No          | VLink192 to Rega DAC                                         |
+|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4             | No          | VMV D1SE                                                     |
+|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4             | No          | Denon AVR-X6700H                                             |
+|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 14.0               | 23A5328b    | Focusrite Scarlett 2i2 3rd Gen, Internal MacBook DAC         |
+|      Intel      | MacBook Air 13 inch (2020 i5 1.1 Ghz Quad-Core)      | 14.0               | 23A5328d    | PreSonus Studio 1810c                                        |
+|  Apple Silicon  | MacBoox Air 13 inch (M1, 2020)                       | 14.0               | No          | Cambridge Audio DacMagic 100                                 |
+|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 14.4.1             | No          | Hidizs S9 PRO                                                |
+|  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.4.1             | No          | Cambridge Audio DacMagic XS                                  |
+|  Apple Silicon  | MacBook Pro 14 inch (M3 Pro, 2024)                   | 14.4.1             | No          | RME ADI-2 PRO FS R (Black Edition)                           |
+|      Intel      | Mac Pro 6.1 (2013)                                   | 14.4.1 (Opencore)  | No          | Cambridge Audio Edge NQ                                      |
+|      Intel      | MacBook Pro 15 inch (2012)                           | 14.5 (Opencore)    | 23F5074a    | Fiio KA3                                                     |
+|  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.5               | No          | HiBy FD3                                                     |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 14.6.1             | No          | FiiO BTR15                                                   |
+|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0               | 24A5264n    | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2 |
 
 You can add to this list by modifying this README and opening a new pull request!
 
