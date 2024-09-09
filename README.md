@@ -112,7 +112,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.5               | No          | HiBy FD3                                                     |
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 14.6.1             | No          | FiiO BTR15                                                   |
 |  Apple Silicon  | MacBook Air 13 inch (M3, 2024)                       | 14.6.1             | No          | iBasso DC03 Pro                                              |
-|      Intel      | MacBook Pro 16 inch (i7, 2019)                       | 14.6.1             | No          | Fiio K17                                                     |
+|      Intel      | MacBook Pro 16 inch (i7, 2019)                       | 14.6.1             | No          | Fiio KA17                                                     |
 |  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0               | 24A5264n    | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2 |
 |      Intel      | MacBook Pro 15 inch (2012)                           | 15.1 (Opencore)    | 24B5035e    | Fiio KA3<br/>Fiio KB3                                        |
 
