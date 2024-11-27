@@ -115,6 +115,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | MacBook Pro 16 inch (i7, 2019)                       | 14.6.1             | No          | Fiio KA17                                                     |
 |  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0               | 24A5264n    | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2 |
 |      Intel      | MacBook Pro 15 inch (2012)                           | 15.1 (Opencore)    | 24B5035e    | Fiio KA3<br/>Fiio KB3                                        |
+|  Apple Silicon  | Mac mini (M2, 2023)                                  | 15.1.1             | No          | Sony NW-A55 (USB DAC mode)                                   |
 
 You can add to this list by modifying this README and opening a new pull request!
 
