@@ -62,66 +62,66 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         mrController = MediaRemoteController(outputDevices: outputDevices)
         
         checkPermissions()
-        
-        let menu = NSMenu()
-        
-        menu.delegate = self
-
-        let sampleRateView = ContentView().environmentObject(outputDevices)
-        let view = NSHostingView(rootView: sampleRateView)
-        view.frame = NSRect(x: 0, y: 0, width: 200, height: 100)
-        let sampleRateItem = NSMenuItem()
-        sampleRateItem.view = view
-        menu.addItem(sampleRateItem)
-        
-        menu.addItem(NSMenuItem.separator())
-        
-        let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
-        menu.addItem(showSampleRateItem)
-        
-        let enableBitDepthItem = NSMenuItem(title: "Bit Depth Switching", action: #selector(toggleBitDepthDetection(item:)), keyEquivalent: "")
-        menu.addItem(enableBitDepthItem)
-        enableBitDepthItem.state = defaults.userPreferBitDepthDetection ? .on : .off
-        
-        let selectedDeviceItem = NSMenuItem(title: "Selected Device", action: nil, keyEquivalent: "")
-        self.devicesMenu = NSMenu()
-        selectedDeviceItem.submenu = self.devicesMenu
-        menu.addItem(selectedDeviceItem)
-        self.handleDevicesMenu()
-        
-        menu.addItem(NSMenuItem.separator())
-        
-        let aboutItem = NSMenuItem(title: "About", action: nil, keyEquivalent: "")
-        let versionItem = NSMenuItem(title: "Version - \(currentVersion)", action: nil, keyEquivalent: "")
-        let buildItem = NSMenuItem(title: "Build - \(currentBuild)", action: nil, keyEquivalent: "")
-        
-        aboutItem.submenu = NSMenu()
-        aboutItem.submenu?.addItem(versionItem)
-        aboutItem.submenu?.addItem(buildItem)
-        menu.addItem(aboutItem)
-        
-        let scriptMenu = NSMenuItem(title: "Scripting", action: nil, keyEquivalent: "")
-        let selectScript = NSMenuItem(title: "Select Script...", action: #selector(selectScript(_:)), keyEquivalent: "")
-        let resetScript = NSMenuItem(title: "Clear selection", action: #selector(resetScript(_:)), keyEquivalent: "")
-        let currentScriptSelectionMenuItem = NSMenuItem(title: "No selection", action: nil, keyEquivalent: "")
-        self.currentScriptSelectionMenuItem = currentScriptSelectionMenuItem
-        scriptMenu.submenu = NSMenu()
-        scriptMenu.submenu?.addItem(selectScript)
-        scriptMenu.submenu?.addItem(resetScript)
-        scriptMenu.submenu?.addItem(currentScriptSelectionMenuItem)
-        menu.addItem(scriptMenu)
-        
-        let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApp.terminate(_:)), keyEquivalent: "")
-        menu.addItem(quitItem)
-
-        self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        self.statusItem?.menu = menu
-        self.statusItem?.button?.title = "Loading..."
-        self.statusItemDisplay()
-        
-        cancellable = NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
-            self.handleDevicesMenu()
-        })
+//        
+//        let menu = NSMenu()
+//        
+//        menu.delegate = self
+//
+//        let sampleRateView = ContentView().environmentObject(outputDevices)
+//        let view = NSHostingView(rootView: sampleRateView)
+//        view.frame = NSRect(x: 0, y: 0, width: 200, height: 100)
+//        let sampleRateItem = NSMenuItem()
+//        sampleRateItem.view = view
+//        menu.addItem(sampleRateItem)
+//        
+//        menu.addItem(NSMenuItem.separator())
+//        
+//        let showSampleRateItem = NSMenuItem(title: defaults.statusBarItemTitle, action: #selector(toggleSampleRate(item:)), keyEquivalent: "")
+//        menu.addItem(showSampleRateItem)
+//        
+//        let enableBitDepthItem = NSMenuItem(title: "Bit Depth Switching", action: #selector(toggleBitDepthDetection(item:)), keyEquivalent: "")
+//        menu.addItem(enableBitDepthItem)
+//        enableBitDepthItem.state = defaults.userPreferBitDepthDetection ? .on : .off
+//        
+//        let selectedDeviceItem = NSMenuItem(title: "Selected Device", action: nil, keyEquivalent: "")
+//        self.devicesMenu = NSMenu()
+//        selectedDeviceItem.submenu = self.devicesMenu
+//        menu.addItem(selectedDeviceItem)
+//        self.handleDevicesMenu()
+//        
+//        menu.addItem(NSMenuItem.separator())
+//        
+//        let aboutItem = NSMenuItem(title: "About", action: nil, keyEquivalent: "")
+//        let versionItem = NSMenuItem(title: "Version - \(currentVersion)", action: nil, keyEquivalent: "")
+//        let buildItem = NSMenuItem(title: "Build - \(currentBuild)", action: nil, keyEquivalent: "")
+//        
+//        aboutItem.submenu = NSMenu()
+//        aboutItem.submenu?.addItem(versionItem)
+//        aboutItem.submenu?.addItem(buildItem)
+//        menu.addItem(aboutItem)
+//        
+//        let scriptMenu = NSMenuItem(title: "Scripting", action: nil, keyEquivalent: "")
+//        let selectScript = NSMenuItem(title: "Select Script...", action: #selector(selectScript(_:)), keyEquivalent: "")
+//        let resetScript = NSMenuItem(title: "Clear selection", action: #selector(resetScript(_:)), keyEquivalent: "")
+//        let currentScriptSelectionMenuItem = NSMenuItem(title: "No selection", action: nil, keyEquivalent: "")
+//        self.currentScriptSelectionMenuItem = currentScriptSelectionMenuItem
+//        scriptMenu.submenu = NSMenu()
+//        scriptMenu.submenu?.addItem(selectScript)
+//        scriptMenu.submenu?.addItem(resetScript)
+//        scriptMenu.submenu?.addItem(currentScriptSelectionMenuItem)
+//        menu.addItem(scriptMenu)
+//        
+//        let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApp.terminate(_:)), keyEquivalent: "")
+//        menu.addItem(quitItem)
+//
+//        self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+//        self.statusItem?.menu = menu
+//        self.statusItem?.button?.title = "Loading..."
+//        self.statusItemDisplay()
+//        
+//        cancellable = NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
+//            self.handleDevicesMenu()
+//        })
 
     }
     

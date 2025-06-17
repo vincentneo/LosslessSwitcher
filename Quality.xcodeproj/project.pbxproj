@@ -27,6 +27,7 @@
 		12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */; };
 		BF0C90C82B20BFD6002F99C9 /* LosslessSwitcher.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */; };
 		BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */; };
+		BF5A87BA2E01D746002033D6 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5A87B92E01D746002033D6 /* MenuBarController.swift */; };
 		BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,7 @@
 		12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMenuItem.swift; sourceTree = "<group>"; };
 		BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = LosslessSwitcher.sdef; sourceTree = "<group>"; };
 		BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptableApplicationCommand.swift; sourceTree = "<group>"; };
+		BF5A87B92E01D746002033D6 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioStreamBasicDescription+Equatable.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,6 +102,7 @@
 				1254A79D2814024300241107 /* Info.plist */,
 				12AFF5C02811AD40001CC6ED /* AppDelegate.swift */,
 				1272AA97280DBB4900FD72BA /* QualityApp.swift */,
+				BF5A87B92E01D746002033D6 /* MenuBarController.swift */,
 				1272AA99280DBB4900FD72BA /* ContentView.swift */,
 				1272AA9B280DBB4B00FD72BA /* Assets.xcassets */,
 				1272AAA0280DBB4B00FD72BA /* Quality.entitlements */,
@@ -213,6 +216,7 @@
 				BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */,
 				1254A79C2813FB9400241107 /* Defaults.swift in Sources */,
 				BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */,
+				BF5A87BA2E01D746002033D6 /* MenuBarController.swift in Sources */,
 				1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */,
 				12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
@@ -350,21 +354,22 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.4;
-				MARKETING_VERSION = 1.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -384,21 +389,22 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.4;
-				MARKETING_VERSION = 1.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
