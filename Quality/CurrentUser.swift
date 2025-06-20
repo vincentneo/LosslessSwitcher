@@ -9,6 +9,7 @@
 import Cocoa
 import CoreServices
 
+@MainActor
 class User {
     
     static let current = User()
@@ -54,3 +55,4 @@ class User {
         case queriedWithoutResult
     }
 }
+

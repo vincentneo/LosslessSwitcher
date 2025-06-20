@@ -10,21 +10,21 @@ import Foundation
 import SimplyCoreAudio
 import CoreAudioTypes
 
-class OutputDevices: ObservableObject {
+@MainActor class OutputDevices: ObservableObject {
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
     @Published var defaultOutputDevice: AudioDevice?
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
     
     private var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
-    private var enableBitDepthDetectionCancellable: AnyCancellable?
+    private nonisolated(unsafe) var enableBitDepthDetectionCancellable: AnyCancellable?
     
     private let coreAudio = SimplyCoreAudio()
     
-    private var changesCancellable: AnyCancellable?
-    private var defaultChangesCancellable: AnyCancellable?
-    private var timerCancellable: AnyCancellable?
-    private var outputSelectionCancellable: AnyCancellable?
+    private nonisolated(unsafe) var changesCancellable: AnyCancellable?
+    private nonisolated(unsafe) var defaultChangesCancellable: AnyCancellable?
+    private nonisolated(unsafe) var timerCancellable: AnyCancellable?
+    private nonisolated(unsafe) var outputSelectionCancellable: AnyCancellable?
     
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
@@ -85,7 +85,9 @@ class OutputDevices: ObservableObject {
                 else {
                     self.timerCalls += 1
                     self.consoleQueue.async {
-                        self.switchLatestSampleRate()
+                        Task { @MainActor in
+                            self.switchLatestSampleRate()
+                        }
                     }
                 }
             }
@@ -236,10 +238,14 @@ class OutputDevices: ObservableObject {
     }
     
     func setFormats(device: AudioDevice?, format: AudioStreamBasicDescription?) {
-        guard let device, let format else { return }
-        let streams = device.streams(scope: .output)
-        if streams?.first?.physicalFormat != format {
-            streams?.first?.physicalFormat = format
+        guard let device = device, let streams = device.streams(scope: .output), let stream = streams.first else { return }
+        let currentFormat = stream.physicalFormat
+        guard let newFormat = format else { return }
+        if currentFormat?.mSampleRate != newFormat.mSampleRate ||
+            currentFormat?.mFormatID != newFormat.mFormatID ||
+            currentFormat?.mChannelsPerFrame != newFormat.mChannelsPerFrame ||
+            currentFormat?.mBitsPerChannel != newFormat.mBitsPerChannel {
+            stream.physicalFormat = newFormat
         }
     }
     
@@ -273,3 +279,4 @@ class OutputDevices: ObservableObject {
         }
     }
 }
+
