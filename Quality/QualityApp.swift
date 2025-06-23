@@ -23,6 +23,7 @@ struct QualityApp: App {
         } label: {
             if defaults.userPreferIconStatusBarItem {
                 Image(systemName: "music.note")
+                    .padding(.horizontal, 8)
             }
             else {
                 SampleRateLabel()
