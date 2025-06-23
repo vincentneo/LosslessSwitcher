@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import SimplyCoreAudio
 import CoreAudioTypes
+import MediaRemoteAdapter
 
 class OutputDevices: ObservableObject {
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
@@ -271,5 +272,14 @@ class OutputDevices: ObservableObject {
                 print("TASK ERR \(error)")
             }
         }
+    }
+    
+    func trackDidChange(_ newTrack: TrackInfo) {
+        self.previousTrack = self.currentTrack
+        self.currentTrack = MediaTrack(trackInfo: newTrack)
+        if self.previousTrack != self.currentTrack {
+            self.renewTimer()
+        }
+        self.switchLatestSampleRate()
     }
 }

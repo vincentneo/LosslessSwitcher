@@ -7,6 +7,7 @@
 
 import Foundation
 import PrivateMediaRemote
+import MediaRemoteAdapter
 
 struct MediaTrack: Equatable, Hashable {
     
@@ -25,5 +26,15 @@ struct MediaTrack: Equatable, Hashable {
         self.album = info[kMRMediaRemoteNowPlayingInfoAlbum] as? String
         self.artist = info[kMRMediaRemoteNowPlayingInfoArtist] as? String
         self.trackNumber = info[kMRMediaRemoteNowPlayingInfoTrackNumber] as? String
+    }
+    
+    init(trackInfo: TrackInfo) {
+        let payload = trackInfo.payload
+        self.id = payload.uniqueIdentifier
+        self.isMusicApp = true
+        self.title = payload.title
+        self.album = payload.album
+        self.artist = payload.artist
+        self.trackNumber = nil
     }
 }
