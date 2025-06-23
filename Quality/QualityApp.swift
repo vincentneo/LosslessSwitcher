@@ -25,7 +25,8 @@ struct QualityApp: App {
                 Image(systemName: "music.note")
             }
             else {
-                Text(controller.statusBarTitle)
+                SampleRateLabel()
+                    .environmentObject(controller.outputDevices)
             }
         }
         .menuBarExtraStyle(.menu)

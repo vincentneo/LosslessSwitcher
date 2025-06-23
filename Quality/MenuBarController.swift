@@ -10,8 +10,6 @@ import SwiftUI
 
 @Observable
 class MenuBarController {
-    var statusBarTitle = "Loading"
-    
     @ObservationIgnored
     var outputDevices: OutputDevices!
     
