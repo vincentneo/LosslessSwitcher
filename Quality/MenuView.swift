@@ -40,6 +40,9 @@ struct MenuView: View {
                     outputDevices.selectedOutputDevice = nil
                     defaults.selectedDeviceUID = nil
                 } label: {
+                    if outputDevices.selectedOutputDevice == nil {
+                        Image(systemName: "checkmark")
+                    }
                     Text("Default Device")
                 }
 
