@@ -130,6 +130,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |      Intel      | MacBook Pro 15 inch (2012)                           | 15.1 (Opencore)    | 24B5035e    | Fiio KA3<br/>Fiio KB3                                        |
 |  Apple Silicon  | Mac mini (M2, 2023)                                  | 15.1.1             | No          | Sony NW-A55 (USB DAC mode)                                   |
 |  Apple Silicon  | Mac mini (M4, 2024)                                  | 15.3.1             | No          | MOTU M2                                                      |
+|  Apple Silicon  | MacBook Pro 14 inch (M1 Max, 2021)                   | 15.5               | No          | Cambridge Audio DacMagic 200M                                        |
 
 
 ### Version 2.x
