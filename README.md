@@ -12,10 +12,21 @@ Let's say if the next song that you are playing, is a Hi-Res Lossless track with
 The opposite happens, when the next track happens to have a lower sample rate. 
 
 ## Installation
-Simply go to the Releases page of this repository or via [link to latest release](https://github.com/vincentneo/LosslessSwitcher/releases/latest)
 
-Drag the app to your Applications folder. If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Settings:
+### For macOS Big Sur 11.4 to macOS Sonoma 14.x
+Please use releases of version 1.x, such as versions 1.0, 1.1 or [1.1.1 betas](https://github.com/vincentneo/LosslessSwitcher/releases/tag/1.1.1-beta2).
+Version 1.x also works up to macOS Sequoia 15.3.1.
 
+You can find the latest stable release of the version 1.x branch here: [Link to v1.1](https://github.com/vincentneo/LosslessSwitcher/releases/tag/1.1.0)
+
+### For macOS Sequoia 15.4 onwards
+Support for this is still in beta. You can try the latest version 2.0 beta here: [Link to v2.0 Beta 1](https://github.com/vincentneo/LosslessSwitcher/releases/tag/2.0-beta1) 
+
+#### Steps
+1. Download the `.zip` file of the preferred version.
+2. Drag the app to your Applications folder.
+
+If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Settings:
 ```
 > User & Groups > Login Items > Add LosslessSwitcher app
 ```
@@ -63,6 +74,8 @@ By using LosslessSwitcher, you agree that under no circumstances will the develo
 Here are some device combinations tested to be working, by users of LosslessSwitcher.
 Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 
+
+### Version 1.x
 | CPU             | Mac Model                                            | macOS Version      | Beta macOS? | Audio Device                                                 |
 | --------------- | ---------------------------------------------------- | ------------------ | ----------- | ------------------------------------------------------------ |
 |      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2             | No          | Denon AVR-X4400H                                             |
@@ -112,11 +125,17 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.5               | No          | HiBy FD3                                                     |
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 14.6.1             | No          | FiiO BTR15                                                   |
 |  Apple Silicon  | MacBook Air 13 inch (M3, 2024)                       | 14.6.1             | No          | iBasso DC03 Pro                                              |
-|      Intel      | MacBook Pro 16 inch (i7, 2019)                       | 14.6.1             | No          | Fiio KA17                                                     |
+|      Intel      | MacBook Pro 16 inch (i7, 2019)                       | 14.6.1             | No          | Fiio KA17                                                    |
 |  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0               | 24A5264n    | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2 |
 |      Intel      | MacBook Pro 15 inch (2012)                           | 15.1 (Opencore)    | 24B5035e    | Fiio KA3<br/>Fiio KB3                                        |
 |  Apple Silicon  | Mac mini (M2, 2023)                                  | 15.1.1             | No          | Sony NW-A55 (USB DAC mode)                                   |
 |  Apple Silicon  | Mac mini (M4, 2024)                                  | 15.3.1             | No          | MOTU M2                                                      |
+
+
+### Version 2.x
+| CPU             | Mac Model                                            | macOS Version      | Beta macOS? | Audio Device                       | Version                 |
+| --------------- | ---------------------------------------------------- | ------------------ | ----------- | -----------------------------------| ----------------------- |
+|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 15.4.1             | No          | Denon PMA-150H                     | 2.0 Beta 1              |
 
 You can add to this list by modifying this README and opening a new pull request!
 
