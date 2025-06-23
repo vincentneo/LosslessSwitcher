@@ -79,20 +79,20 @@ class CMPlayerParser {
         for entry in entries {
             let date = entry.date
             let rawMessage = entry.message
-            
+
             if let lastDate = lastDate, date.timeIntervalSince(lastDate) > kTimeDifferenceAcceptance {
                 sampleRate = nil
                 bitDepth = nil
             }
             
-            if rawMessage.contains("ACAppleLosslessDecoder") && rawMessage.contains("Input format: ") {
+            if rawMessage.contains("ACAppleLosslessDecoder.cpp") && rawMessage.contains("Input format:") {
                 if let subSampleRate = rawMessage.firstSubstring(between: "ch, ", and: " Hz") {
-                    let strSampleRate = String(subSampleRate)
+                    let strSampleRate = String(subSampleRate).trimmingCharacters(in: .whitespacesAndNewlines)
                     sampleRate = Double(strSampleRate)
                 }
                 
                 if let subBitDepth = rawMessage.firstSubstring(between: "from ", and: "-bit source") {
-                    let strBitDepth = String(subBitDepth)
+                    let strBitDepth = String(subBitDepth).trimmingCharacters(in: .whitespacesAndNewlines)
                     bitDepth = Int(strBitDepth)
                 }
             }

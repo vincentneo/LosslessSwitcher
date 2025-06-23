@@ -125,19 +125,19 @@ class OutputDevices: ObservableObject {
         var allStats = [CMPlayerStats]()
         
         do {
-            let musicLogs = try Console.getRecentEntries(type: .music)
+//            let musicLogs = try Console.getRecentEntries(type: .music)
             let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
+//            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
             
-            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-            if enableBitDepthDetection {
+//            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+//            if enableBitDepthDetection {
                 allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-            }
-            else {
-                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
-            }
+//            }
+//            else {
+//                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
+//            }
 
-            allStats.sort(by: {$0.priority > $1.priority})
+//            allStats.sort(by: {$0.priority > $1.priority})
             print("[getAllStats] \(allStats)")
         }
         catch {
