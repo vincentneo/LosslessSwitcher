@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class Defaults: ObservableObject {
     static let shared = Defaults()
     private let kUserPreferIconStatusBarItem = "com.vincent-neo.LosslessSwitcher-Key-UserPreferIconStatusBarItem"
@@ -63,3 +64,4 @@ class Defaults: ObservableObject {
         return title
     }
 }
+
