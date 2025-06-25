@@ -29,6 +29,8 @@ class OutputDevices: ObservableObject {
     
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
+    private var processQueue = DispatchQueue(label: "processQueue", qos: .userInitiated)
+    
     private var previousSampleRate: Float64?
     var trackAndSample = [MediaTrack : Float64]()
     var previousTrack: MediaTrack?
@@ -85,7 +87,7 @@ class OutputDevices: ObservableObject {
                 }
                 else {
                     self.timerCalls += 1
-                    self.consoleQueue.async {
+                    self.processQueue.async {
                         self.switchLatestSampleRate()
                     }
                 }
@@ -161,7 +163,7 @@ class OutputDevices: ObservableObject {
             }
             
             if sampleRate == 48000 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                processQueue.asyncAfter(deadline: .now() + 1) {
                     self.switchLatestSampleRate(recursion: true)
                 }
             }
@@ -208,7 +210,7 @@ class OutputDevices: ObservableObject {
 //            }
         }
         else if !recursion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            processQueue.asyncAfter(deadline: .now() + 1) {
                 self.switchLatestSampleRate(recursion: true)
             }
         }
@@ -280,6 +282,8 @@ class OutputDevices: ObservableObject {
         if self.previousTrack != self.currentTrack {
             self.renewTimer()
         }
-        self.switchLatestSampleRate()
+        processQueue.async { [unowned self] in
+            self.switchLatestSampleRate()
+        }
     }
 }

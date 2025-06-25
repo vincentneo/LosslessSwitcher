@@ -61,17 +61,23 @@ struct MenuView: View {
                 Text("Selected Device")
             }
             
-            Menu {
-                
-            } label: {
-                Text("")
-            }
+//            Menu {
+//                
+//            } label: {
+//                Text("")
+//            }
             
             Menu {
                 Text("Version - \(currentVersion)")
                 Text("Build - \(currentBuild)")
             } label: {
                 Text("About")
+            }
+            
+            Button {
+                NSApp.terminate(self)
+            } label: {
+                Text("Quit LosslessSwitcher")
             }
         }
     }
