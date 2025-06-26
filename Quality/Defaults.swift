@@ -20,14 +20,13 @@ class Defaults: ObservableObject {
             kUserPreferBitDepthDetection : false
         ])
         
+        userPreferIconStatusBarItem = UserDefaults.standard.bool(forKey: kUserPreferIconStatusBarItem)
+        
         self.userPreferBitDepthDetection = UserDefaults.standard.bool(forKey: kUserPreferBitDepthDetection)
     }
     
-    var userPreferIconStatusBarItem: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: kUserPreferIconStatusBarItem)
-        }
-        set {
+    @Published var userPreferIconStatusBarItem: Bool {
+        willSet {
             UserDefaults.standard.set(newValue, forKey: kUserPreferIconStatusBarItem)
         }
     }
