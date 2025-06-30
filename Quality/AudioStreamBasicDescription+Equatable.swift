@@ -7,8 +7,8 @@
 
 import CoreAudioTypes
 
-extension AudioStreamBasicDescription: Equatable {
-    public static func == (lhs: AudioStreamBasicDescription, rhs: AudioStreamBasicDescription) -> Bool {
+extension AudioStreamBasicDescription {
+    public static func isLosslessEqual(lhs: AudioStreamBasicDescription, rhs: AudioStreamBasicDescription) -> Bool {
         return lhs.mSampleRate == rhs.mSampleRate && lhs.mBitsPerChannel == rhs.mBitsPerChannel
     }
 }
