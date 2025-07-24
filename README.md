@@ -135,6 +135,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 ### Version 2.x
 | CPU             | Mac Model                                            | macOS Version      | Beta macOS? | Audio Device                       | Version    |
 | --------------- | ---------------------------------------------------- | ------------------ | ----------- | -----------------------------------|------------|
+|  Apple Silicon  | MacBook Pro M1 13 inch (2020)                        | 15.5               | No          | Cambridge Audio CXA81              | 2.0 Beta 1 | 
 |  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 15.4.1             | No          | Denon PMA-150H                     | 2.0 Beta 1 |
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Max, 2021)                   | 15.5               | No          | Cambridge Audio DacMagic 200M      | 2.0 Beta 2 |
 
