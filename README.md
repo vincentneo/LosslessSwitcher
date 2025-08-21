@@ -140,6 +140,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 15.5               | No          | Cambridge Audio CXA81              | 2.0 Beta 2 | 
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Max, 2021)                   | 15.5               | No          | Cambridge Audio DacMagic 200M      | 2.0 Beta 2 |
 |  Apple Silicon  | MacBook Pro 14 inch (M4 Pro, 2024)                   | 15.5               | No          | Cambridge Audio CXA81              | 2.0 Beta 2 |
+|      Intel      | Mac Pro 6.1 (2013) with OpenCore Patcher             | 15.5               | No          | Cambridge Audio Edge NQ            | 2.0 Beta 2 |
 |  Apple Silicon  | MacBook Pro 14 inch (M2 Pro, 2023)                   | 26.0               | Pub. beta 2 | AudioQuest Dragonfly Red           | 2.0 Beta 2 |
 
 You can add to this list by modifying this README and opening a new pull request!
