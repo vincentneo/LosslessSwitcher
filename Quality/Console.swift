@@ -28,7 +28,7 @@ class Console {
     static func getRecentEntries(type: EntryType) throws -> [SimpleConsole] {
         var messages = [SimpleConsole]()
         let store = try OSLogStore.local()
-        let duration = store.position(timeIntervalSinceEnd: -3.0)
+        let duration = store.position(timeIntervalSinceEnd: -5.0)
         let entries = try store.getEntries(with: [], at: duration, matching: type.predicate)
         // for some reason AnySequence to Array turns it into a empty array?
         for entry in entries {

@@ -12,9 +12,24 @@ struct QualityApp: App {
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
+    @State private var controller = MenuBarController()
+    @ObservedObject private var defaults = Defaults.shared
+    
     var body: some Scene {
-        Settings {
-            EmptyView()
+        MenuBarExtra {
+            MenuView()
+                .environmentObject(controller.outputDevices)
+                .environmentObject(defaults)
+        } label: {
+            if defaults.userPreferIconStatusBarItem {
+                Image(systemName: "music.note")
+                    .padding(.horizontal, 8)
+            }
+            else {
+                SampleRateLabel()
+                    .environmentObject(controller.outputDevices)
+            }
         }
+        .menuBarExtraStyle(.menu)
     }
 }

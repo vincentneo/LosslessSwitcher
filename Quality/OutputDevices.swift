@@ -9,14 +9,16 @@ import Combine
 import Foundation
 import SimplyCoreAudio
 import CoreAudioTypes
+import MediaRemoteAdapter
 
 class OutputDevices: ObservableObject {
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
     @Published var defaultOutputDevice: AudioDevice?
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
+    @Published var currentBitDepth: Int?
+    @Published var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
     
-    private var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
     private var enableBitDepthDetectionCancellable: AnyCancellable?
     
     private let coreAudio = SimplyCoreAudio()
@@ -28,8 +30,12 @@ class OutputDevices: ObservableObject {
     
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
+    private var processQueue = DispatchQueue(label: "processQueue", qos: .userInitiated)
+    
     private var previousSampleRate: Float64?
+    private var previousBitDepth: Int?
     var trackAndSample = [MediaTrack : Float64]()
+    var trackAndBitDepth = [MediaTrack : Int]()
     var previousTrack: MediaTrack?
     var currentTrack: MediaTrack?
     
@@ -84,7 +90,7 @@ class OutputDevices: ObservableObject {
                 }
                 else {
                     self.timerCalls += 1
-                    self.consoleQueue.async {
+                    self.processQueue.async {
                         self.switchLatestSampleRate()
                     }
                 }
@@ -94,7 +100,7 @@ class OutputDevices: ObservableObject {
     func getDeviceSampleRate() {
         let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
         guard let sampleRate = defaultDevice?.nominalSampleRate else { return }
-        self.updateSampleRate(sampleRate)
+        self.updateSampleRate(sampleRate, bitDepth: nil)
     }
     
     func getSampleRateFromAppleScript() -> Double? {
@@ -124,19 +130,19 @@ class OutputDevices: ObservableObject {
         var allStats = [CMPlayerStats]()
         
         do {
-            let musicLogs = try Console.getRecentEntries(type: .music)
+//            let musicLogs = try Console.getRecentEntries(type: .music)
             let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
+//            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
             
-            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-            if enableBitDepthDetection {
+//            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+//            if enableBitDepthDetection {
                 allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-            }
-            else {
-                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
-            }
+//            }
+//            else {
+//                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
+//            }
 
-            allStats.sort(by: {$0.priority > $1.priority})
+//            allStats.sort(by: {$0.priority > $1.priority})
             print("[getAllStats] \(allStats)")
         }
         catch {
@@ -160,7 +166,7 @@ class OutputDevices: ObservableObject {
             }
             
             if sampleRate == 48000 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                processQueue.asyncAfter(deadline: .now() + 1) {
                     self.switchLatestSampleRate(recursion: true)
                 }
             }
@@ -189,9 +195,10 @@ class OutputDevices: ObservableObject {
                 else if suitableFormat.mSampleRate != previousSampleRate { // bit depth disabled
                     defaultDevice?.setNominalSampleRate(suitableFormat.mSampleRate)
                 }
-                self.updateSampleRate(suitableFormat.mSampleRate)
+                self.updateSampleRate(suitableFormat.mSampleRate, bitDepth: Int(suitableFormat.mBitsPerChannel))
                 if let currentTrack = currentTrack {
                     self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
+                    self.trackAndBitDepth[currentTrack] = Int(suitableFormat.mBitsPerChannel)
                 }
             }
 
@@ -207,7 +214,7 @@ class OutputDevices: ObservableObject {
 //            }
         }
         else if !recursion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            processQueue.asyncAfter(deadline: .now() + 1) {
                 self.switchLatestSampleRate(recursion: true)
             }
         }
@@ -243,33 +250,59 @@ class OutputDevices: ObservableObject {
         }
     }
     
-    func updateSampleRate(_ sampleRate: Float64) {
+    func updateSampleRate(_ sampleRate: Float64, bitDepth: Int?) {
         self.previousSampleRate = sampleRate
-        DispatchQueue.main.async {
+        self.previousBitDepth = bitDepth
+        DispatchQueue.main.async { [self] in
             let readableSampleRate = sampleRate / 1000
             self.currentSampleRate = readableSampleRate
+            self.currentBitDepth = bitDepth
             
             let delegate = AppDelegate.instance
-            delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
+            
+            if enableBitDepthDetection {
+                if let bitDepth = bitDepth {
+                    delegate?.statusItemTitle = String(format: "%.1f kHz / %d bit", readableSampleRate, bitDepth)
+                } else {
+                    delegate?.statusItemTitle = String(format: "%.1f kHz / ? bit", readableSampleRate)
+                }
+            } else {
+                delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
+            }
         }
-        self.runUserScript(sampleRate)
+        self.runUserScript(sampleRate, bitDepth: bitDepth)
     }
     
-    func runUserScript(_ sampleRate: Float64) {
+    func runUserScript(_ sampleRate: Float64, bitDepth: Int?) {
         guard let scriptPath = Defaults.shared.shellScriptPath else { return }
         let argumentSampleRate = String(Int(sampleRate))
+        var arguments = [argumentSampleRate]
+        
+        // Add bit depth as second argument if available
+        if let bitDepth = bitDepth {
+            arguments.append(String(bitDepth))
+        }
+        
         Task.detached {
             let scriptURL = URL(fileURLWithPath: scriptPath)
             do {
                 let task = try NSUserUnixTask(url: scriptURL)
-                let arguments = [
-                    argumentSampleRate
-                ]
                 try await task.execute(withArguments: arguments)
             }
             catch {
                 print("TASK ERR \(error)")
             }
+        }
+    }
+    
+    func trackDidChange(_ newTrack: TrackInfo) {
+        self.previousTrack = self.currentTrack
+        self.currentTrack = MediaTrack(trackInfo: newTrack)
+        if self.previousTrack != self.currentTrack {
+            self.renewTimer()
+        }
+        processQueue.async { [unowned self] in
+            self.switchLatestSampleRate()
         }
     }
 }
