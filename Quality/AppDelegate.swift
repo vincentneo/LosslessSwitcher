@@ -11,6 +11,7 @@ import SwiftUI
 import SimplyCoreAudio
 import PrivateMediaRemote
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     // https://stackoverflow.com/a/66160164
@@ -36,7 +37,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    func checkPermissions() {
+    @MainActor func checkPermissions() {
         do {
             if try !User.current.isAdmin() {
                 let alert = NSAlert()
@@ -166,7 +167,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Defaults.shared.selectedDeviceUID = sender.device?.uid
     }
 
-    func statusItemDisplay() {
+    @MainActor func statusItemDisplay() {
         if defaults.userPreferIconStatusBarItem {
             self.statusItem?.button?.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "")
             self.statusItem?.button?.title = ""
@@ -184,13 +185,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func toggleBitDepthDetection(item: NSMenuItem) {
-        Task {
-            await defaults.setPreferBitDepthDetection(newValue: !defaults.userPreferBitDepthDetection)
-            item.state = defaults.userPreferBitDepthDetection ? .on : .off
-        }
+        defaults.setPreferBitDepthDetection(newValue: !defaults.userPreferBitDepthDetection)
+        item.state = defaults.userPreferBitDepthDetection ? .on : .off
     }
     
-    @objc func selectScript(_ item: NSMenuItem) {
+    @MainActor @objc func selectScript(_ item: NSMenuItem) {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
@@ -198,7 +197,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         panel.message = "Select a script that should be invoked when sample rate changes."
         
         panel.begin { response in
-            Defaults.shared.shellScriptPath = panel.url?.path
+            Task { @MainActor in
+                let selectedPath = panel.url?.path
+                Defaults.shared.shellScriptPath = selectedPath
+            }
         }
     }
     
@@ -213,3 +215,4 @@ extension AppDelegate: NSMenuDelegate {
         currentScriptSelectionMenuItem?.title = Defaults.shared.shellScriptPath ?? "No selection"
     }
 }
+
