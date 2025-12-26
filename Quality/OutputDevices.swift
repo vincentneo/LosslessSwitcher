@@ -52,7 +52,7 @@ class OutputDevices: ObservableObject {
                 self.getDeviceSampleRate()
             })
         
-        outputSelectionCancellable = selectedOutputDevice.publisher.sink(receiveValue: { _ in
+        outputSelectionCancellable = $selectedOutputDevice.sink(receiveValue: { _ in
             self.getDeviceSampleRate()
         })
         
@@ -76,14 +76,15 @@ class OutputDevices: ObservableObject {
         timerCancellable = Timer
             .publish(every: 2, on: .main, in: .default)
             .autoconnect()
-            .sink { _ in
-                if self.timerCalls == 5 {
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.timerCalls += 1
+                if self.timerCalls >= 5 {
                     self.timerCalls = 0
                     self.timerCancellable?.cancel()
                     self.timerCancellable = nil
                 }
                 else {
-                    self.timerCalls += 1
                     self.consoleQueue.async {
                         self.switchLatestSampleRate()
                     }
@@ -159,7 +160,7 @@ class OutputDevices: ObservableObject {
                 return
             }
             
-            if sampleRate == 48000 {
+            if sampleRate == 48000 && !recursion {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.switchLatestSampleRate(recursion: true)
                 }
