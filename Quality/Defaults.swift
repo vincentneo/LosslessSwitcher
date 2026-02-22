@@ -20,6 +20,7 @@ class Defaults: ObservableObject {
             kUserPreferBitDepthDetection : false
         ])
         
+        shellScriptPath = UserDefaults.standard.string(forKey: kShellScriptPath)
         userPreferIconStatusBarItem = UserDefaults.standard.bool(forKey: kUserPreferIconStatusBarItem)
         
         self.userPreferBitDepthDetection = UserDefaults.standard.bool(forKey: kUserPreferBitDepthDetection)
@@ -40,11 +41,8 @@ class Defaults: ObservableObject {
         }
     }
     
-    var shellScriptPath: String? {
-        get {
-            return UserDefaults.standard.string(forKey: kShellScriptPath)
-        }
-        set {
+    @Published var shellScriptPath: String? {
+        willSet {
             UserDefaults.standard.setValue(newValue, forKey: kShellScriptPath)
         }
     }
@@ -55,6 +53,10 @@ class Defaults: ObservableObject {
     @MainActor func setPreferBitDepthDetection(newValue: Bool) {
         UserDefaults.standard.set(newValue, forKey: kUserPreferBitDepthDetection)
         self.userPreferBitDepthDetection = newValue
+    }
+    
+    @MainActor func setShellScriptPath(newValue: String?) {
+        self.shellScriptPath = newValue
     }
 
     var statusBarItemTitle: String {

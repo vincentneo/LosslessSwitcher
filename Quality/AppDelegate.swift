@@ -190,26 +190,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    @objc func selectScript(_ item: NSMenuItem) {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = false
-        panel.message = "Select a script that should be invoked when sample rate changes."
-        
-        panel.begin { response in
-            Defaults.shared.shellScriptPath = panel.url?.path
-        }
-    }
-    
-    @objc func resetScript(_ item: NSMenuItem) {
-        Defaults.shared.shellScriptPath = nil
-    }
-    
-}
-
-extension AppDelegate: NSMenuDelegate {
-    func menuWillOpen(_ menu: NSMenu) {
-        currentScriptSelectionMenuItem?.title = Defaults.shared.shellScriptPath ?? "No selection"
-    }
 }
