@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import SimplyCoreAudio
 import CoreAudioTypes
+import MediaRemoteAdapter
 
 class OutputDevices: ObservableObject {
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
@@ -27,6 +28,8 @@ class OutputDevices: ObservableObject {
     private var outputSelectionCancellable: AnyCancellable?
     
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
+    
+    private var processQueue = DispatchQueue(label: "processQueue", qos: .userInitiated)
     
     private var previousSampleRate: Float64?
     var trackAndSample = [MediaTrack : Float64]()
@@ -52,7 +55,7 @@ class OutputDevices: ObservableObject {
                 self.getDeviceSampleRate()
             })
         
-        outputSelectionCancellable = selectedOutputDevice.publisher.sink(receiveValue: { _ in
+        outputSelectionCancellable = $selectedOutputDevice.sink(receiveValue: { _ in
             self.getDeviceSampleRate()
         })
         
@@ -76,15 +79,16 @@ class OutputDevices: ObservableObject {
         timerCancellable = Timer
             .publish(every: 2, on: .main, in: .default)
             .autoconnect()
-            .sink { _ in
-                if self.timerCalls == 5 {
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.timerCalls += 1
+                if self.timerCalls >= 5 {
                     self.timerCalls = 0
                     self.timerCancellable?.cancel()
                     self.timerCancellable = nil
                 }
                 else {
-                    self.timerCalls += 1
-                    self.consoleQueue.async {
+                    self.processQueue.async {
                         self.switchLatestSampleRate()
                     }
                 }
@@ -124,19 +128,19 @@ class OutputDevices: ObservableObject {
         var allStats = [CMPlayerStats]()
         
         do {
-            let musicLogs = try Console.getRecentEntries(type: .music)
+//            let musicLogs = try Console.getRecentEntries(type: .music)
             let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
+//            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
             
-            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-            if enableBitDepthDetection {
+//            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
+//            if enableBitDepthDetection {
                 allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-            }
-            else {
-                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
-            }
+//            }
+//            else {
+//                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
+//            }
 
-            allStats.sort(by: {$0.priority > $1.priority})
+//            allStats.sort(by: {$0.priority > $1.priority})
             print("[getAllStats] \(allStats)")
         }
         catch {
@@ -159,8 +163,8 @@ class OutputDevices: ObservableObject {
                 return
             }
             
-            if sampleRate == 48000 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if sampleRate == 48000 && !recursion {
+                processQueue.asyncAfter(deadline: .now() + 1) {
                     self.switchLatestSampleRate(recursion: true)
                 }
             }
@@ -168,13 +172,19 @@ class OutputDevices: ObservableObject {
             let formats = self.getFormats(bestStat: first, device: defaultDevice!)!
             
             // https://stackoverflow.com/a/65060134
-            let nearest = supported.min(by: {
+            var nearest = supported.min(by: {
                 abs($0 - sampleRate) < abs($1 - sampleRate)
             })
             
             let nearestBitDepth = formats.min(by: {
                 abs(Int32($0.mBitsPerChannel) - bitDepth) < abs(Int32($1.mBitsPerChannel) - bitDepth)
             })
+            
+            if Defaults.shared.userPreferSampleRateMultiples,
+               let nearestSampleRate = nearest,
+               nearestSampleRate != sampleRate, supported.contains(sampleRate / 2) {
+                nearest = sampleRate / 2
+            }
             
             let nearestFormat = formats.filter({
                 $0.mSampleRate == nearest && $0.mBitsPerChannel == nearestBitDepth?.mBitsPerChannel
@@ -207,7 +217,7 @@ class OutputDevices: ObservableObject {
 //            }
         }
         else if !recursion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            processQueue.asyncAfter(deadline: .now() + 1) {
                 self.switchLatestSampleRate(recursion: true)
             }
         }
@@ -270,6 +280,17 @@ class OutputDevices: ObservableObject {
             catch {
                 print("TASK ERR \(error)")
             }
+        }
+    }
+    
+    func trackDidChange(_ newTrack: TrackInfo) {
+        self.previousTrack = self.currentTrack
+        self.currentTrack = MediaTrack(trackInfo: newTrack)
+        if self.previousTrack != self.currentTrack {
+            self.renewTimer()
+        }
+        processQueue.async { [unowned self] in
+            self.switchLatestSampleRate()
         }
     }
 }

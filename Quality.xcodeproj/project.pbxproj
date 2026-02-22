@@ -27,8 +27,27 @@
 		12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */; };
 		BF0C90C82B20BFD6002F99C9 /* LosslessSwitcher.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */; };
 		BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */; };
+		BF342D7C2E0935980032F398 /* MediaRemoteAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = BF342D7B2E0935980032F398 /* MediaRemoteAdapter */; };
+		BF342D7D2E0937D20032F398 /* MediaRemoteAdapter in Embed Frameworks */ = {isa = PBXBuildFile; productRef = BF342D7B2E0935980032F398 /* MediaRemoteAdapter */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BF342D802E0947890032F398 /* SampleRateLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF342D7F2E0947890032F398 /* SampleRateLabel.swift */; };
+		BF342D822E0948730032F398 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF342D812E0948730032F398 /* MenuView.swift */; };
+		BF5A87BA2E01D746002033D6 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5A87B92E01D746002033D6 /* MenuBarController.swift */; };
 		BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BF342D7E2E0937D20032F398 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BF342D7D2E0937D20032F398 /* MediaRemoteAdapter in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputDevices.swift; sourceTree = "<group>"; };
@@ -51,6 +70,9 @@
 		12F1AA562868639A006C1AD8 /* DeviceMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMenuItem.swift; sourceTree = "<group>"; };
 		BF0C90C72B20BFD6002F99C9 /* LosslessSwitcher.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = LosslessSwitcher.sdef; sourceTree = "<group>"; };
 		BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptableApplicationCommand.swift; sourceTree = "<group>"; };
+		BF342D7F2E0947890032F398 /* SampleRateLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRateLabel.swift; sourceTree = "<group>"; };
+		BF342D812E0948730032F398 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		BF5A87B92E01D746002033D6 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioStreamBasicDescription+Equatable.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -62,6 +84,7 @@
 				1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */,
 				1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */,
 				1234F50A281E83D1007EC9F5 /* MediaRemote.framework in Frameworks */,
+				BF342D7C2E0935980032F398 /* MediaRemoteAdapter in Frameworks */,
 				1234F508281E8372007EC9F5 /* PrivateMediaRemote in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,6 +123,9 @@
 				1254A79D2814024300241107 /* Info.plist */,
 				12AFF5C02811AD40001CC6ED /* AppDelegate.swift */,
 				1272AA97280DBB4900FD72BA /* QualityApp.swift */,
+				BF342D812E0948730032F398 /* MenuView.swift */,
+				BF342D7F2E0947890032F398 /* SampleRateLabel.swift */,
+				BF5A87B92E01D746002033D6 /* MenuBarController.swift */,
 				1272AA99280DBB4900FD72BA /* ContentView.swift */,
 				1272AA9B280DBB4B00FD72BA /* Assets.xcassets */,
 				1272AAA0280DBB4B00FD72BA /* Quality.entitlements */,
@@ -138,6 +164,7 @@
 				1272AA90280DBB4900FD72BA /* Sources */,
 				1272AA91280DBB4900FD72BA /* Frameworks */,
 				1272AA92280DBB4900FD72BA /* Resources */,
+				BF342D7E2E0937D20032F398 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -148,6 +175,7 @@
 				1272AAB0280DC71B00FD72BA /* Sweep */,
 				1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */,
 				1234F507281E8372007EC9F5 /* PrivateMediaRemote */,
+				BF342D7B2E0935980032F398 /* MediaRemoteAdapter */,
 			);
 			productName = Quality;
 			productReference = 1272AA94280DBB4900FD72BA /* LosslessSwitcher.app */;
@@ -181,6 +209,7 @@
 				1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */,
 				1221F3F7280F10A3003E8B77 /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */,
 				1234F504281E8372007EC9F5 /* XCRemoteSwiftPackageReference "MediaRemote" */,
+				BF342D7A2E0935980032F398 /* XCRemoteSwiftPackageReference "mediaremote-adapter" */,
 			);
 			productRefGroup = 1272AA95280DBB4900FD72BA /* Products */;
 			projectDirPath = "";
@@ -213,8 +242,10 @@
 				BF0C90CA2B20C163002F99C9 /* ScriptableApplicationCommand.swift in Sources */,
 				1254A79C2813FB9400241107 /* Defaults.swift in Sources */,
 				BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */,
+				BF5A87BA2E01D746002033D6 /* MenuBarController.swift in Sources */,
 				1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */,
 				12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */,
+				BF342D822E0948730032F398 /* MenuView.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
@@ -222,6 +253,7 @@
 				1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */,
 				1293436B28131591002E19A8 /* CurrentUser.swift in Sources */,
 				1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */,
+				BF342D802E0947890032F398 /* SampleRateLabel.swift in Sources */,
 				127C972D281FCF000087313B /* AppVersion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,21 +382,23 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "2022-2025 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.4;
-				MARKETING_VERSION = 1.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -384,21 +418,23 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Quality/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "2022 Vincent Neo";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "2022-2025 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.4;
-				MARKETING_VERSION = 1.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -458,6 +494,14 @@
 				minimumVersion = 0.4.0;
 			};
 		};
+		BF342D7A2E0935980032F398 /* XCRemoteSwiftPackageReference "mediaremote-adapter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ejbills/mediaremote-adapter";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -475,6 +519,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1272AAAF280DC71B00FD72BA /* XCRemoteSwiftPackageReference "Sweep" */;
 			productName = Sweep;
+		};
+		BF342D7B2E0935980032F398 /* MediaRemoteAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BF342D7A2E0935980032F398 /* XCRemoteSwiftPackageReference "mediaremote-adapter" */;
+			productName = MediaRemoteAdapter;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
