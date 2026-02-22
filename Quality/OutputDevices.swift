@@ -171,13 +171,19 @@ class OutputDevices: ObservableObject {
             let formats = self.getFormats(bestStat: first, device: defaultDevice!)!
             
             // https://stackoverflow.com/a/65060134
-            let nearest = supported.min(by: {
+            var nearest = supported.min(by: {
                 abs($0 - sampleRate) < abs($1 - sampleRate)
             })
             
             let nearestBitDepth = formats.min(by: {
                 abs(Int32($0.mBitsPerChannel) - bitDepth) < abs(Int32($1.mBitsPerChannel) - bitDepth)
             })
+            
+            if Defaults.shared.userPreferSampleRateMultiples,
+               let nearestSampleRate = nearest,
+               nearestSampleRate != sampleRate, supported.contains(sampleRate / 2) {
+                nearest = sampleRate / 2
+            }
             
             let nearestFormat = formats.filter({
                 $0.mSampleRate == nearest && $0.mBitsPerChannel == nearestBitDepth?.mBitsPerChannel

@@ -35,6 +35,17 @@ struct MenuView: View {
                 }
             }
             
+            Button {
+                defaults.userPreferSampleRateMultiples.toggle()
+            } label: {
+                HStack {
+                    Text("Prefer Closest Sample Rate Multiple")
+                    if defaults.userPreferSampleRateMultiples {
+                        Image(systemName: "checkmark")
+                    }
+                }
+            }
+            
             Menu {
                 Button {
                     outputDevices.selectedOutputDevice = nil
@@ -60,12 +71,6 @@ struct MenuView: View {
             } label: {
                 Text("Selected Device")
             }
-            
-//            Menu {
-//
-//            } label: {
-//                Text("")
-//            }
             
             Menu {
                 Text("Version - \(currentVersion)")

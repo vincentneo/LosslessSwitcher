@@ -13,17 +13,25 @@ class Defaults: ObservableObject {
     private let kSelectedDeviceUID = "com.vincent-neo.LosslessSwitcher-Key-SelectedDeviceUID"
     private let kUserPreferBitDepthDetection = "com.vincent-neo.LosslessSwitcher-Key-BitDepthDetection"
     private let kShellScriptPath = "KeyShellScriptPath"
+    private let kUserPreferSampleRateMultiples = "PreferSampleRateMultiples"
     
     private init() {
         UserDefaults.standard.register(defaults: [
             kUserPreferIconStatusBarItem : true,
-            kUserPreferBitDepthDetection : false
+            kUserPreferBitDepthDetection : false,
+            kUserPreferSampleRateMultiples : false
         ])
         
-        shellScriptPath = UserDefaults.standard.string(forKey: kShellScriptPath)
-        userPreferIconStatusBarItem = UserDefaults.standard.bool(forKey: kUserPreferIconStatusBarItem)
-        
+        self.shellScriptPath = UserDefaults.standard.string(forKey: kShellScriptPath)
+        self.userPreferIconStatusBarItem = UserDefaults.standard.bool(forKey: kUserPreferIconStatusBarItem)
         self.userPreferBitDepthDetection = UserDefaults.standard.bool(forKey: kUserPreferBitDepthDetection)
+        self.userPreferSampleRateMultiples = UserDefaults.standard.bool(forKey: kUserPreferSampleRateMultiples)
+    }
+    
+    @Published var userPreferSampleRateMultiples: Bool {
+        willSet {
+            UserDefaults.standard.set(newValue, forKey: kUserPreferSampleRateMultiples)
+        }
     }
     
     @Published var userPreferIconStatusBarItem: Bool {
@@ -57,6 +65,10 @@ class Defaults: ObservableObject {
     
     @MainActor func setShellScriptPath(newValue: String?) {
         self.shellScriptPath = newValue
+    }
+    
+    @MainActor func setPreferSampleRateMultiple(newValue: Bool) {
+        self.userPreferSampleRateMultiples = newValue
     }
 
     var statusBarItemTitle: String {
