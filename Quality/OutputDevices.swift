@@ -16,8 +16,9 @@ class OutputDevices: ObservableObject {
     @Published var defaultOutputDevice: AudioDevice?
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
+    @Published var currentBitDepth: Int?
+    @Published var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
     
-    private var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
     private var enableBitDepthDetectionCancellable: AnyCancellable?
     
     private let coreAudio = SimplyCoreAudio()
@@ -32,7 +33,9 @@ class OutputDevices: ObservableObject {
     private var processQueue = DispatchQueue(label: "processQueue", qos: .userInitiated)
     
     private var previousSampleRate: Float64?
+    private var previousBitDepth: Int?
     var trackAndSample = [MediaTrack : Float64]()
+    var trackAndBitDepth = [MediaTrack : Int]()
     var previousTrack: MediaTrack?
     var currentTrack: MediaTrack?
     
@@ -98,7 +101,7 @@ class OutputDevices: ObservableObject {
     func getDeviceSampleRate() {
         let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
         guard let sampleRate = defaultDevice?.nominalSampleRate else { return }
-        self.updateSampleRate(sampleRate)
+        self.updateSampleRate(sampleRate, bitDepth: nil)
     }
     
     func getSampleRateFromAppleScript() -> Double? {
@@ -199,9 +202,10 @@ class OutputDevices: ObservableObject {
                 else if suitableFormat.mSampleRate != previousSampleRate { // bit depth disabled
                     defaultDevice?.setNominalSampleRate(suitableFormat.mSampleRate)
                 }
-                self.updateSampleRate(suitableFormat.mSampleRate)
+                self.updateSampleRate(suitableFormat.mSampleRate, bitDepth: Int(suitableFormat.mBitsPerChannel))
                 if let currentTrack = currentTrack {
                     self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
+                    self.trackAndBitDepth[currentTrack] = Int(suitableFormat.mBitsPerChannel)
                 }
             }
 
@@ -253,28 +257,43 @@ class OutputDevices: ObservableObject {
         }
     }
     
-    func updateSampleRate(_ sampleRate: Float64) {
+    func updateSampleRate(_ sampleRate: Float64, bitDepth: Int?) {
         self.previousSampleRate = sampleRate
-        DispatchQueue.main.async {
+        self.previousBitDepth = bitDepth
+        DispatchQueue.main.async { [self] in
             let readableSampleRate = sampleRate / 1000
             self.currentSampleRate = readableSampleRate
+            self.currentBitDepth = bitDepth
             
             let delegate = AppDelegate.instance
-            delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
+            
+            if enableBitDepthDetection {
+                if let bitDepth = bitDepth {
+                    delegate?.statusItemTitle = String(format: "%.1f kHz / %d bit", readableSampleRate, bitDepth)
+                } else {
+                    delegate?.statusItemTitle = String(format: "%.1f kHz / ? bit", readableSampleRate)
+                }
+            } else {
+                delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
+            }
         }
-        self.runUserScript(sampleRate)
+        self.runUserScript(sampleRate, bitDepth: bitDepth)
     }
     
-    func runUserScript(_ sampleRate: Float64) {
+    func runUserScript(_ sampleRate: Float64, bitDepth: Int?) {
         guard let scriptPath = Defaults.shared.shellScriptPath else { return }
         let argumentSampleRate = String(Int(sampleRate))
+        var arguments = [argumentSampleRate]
+        
+        // Add bit depth as second argument if available
+        if let bitDepth = bitDepth {
+            arguments.append(String(bitDepth))
+        }
+        
         Task.detached {
             let scriptURL = URL(fileURLWithPath: scriptPath)
             do {
                 let task = try NSUserUnixTask(url: scriptURL)
-                let arguments = [
-                    argumentSampleRate
-                ]
                 try await task.execute(withArguments: arguments)
             }
             catch {
