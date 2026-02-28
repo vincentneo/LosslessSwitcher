@@ -149,6 +149,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 26.1               | Dev. Beta 2 | iBasso DC Elite                    | 2.0 Beta 2 |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 26.1               | No          | Fiio K11                           | 2.0 Beta 2 |
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 26.1               | No          | Ayre QB-9 Twenty                   | 2.0 Beta 2 |
+|  Apple Silicon  | MacBook Air 13 inch (M3, 2024)                       | 26.3               | No          | Fiio K17                           | 2.0 Beta 3 |
 
 
 You can add to this list by modifying this README and opening a new pull request!
