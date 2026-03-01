@@ -10,6 +10,7 @@ import Foundation
 import SimplyCoreAudio
 import CoreAudioTypes
 import MediaRemoteAdapter
+import OrderedCollections
 
 class OutputDevices: ObservableObject {
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
@@ -27,6 +28,17 @@ class OutputDevices: ObservableObject {
     private var defaultChangesCancellable: AnyCancellable?
     private var timerCancellable: AnyCancellable?
     private var outputSelectionCancellable: AnyCancellable?
+    
+    private let logReader = LogReader()
+    private var entryStreamReceiver: AnyCancellable?
+    private var lastTrackChangeTime: Date?
+    
+    private var collection: OrderedDictionary<String, InfoPair> = [:]
+    private var currentTrackPair: DatedPair<MediaTrack>?
+    private var updateRequester = PassthroughSubject<Void, Never>()
+    private var updateRequesterReceiver: AnyCancellable?
+    
+    private var pairHandlingQueue = DispatchQueue(label: "phq", qos: .userInteractive)
     
     private var consoleQueue = DispatchQueue(label: "consoleQueue", qos: .userInteractive)
     
@@ -47,6 +59,62 @@ class OutputDevices: ObservableObject {
         self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
         self.getDeviceSampleRate()
         
+        self.logReader.spawnProcessIfNeeded()
+        
+        // WIP: This code is dizzying to work with...
+        entryStreamReceiver = logReader.entryStream.receive(on: pairHandlingQueue).sink { [weak self] entry in
+            //print("ESR", self.lastTrackChangeTime, self.currentTrack, entry.date, entry.trackName, entry.sampleRate)
+            
+            let key = entry.trackName ?? UUID().uuidString
+            
+            if entry.trackName == nil, let lastKey = self?.collection.keys.last, let lastDate = self?.collection[lastKey]?.format?.date {
+                if abs(lastDate.timeIntervalSince1970 - entry.date.timeIntervalSince1970) < 1 {
+                    return
+                }
+            }
+            
+            let format = DatedPair(date: entry.date, object: AudioFormat(sampleRate: entry.sampleRate, bitDepth: entry.bitDepth))
+            if let pair = self?.collection[key] {
+                pair.format = format
+            }
+            else {
+                self?.collection[key] = InfoPair(format: format)
+            }
+            
+            self?.updateRequester.send()
+        }
+        
+        updateRequesterReceiver = updateRequester
+            .throttle(for: 0.2, scheduler: DispatchQueue.global(), latest: true)
+            .receive(on: pairHandlingQueue)
+            .sink { [weak self] in
+                guard let collection = self?.collection, let currentTrackPair = self?.currentTrackPair else { return }
+                print(collection)
+                var limit = 0
+                for (_, value) in collection.reversed() {
+                    guard limit < 5 else { return }
+                    defer {
+                        limit += 1
+                    }
+                    
+                    if let track = value.track?.object, let current = self?.currentTrack, track == current {
+                        print("URR TRACK YES")
+                        if let format = value.format?.object {
+                            print("URR FORMAT YES")
+                            self?.switchLatestSampleRate(format: format)
+                            return
+                        }
+                    }
+                    
+//                    let trackValue = value.track
+//                    let format = value.format
+//                    if let title = currentTrackPair.object.title {
+//                        
+//                        return
+//                    }
+                }
+        }
+        
         changesCancellable =
             NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
                 self.outputDevices = self.coreAudio.allOutputDevices
@@ -65,7 +133,6 @@ class OutputDevices: ObservableObject {
         enableBitDepthDetectionCancellable = Defaults.shared.$userPreferBitDepthDetection.sink(receiveValue: { newValue in
             self.enableBitDepthDetection = newValue
         })
-
         
     }
     
@@ -74,6 +141,7 @@ class OutputDevices: ObservableObject {
         defaultChangesCancellable?.cancel()
         timerCancellable?.cancel()
         enableBitDepthDetectionCancellable?.cancel()
+        entryStreamReceiver?.cancel()
         //timer.upstream.connect().cancel()
     }
     
@@ -91,9 +159,9 @@ class OutputDevices: ObservableObject {
                     self.timerCancellable = nil
                 }
                 else {
-                    self.processQueue.async {
-                        self.switchLatestSampleRate()
-                    }
+//                    self.processQueue.async {
+//                        self.switchLatestSampleRate()
+//                    }
                 }
             }
     }
@@ -153,26 +221,25 @@ class OutputDevices: ObservableObject {
         return allStats
     }
     
-    func switchLatestSampleRate(recursion: Bool = false) {
-        let allStats = self.getAllStats()
+    func switchLatestSampleRate(format: AudioFormat) {
         let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
         
-        if let first = allStats.first, let supported = defaultDevice?.nominalSampleRates {
-            let sampleRate = Float64(first.sampleRate)
-            let bitDepth = Int32(first.bitDepth)
+        if let supported = defaultDevice?.nominalSampleRates {
+            let sampleRate = Float64(format.sampleRate)
+            let bitDepth = Int32(format.bitDepth ?? 32)
             
-            if self.currentTrack == self.previousTrack, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate {
-                print("same track, prev sample rate is higher")
-                return
-            }
+//            if self.currentTrack == self.previousTrack, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate {
+//                print("same track, prev sample rate is higher")
+//                return
+//            }
+//            
+//            if sampleRate == 48000 && !recursion {
+//                processQueue.asyncAfter(deadline: .now() + 1) {
+//                    self.switchLatestSampleRate(recursion: true)
+//                }
+//            }
             
-            if sampleRate == 48000 && !recursion {
-                processQueue.asyncAfter(deadline: .now() + 1) {
-                    self.switchLatestSampleRate(recursion: true)
-                }
-            }
-            
-            let formats = self.getFormats(bestStat: first, device: defaultDevice!)!
+            let formats = self.getFormats(device: defaultDevice!)!
             
             // https://stackoverflow.com/a/65060134
             var nearest = supported.min(by: {
@@ -220,11 +287,11 @@ class OutputDevices: ObservableObject {
 //                }
 //            }
         }
-        else if !recursion {
-            processQueue.asyncAfter(deadline: .now() + 1) {
-                self.switchLatestSampleRate(recursion: true)
-            }
-        }
+//        else if !recursion {
+//            processQueue.asyncAfter(deadline: .now() + 1) {
+//                self.switchLatestSampleRate(recursion: true)
+//            }
+//        }
         else {
 //                print("cache \(self.trackAndSample)")
             if self.currentTrack == self.previousTrack {
@@ -242,7 +309,7 @@ class OutputDevices: ObservableObject {
 
     }
     
-    func getFormats(bestStat: CMPlayerStats, device: AudioDevice) -> [AudioStreamBasicDescription]? {
+    func getFormats(device: AudioDevice) -> [AudioStreamBasicDescription]? {
         // new sample rate + bit depth detection route
         let streams = device.streams(scope: .output)
         let availableFormats = streams?.first?.availablePhysicalFormats?.compactMap({$0.mFormat})
@@ -303,13 +370,37 @@ class OutputDevices: ObservableObject {
     }
     
     func trackDidChange(_ newTrack: TrackInfo) {
+        let mt = MediaTrack(trackInfo: newTrack)
+        
+        guard previousTrack != mt else { return }
         self.previousTrack = self.currentTrack
-        self.currentTrack = MediaTrack(trackInfo: newTrack)
-        if self.previousTrack != self.currentTrack {
-            self.renewTimer()
+        self.currentTrack = mt
+
+        pairHandlingQueue.async { [weak self] in
+            let now = Date.now
+            let pair = DatedPair(date: now, object: mt)
+            self?.currentTrackPair = pair
+            
+            let key = mt.title ?? UUID().uuidString
+            if let collectionPair = self?.collection[key] {
+                collectionPair.track = pair
+            }
+            else if let lastKey = self?.collection.keys.last, self?.collection[lastKey]?.track == nil, UUID(uuidString: lastKey) != nil {
+                self?.collection[lastKey]?.track = pair
+            }
+            else {
+                self?.collection[key] = .init(track: pair)
+            }
+            self?.updateRequester.send()
         }
-        processQueue.async { [unowned self] in
-            self.switchLatestSampleRate()
-        }
+        
+        
+//        if self.previousTrack != self.currentTrack {
+//            self.renewTimer()
+//        }
+//        processQueue.async { [unowned self] in
+//            self.switchLatestSampleRate()
+//        }
+        lastTrackChangeTime = Date()
     }
 }

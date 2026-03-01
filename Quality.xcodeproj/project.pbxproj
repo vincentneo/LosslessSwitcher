@@ -31,6 +31,11 @@
 		BF342D7D2E0937D20032F398 /* MediaRemoteAdapter in Embed Frameworks */ = {isa = PBXBuildFile; productRef = BF342D7B2E0935980032F398 /* MediaRemoteAdapter */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BF342D802E0947890032F398 /* SampleRateLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF342D7F2E0947890032F398 /* SampleRateLabel.swift */; };
 		BF342D822E0948730032F398 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF342D812E0948730032F398 /* MenuView.swift */; };
+		BF503DEE2F542CA600C361E6 /* LogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF503DED2F542CA300C361E6 /* LogReader.swift */; };
+		BF503DF22F5442D100C361E6 /* CMEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF503DF12F5442CF00C361E6 /* CMEntry.swift */; };
+		BF503DF42F54646C00C361E6 /* InfoPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF503DF32F54644000C361E6 /* InfoPair.swift */; };
+		BF503DF72F5464DB00C361E6 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = BF503DF62F5464DB00C361E6 /* OrderedCollections */; };
+		BF503DF92F54680700C361E6 /* AudioFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF503DF82F54680400C361E6 /* AudioFormat.swift */; };
 		BF5A87BA2E01D746002033D6 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5A87B92E01D746002033D6 /* MenuBarController.swift */; };
 		BF7E0D09296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */; };
 /* End PBXBuildFile section */
@@ -72,6 +77,10 @@
 		BF0C90C92B20C163002F99C9 /* ScriptableApplicationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptableApplicationCommand.swift; sourceTree = "<group>"; };
 		BF342D7F2E0947890032F398 /* SampleRateLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleRateLabel.swift; sourceTree = "<group>"; };
 		BF342D812E0948730032F398 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		BF503DED2F542CA300C361E6 /* LogReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogReader.swift; sourceTree = "<group>"; };
+		BF503DF12F5442CF00C361E6 /* CMEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMEntry.swift; sourceTree = "<group>"; };
+		BF503DF32F54644000C361E6 /* InfoPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPair.swift; sourceTree = "<group>"; };
+		BF503DF82F54680400C361E6 /* AudioFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFormat.swift; sourceTree = "<group>"; };
 		BF5A87B92E01D746002033D6 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		BF7E0D08296336DA009FFEEC /* AudioStreamBasicDescription+Equatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioStreamBasicDescription+Equatable.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -83,6 +92,7 @@
 			files = (
 				1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */,
 				1272AAB1280DC71B00FD72BA /* Sweep in Frameworks */,
+				BF503DF72F5464DB00C361E6 /* OrderedCollections in Frameworks */,
 				1234F50A281E83D1007EC9F5 /* MediaRemote.framework in Frameworks */,
 				BF342D7C2E0935980032F398 /* MediaRemoteAdapter in Frameworks */,
 				1234F508281E8372007EC9F5 /* PrivateMediaRemote in Frameworks */,
@@ -120,6 +130,10 @@
 		1272AA96280DBB4900FD72BA /* Quality */ = {
 			isa = PBXGroup;
 			children = (
+				BF503DF82F54680400C361E6 /* AudioFormat.swift */,
+				BF503DF32F54644000C361E6 /* InfoPair.swift */,
+				BF503DF12F5442CF00C361E6 /* CMEntry.swift */,
+				BF503DED2F542CA300C361E6 /* LogReader.swift */,
 				1254A79D2814024300241107 /* Info.plist */,
 				12AFF5C02811AD40001CC6ED /* AppDelegate.swift */,
 				1272AA97280DBB4900FD72BA /* QualityApp.swift */,
@@ -176,6 +190,7 @@
 				1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */,
 				1234F507281E8372007EC9F5 /* PrivateMediaRemote */,
 				BF342D7B2E0935980032F398 /* MediaRemoteAdapter */,
+				BF503DF62F5464DB00C361E6 /* OrderedCollections */,
 			);
 			productName = Quality;
 			productReference = 1272AA94280DBB4900FD72BA /* LosslessSwitcher.app */;
@@ -210,6 +225,7 @@
 				1221F3F7280F10A3003E8B77 /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */,
 				1234F504281E8372007EC9F5 /* XCRemoteSwiftPackageReference "MediaRemote" */,
 				BF342D7A2E0935980032F398 /* XCRemoteSwiftPackageReference "mediaremote-adapter" */,
+				BF503DF52F5464DB00C361E6 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = 1272AA95280DBB4900FD72BA /* Products */;
 			projectDirPath = "";
@@ -246,15 +262,19 @@
 				1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */,
 				12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */,
 				BF342D822E0948730032F398 /* MenuView.swift in Sources */,
+				BF503DF22F5442D100C361E6 /* CMEntry.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
+				BF503DEE2F542CA600C361E6 /* LogReader.swift in Sources */,
+				BF503DF92F54680700C361E6 /* AudioFormat.swift in Sources */,
 				1234F510281E9520007EC9F5 /* MediaRemoteController.swift in Sources */,
 				1272AA9A280DBB4900FD72BA /* ContentView.swift in Sources */,
 				1293436B28131591002E19A8 /* CurrentUser.swift in Sources */,
 				1272AA98280DBB4900FD72BA /* QualityApp.swift in Sources */,
 				BF342D802E0947890032F398 /* SampleRateLabel.swift in Sources */,
 				127C972D281FCF000087313B /* AppVersion.swift in Sources */,
+				BF503DF42F54646C00C361E6 /* InfoPair.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,7 +402,7 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -398,7 +418,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -418,7 +438,7 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 24;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = 3X69W4AQD6;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -434,7 +454,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -502,6 +522,14 @@
 				kind = branch;
 			};
 		};
+		BF503DF52F5464DB00C361E6 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -524,6 +552,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BF342D7A2E0935980032F398 /* XCRemoteSwiftPackageReference "mediaremote-adapter" */;
 			productName = MediaRemoteAdapter;
+		};
+		BF503DF62F5464DB00C361E6 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BF503DF52F5464DB00C361E6 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
