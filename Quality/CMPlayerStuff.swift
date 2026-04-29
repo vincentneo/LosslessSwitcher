@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import OSLog
 import Sweep
 
 struct CMPlayerStats {
@@ -26,7 +25,6 @@ class CMPlayerParser {
         var stats = [CMPlayerStats]()
         
         for entry in entries {
-            // ignore useless log messages for faster switching
             if !entry.message.contains("audioCapabilities:") {
                 continue
             }
@@ -63,7 +61,6 @@ class CMPlayerParser {
             }
             
             lastDate = date
-            
         }
         return stats
     }
@@ -108,7 +105,6 @@ class CMPlayerParser {
             }
             
             lastDate = date
-            
         }
         return stats
     }
@@ -117,7 +113,7 @@ class CMPlayerParser {
         let kTimeDifferenceAcceptance = 5.0 // seconds
         var lastDate: Date?
         var sampleRate: Double?
-        let bitDepth = 24 // Core Media don't provide bit depth, but I am keeping this for now, since it seems to be the first to deliver accurate bitrate data, fairly consistently.
+        let bitDepth = 24
         
         var stats = [CMPlayerStats]()
         
@@ -145,7 +141,6 @@ class CMPlayerParser {
             }
             
             lastDate = date
-            
         }
         return stats
     }

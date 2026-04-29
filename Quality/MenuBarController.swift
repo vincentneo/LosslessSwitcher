@@ -11,13 +11,14 @@ import SwiftUI
 @Observable
 class MenuBarController {
     @ObservationIgnored
-    var outputDevices: OutputDevices!
+    weak var outputDevices: OutputDevices?
     
     @ObservationIgnored
-    private var mrController: MediaRemoteController!
+    private var mrController: MediaRemoteController?
     
-    init() {
-        let outputDevices = OutputDevices()
+    init() {}
+    
+    func setup(with outputDevices: OutputDevices) {
         self.outputDevices = outputDevices
         self.mrController = MediaRemoteController(outputDevices: outputDevices)
     }

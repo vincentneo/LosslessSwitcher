@@ -11,14 +11,12 @@ import SwiftUI
 struct QualityApp: App {
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
-    @State private var controller = MenuBarController()
-    @ObservedObject private var defaults = Defaults.shared
+    @State private var defaults = Defaults.shared
     
     var body: some Scene {
         MenuBarExtra {
             MenuView()
-                .environmentObject(controller.outputDevices)
+                .environmentObject(appDelegate.outputDevices)
                 .environmentObject(defaults)
         } label: {
             if defaults.userPreferIconStatusBarItem {
@@ -27,7 +25,7 @@ struct QualityApp: App {
             }
             else {
                 SampleRateLabel()
-                    .environmentObject(controller.outputDevices)
+                    .environmentObject(appDelegate.outputDevices)
             }
         }
         .menuBarExtraStyle(.menu)

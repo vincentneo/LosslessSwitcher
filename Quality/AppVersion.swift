@@ -7,5 +7,5 @@
 
 import Foundation
 
-let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
+let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0"
+let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0"
