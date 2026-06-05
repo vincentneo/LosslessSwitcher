@@ -17,6 +17,7 @@ class OutputDevices: ObservableObject {
     @Published var outputDevices = [AudioDevice]()
     @Published var currentSampleRate: Float64?
     @Published var currentBitDepth: Int?
+    @Published var isAtmosActive = false // Music is playing lossy Atmos/Spatial, not Lossless
     @Published var enableBitDepthDetection = Defaults.shared.userPreferBitDepthDetection
     
     private var enableBitDepthDetectionCancellable: AnyCancellable?
@@ -142,6 +143,12 @@ class OutputDevices: ObservableObject {
 //            else {
 //                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
 //            }
+
+            // Flag lossy Dolby Atmos / Spatial playback (no lossless stream to switch to).
+            // nil means no decode info in this window, so keep the previous value.
+            if let atmos = CMPlayerParser.detectAtmos(coreAudioLogs) {
+                DispatchQueue.main.async { self.isAtmosActive = atmos }
+            }
 
 //            allStats.sort(by: {$0.priority > $1.priority})
             print("[getAllStats] \(allStats)")
