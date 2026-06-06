@@ -124,24 +124,25 @@ class CMPlayerParser {
     /// window contains no decode info — callers should keep the previous value in
     /// that case rather than flip-flopping during steady playback.
     static func detectAtmos(_ entries: [SimpleConsole]) -> Bool? {
-        var sawLossless = false
-        var sawLossyAAC = false
-
+        // `entries` are newest-first (Console.getRecentEntries reverses the
+        // chronological order), so the first decoder line we encounter is the
+        // most recent. Decide on that and stop, rather than letting any
+        // occurrence in the window decide — otherwise a stale decoder line from
+        // the previous track (e.g. an `alac` line still in the window right
+        // after switching into Atmos) could outvote the current one.
         for entry in entries {
             let message = entry.message
             if message.contains("ACAppleLosslessDecoder.cpp") {
-                sawLossless = true
+                return false // most recent decode is lossless -> not Atmos
             }
             if message.contains("ACMP4AACBaseDecoder.cpp"),
                message.contains("Output format:"),
                message.contains("48000 Hz") {
-                sawLossyAAC = true
+                return true  // most recent decode is the lossy AAC (Atmos/Spatial) asset
             }
         }
 
-        if sawLossless { return false }  // a lossless stream is decoding -> not Atmos
-        if sawLossyAAC  { return true }   // lossy AAC @ 48 kHz, no lossless -> Atmos/Spatial
-        return nil                        // no decode info in window -> unknown
+        return nil // no decode info in this window -> keep previous value
     }
 
     static func parseCoreMediaConsoleLogs(_ entries: [SimpleConsole]) -> [CMPlayerStats] {
