@@ -14,8 +14,14 @@ struct MenuView: View {
     
     var body: some View {
         VStack {
+            if outputDevices.isAtmosActive {
+                Text("⚠️ Dolby Atmos is on — not playing in Lossless")
+                    .foregroundColor(.red)
+                Divider()
+            }
+
             ContentView()
-            
+
             Divider()
             
             Button {

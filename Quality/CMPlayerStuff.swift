@@ -113,6 +113,38 @@ class CMPlayerParser {
         return stats
     }
     
+    /// Detects whether Music is playing a lossy Dolby Atmos / Spatial stream
+    /// instead of a Lossless one, using the same CoreAudio logs we already fetch.
+    ///
+    /// - Lossless playback decodes via `ACAppleLosslessDecoder` (subType `alac`).
+    /// - Atmos / Spatial playback bypasses lossless entirely and decodes the lossy
+    ///   AAC asset (`ACMP4AACBaseDecoder`, `Output format: ... 48000 Hz`).
+    ///
+    /// Returns `true` (Atmos), `false` (Lossless), or `nil` when the recent log
+    /// window contains no decode info — callers should keep the previous value in
+    /// that case rather than flip-flopping during steady playback.
+    static func detectAtmos(_ entries: [SimpleConsole]) -> Bool? {
+        // `entries` are newest-first (Console.getRecentEntries reverses the
+        // chronological order), so the first decoder line we encounter is the
+        // most recent. Decide on that and stop, rather than letting any
+        // occurrence in the window decide — otherwise a stale decoder line from
+        // the previous track (e.g. an `alac` line still in the window right
+        // after switching into Atmos) could outvote the current one.
+        for entry in entries {
+            let message = entry.message
+            if message.contains("ACAppleLosslessDecoder.cpp") {
+                return false // most recent decode is lossless -> not Atmos
+            }
+            if message.contains("ACMP4AACBaseDecoder.cpp"),
+               message.contains("Output format:"),
+               message.contains("48000 Hz") {
+                return true  // most recent decode is the lossy AAC (Atmos/Spatial) asset
+            }
+        }
+
+        return nil // no decode info in this window -> keep previous value
+    }
+
     static func parseCoreMediaConsoleLogs(_ entries: [SimpleConsole]) -> [CMPlayerStats] {
         let kTimeDifferenceAcceptance = 5.0 // seconds
         var lastDate: Date?
