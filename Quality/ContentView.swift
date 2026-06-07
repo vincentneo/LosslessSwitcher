@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import OSLog
+//import OSLog
 import SimplyCoreAudio
 
 struct ContentView: View {

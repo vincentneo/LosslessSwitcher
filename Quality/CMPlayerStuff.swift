@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import OSLog
+//import OSLog
 import Sweep
 
 struct CMPlayerStats {

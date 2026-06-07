@@ -7,10 +7,13 @@
 
 import SwiftUI
 
+
 struct MenuView: View {
     
     @EnvironmentObject private var outputDevices: OutputDevices
     @EnvironmentObject private var defaults: Defaults
+    
+    @State var stream = LogReader()
     
     var body: some View {
         VStack {
