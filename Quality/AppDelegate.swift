@@ -15,7 +15,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // https://stackoverflow.com/a/66160164
     static private(set) var instance: AppDelegate! = nil
-    var outputDevices: OutputDevices!
+    // Single shared instances for the whole app. Created eagerly so the SwiftUI
+    // scene can bind to them at launch, and so there is exactly one log stream /
+    // media controller rather than one here and another in the menu bar scene.
+    let outputDevices = OutputDevices()
     private let defaults = Defaults.shared
     private var mrController: MediaRemoteController!
     private var devicesMenu: NSMenu!
@@ -58,9 +61,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
-        outputDevices = OutputDevices()
         mrController = MediaRemoteController(outputDevices: outputDevices)
-        
+
         checkPermissions()
 //        
 //        let menu = NSMenu()
@@ -124,7 +126,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //        })
 
     }
-    
+
+    func applicationWillTerminate(_ notification: Notification) {
+        // Tear down child processes (the `log stream` reader and the media
+        // remote helpers) so they aren't orphaned when the app exits.
+        outputDevices.prepareForTermination()
+        mrController?.stop()
+    }
+
+    /// Relaunches the app: spawns a fresh instance, then quits this one.
+    /// `applicationWillTerminate` handles cleanup of the outgoing instance.
+    func restart() {
+        let url = Bundle.main.bundleURL
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: url, configuration: configuration) { _, error in
+            DispatchQueue.main.async {
+                if let error {
+                    print("Restart failed: \(error)")
+                    return
+                }
+                NSApp.terminate(nil)
+            }
+        }
+    }
+
     func handleDevicesMenu() {
         self.devicesMenu.removeAllItems()
         let autoItem = DeviceMenuItem(title: "Default Device", action: #selector(deviceSelection(_:)), keyEquivalent: "", device: nil)

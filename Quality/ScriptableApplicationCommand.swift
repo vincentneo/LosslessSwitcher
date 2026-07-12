@@ -14,7 +14,7 @@ class ScriptableApplicationCommand: NSScriptCommand {
             return -1000
         }
         let od = delegate.outputDevices
-        guard let sampleRate = od?.currentSampleRate else {
+        guard let sampleRate = od.currentSampleRate else {
             return -1
         }
         return Int(sampleRate * 1000)
