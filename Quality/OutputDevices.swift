@@ -53,7 +53,9 @@ class OutputDevices: ObservableObject {
     
     var timerActive = false
     var timerCalls = 0
-    
+
+    private static let maxCollectionEntries = 50
+
     init() {
         self.outputDevices = self.coreAudio.allOutputDevices
         self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
@@ -80,7 +82,13 @@ class OutputDevices: ObservableObject {
             else {
                 self?.collection[key] = InfoPair(format: format)
             }
-            
+
+            // Only the most recent handful of entries are ever consulted; keep
+            // the collection bounded so it doesn't grow for the life of the app.
+            while let count = self?.collection.count, count > OutputDevices.maxCollectionEntries {
+                self?.collection.removeFirst()
+            }
+
             self?.updateRequester.send()
         }
         
@@ -145,6 +153,12 @@ class OutputDevices: ObservableObject {
         //timer.upstream.connect().cancel()
     }
     
+    /// Stops the log stream subprocess ahead of app termination or restart so
+    /// it isn't left orphaned.
+    func prepareForTermination() {
+        logReader.stop()
+    }
+
     func renewTimer() {
         if timerCancellable != nil { return }
         timerCancellable = Timer

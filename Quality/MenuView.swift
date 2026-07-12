@@ -12,9 +12,7 @@ struct MenuView: View {
     
     @EnvironmentObject private var outputDevices: OutputDevices
     @EnvironmentObject private var defaults: Defaults
-    
-    @State var stream = LogReader()
-    
+
     var body: some View {
         VStack {
             ContentView()
@@ -108,6 +106,14 @@ struct MenuView: View {
                 Text("Scripting")
             }
             
+            Divider()
+
+            Button {
+                AppDelegate.instance?.restart()
+            } label: {
+                Text("Restart LosslessSwitcher")
+            }
+
             Button {
                 NSApp.terminate(self)
             } label: {

@@ -32,8 +32,12 @@ class MediaRemoteController {
         
     }
     
+    func stop() {
+        controller.stopListening()
+    }
+
     deinit {
         controller.stopListening()
     }
-    
+
 }
