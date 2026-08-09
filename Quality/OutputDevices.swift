@@ -11,6 +11,10 @@ import SimplyCoreAudio
 import CoreAudioTypes
 import MediaRemoteAdapter
 
+enum MusicApp {
+    static let bundleIdentifier = "com.apple.Music"
+}
+
 class OutputDevices: ObservableObject {
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
     @Published var defaultOutputDevice: AudioDevice?
@@ -131,19 +135,8 @@ class OutputDevices: ObservableObject {
         var allStats = [CMPlayerStats]()
         
         do {
-//            let musicLogs = try Console.getRecentEntries(type: .music)
             let coreAudioLogs = try Console.getRecentEntries(type: .coreAudio)
-//            let coreMediaLogs = try Console.getRecentEntries(type: .coreMedia)
-            
-//            allStats.append(contentsOf: CMPlayerParser.parseMusicConsoleLogs(musicLogs))
-//            if enableBitDepthDetection {
-                allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
-//            }
-//            else {
-//                allStats.append(contentsOf: CMPlayerParser.parseCoreMediaConsoleLogs(coreMediaLogs))
-//            }
-
-//            allStats.sort(by: {$0.priority > $1.priority})
+            allStats.append(contentsOf: CMPlayerParser.parseCoreAudioConsoleLogs(coreAudioLogs))
             print("[getAllStats] \(allStats)")
         }
         catch {
@@ -151,6 +144,84 @@ class OutputDevices: ObservableObject {
         }
         
         return allStats
+    }
+    
+    func musicPlaybackPaused() {
+        timerCancellable?.cancel()
+        timerCancellable = nil
+        timerCalls = 0
+        // Keep currentTrack and trackAndSample so we can restore on resume.
+        processQueue.async { [unowned self] in
+            self.applyFallbackSampleRate()
+        }
+    }
+    
+    func resetToDefaultSampleRate() {
+        timerCancellable?.cancel()
+        timerCancellable = nil
+        timerCalls = 0
+        currentTrack = nil
+        
+        processQueue.async { [unowned self] in
+            self.applyFallbackSampleRate()
+        }
+    }
+    
+    private func applyFallbackSampleRate() {
+        let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
+        guard let defaultDevice, let supported = defaultDevice.nominalSampleRates else { return }
+        
+        let target = Defaults.shared.fallbackSampleRateHz
+        guard let nearest = supported.min(by: { abs($0 - target) < abs($1 - target) }) else { return }
+        
+        if self.enableBitDepthDetection,
+           let streams = defaultDevice.streams(scope: .output),
+           let formats = streams.first?.availablePhysicalFormats?.map(\.mFormat) {
+            let formatAtRate = formats.filter { $0.mSampleRate == nearest }
+            let preferred = formatAtRate.min(by: {
+                abs(Int32($0.mBitsPerChannel) - 24) < abs(Int32($1.mBitsPerChannel) - 24)
+            }) ?? formatAtRate.first
+            if let preferred {
+                self.setFormats(device: defaultDevice, format: preferred)
+                self.updateSampleRate(preferred.mSampleRate, bitDepth: Int(preferred.mBitsPerChannel))
+                return
+            }
+        }
+        
+        if nearest != self.previousSampleRate {
+            defaultDevice.setNominalSampleRate(nearest)
+        }
+        self.updateSampleRate(nearest, bitDepth: nil)
+    }
+    
+    private func applySampleRate(_ sampleRate: Float64, bitDepth: Int?) {
+        let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
+        guard let defaultDevice, let supported = defaultDevice.nominalSampleRates else { return }
+        
+        guard let nearest = supported.min(by: { abs($0 - sampleRate) < abs($1 - sampleRate) }) else { return }
+        
+        if enableBitDepthDetection, let bitDepth {
+            let formats = self.getFormats(
+                bestStat: CMPlayerStats(sampleRate: sampleRate, bitDepth: bitDepth, date: Date(), priority: 0),
+                device: defaultDevice
+            )
+            let nearestBitDepth = formats?.min(by: {
+                abs(Int32($0.mBitsPerChannel) - Int32(bitDepth)) < abs(Int32($1.mBitsPerChannel) - Int32(bitDepth))
+            })
+            let nearestFormat = formats?.filter {
+                $0.mSampleRate == nearest && $0.mBitsPerChannel == nearestBitDepth?.mBitsPerChannel
+            }
+            if let suitableFormat = nearestFormat?.first {
+                self.setFormats(device: defaultDevice, format: suitableFormat)
+                self.updateSampleRate(suitableFormat.mSampleRate, bitDepth: Int(suitableFormat.mBitsPerChannel))
+                return
+            }
+        }
+        
+        if nearest != previousSampleRate {
+            defaultDevice.setNominalSampleRate(nearest)
+        }
+        self.updateSampleRate(nearest, bitDepth: bitDepth)
     }
     
     func switchLatestSampleRate(recursion: Bool = false) {
@@ -241,18 +312,11 @@ class OutputDevices: ObservableObject {
             }
         }
         else {
-//                print("cache \(self.trackAndSample)")
-            if self.currentTrack == self.previousTrack {
-                print("same track, ignore cache")
-                return
+            if let currentTrack = currentTrack,
+               let cachedSampleRate = trackAndSample[currentTrack] {
+                let cachedBitDepth = trackAndBitDepth[currentTrack]
+                applySampleRate(cachedSampleRate, bitDepth: cachedBitDepth)
             }
-//            if let currentTrack = currentTrack, let cachedSampleRate = trackAndSample[currentTrack] {
-//                print("using cached data")
-//                if cachedSampleRate != previousSampleRate {
-//                    defaultDevice?.setNominalSampleRate(cachedSampleRate)
-//                    self.updateSampleRate(cachedSampleRate)
-//                }
-//            }
         }
 
     }
@@ -273,6 +337,9 @@ class OutputDevices: ObservableObject {
     }
     
     func updateSampleRate(_ sampleRate: Float64, bitDepth: Int?) {
+        if sampleRate == previousSampleRate && bitDepth == previousBitDepth {
+            return
+        }
         self.previousSampleRate = sampleRate
         self.previousBitDepth = bitDepth
         DispatchQueue.main.async { [self] in
@@ -318,13 +385,23 @@ class OutputDevices: ObservableObject {
     }
     
     func trackDidChange(_ newTrack: TrackInfo) {
-        self.previousTrack = self.currentTrack
-        self.currentTrack = MediaTrack(trackInfo: newTrack)
-        if self.previousTrack != self.currentTrack {
+        let track = MediaTrack(trackInfo: newTrack)
+        let isResume = track == currentTrack
+        
+        if !isResume {
+            self.previousTrack = self.currentTrack
+            self.currentTrack = track
             self.renewTimer()
         }
+        
         processQueue.async { [unowned self] in
-            self.switchLatestSampleRate()
+            if isResume, let cachedSampleRate = self.trackAndSample[track] {
+                if cachedSampleRate != self.previousSampleRate {
+                    self.applySampleRate(cachedSampleRate, bitDepth: self.trackAndBitDepth[track])
+                }
+            } else {
+                self.switchLatestSampleRate()
+            }
         }
     }
 }

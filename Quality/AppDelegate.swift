@@ -15,9 +15,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // https://stackoverflow.com/a/66160164
     static private(set) var instance: AppDelegate! = nil
-    var outputDevices: OutputDevices!
+    var outputDevices: OutputDevices
     private let defaults = Defaults.shared
-    private var mrController: MediaRemoteController!
+    private var mrController: MediaRemoteController
     private var devicesMenu: NSMenu!
     
     var statusItem: NSStatusItem?
@@ -34,6 +34,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             _statusItemTitle = newValue
             statusItemDisplay()
         }
+    }
+    
+    override init() {
+        let devices = OutputDevices()
+        self.outputDevices = devices
+        self.mrController = MediaRemoteController(outputDevices: devices)
+        super.init()
     }
     
     func checkPermissions() {
@@ -58,9 +65,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
-        outputDevices = OutputDevices()
-        mrController = MediaRemoteController(outputDevices: outputDevices)
-        
         checkPermissions()
 //        
 //        let menu = NSMenu()

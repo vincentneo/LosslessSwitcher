@@ -47,6 +47,23 @@ struct MenuView: View {
             }
             
             Menu {
+                ForEach(Defaults.fallbackSampleRateOptionsKHz, id: \.self) { rate in
+                    Button {
+                        defaults.fallbackSampleRateKHz = rate
+                    } label: {
+                        HStack {
+                            Text(String(format: "%.1f kHz", rate))
+                            if defaults.isFallbackSampleRate(rate) {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                Text("Default Sample Rate")
+            }
+            
+            Menu {
                 Button {
                     outputDevices.selectedOutputDevice = nil
                     defaults.selectedDeviceUID = nil
