@@ -151,6 +151,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 26.1               | No          | Ayre QB-9 Twenty                   | 2.0 Beta 2 |
 |  Apple Silicon  | MacBook Air 13 inch (M3, 2024)                       | 26.3               | No          | Fiio K17                           | 2.0 Beta 3 |
 |  Apple Silicon  | MacBook Air 13 inch (M1, 2020)                       | 26.3.1             | No          | Fosi Audio K5 Pro                  | 2.0        |
+|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 26.3.1             | No          | Fiio Snowsky Tiny A                | 2.0        |
 
 
 You can add to this list by modifying this README and opening a new pull request!
