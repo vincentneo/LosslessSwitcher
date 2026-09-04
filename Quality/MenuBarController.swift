@@ -17,7 +17,7 @@ class MenuBarController {
     private var mrController: MediaRemoteController!
     
     init() {
-        let outputDevices = OutputDevices()
+        let outputDevices = OutputDevices.shared
         self.outputDevices = outputDevices
         self.mrController = MediaRemoteController(outputDevices: outputDevices)
     }

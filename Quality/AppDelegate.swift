@@ -17,7 +17,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     static private(set) var instance: AppDelegate! = nil
     var outputDevices: OutputDevices!
     private let defaults = Defaults.shared
-    private var mrController: MediaRemoteController!
     private var devicesMenu: NSMenu!
     
     var statusItem: NSStatusItem?
@@ -58,8 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
-        outputDevices = OutputDevices()
-        mrController = MediaRemoteController(outputDevices: outputDevices)
+        outputDevices = OutputDevices.shared
         
         checkPermissions()
 //        
