@@ -12,6 +12,8 @@ import CoreAudioTypes
 import MediaRemoteAdapter
 
 class OutputDevices: ObservableObject {
+    static let shared = OutputDevices()
+
     @Published var selectedOutputDevice: AudioDevice? // auto if nil
     @Published var defaultOutputDevice: AudioDevice?
     @Published var outputDevices = [AudioDevice]()
@@ -214,7 +216,7 @@ class OutputDevices: ObservableObject {
                 if enableBitDepthDetection {
                     self.setFormats(device: defaultDevice, format: suitableFormat)
                 }
-                else if suitableFormat.mSampleRate != previousSampleRate { // bit depth disabled
+                else if defaultDevice?.nominalSampleRate != suitableFormat.mSampleRate { // bit depth disabled
                     defaultDevice?.setNominalSampleRate(suitableFormat.mSampleRate)
                 }
                 self.updateSampleRate(suitableFormat.mSampleRate, bitDepth: Int(suitableFormat.mBitsPerChannel))
