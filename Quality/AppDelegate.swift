@@ -58,8 +58,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
-        outputDevices = OutputDevices()
-        mrController = MediaRemoteController(outputDevices: outputDevices)
+        outputDevices = MenuBarController.shared.outputDevices
         
         checkPermissions()
 //        

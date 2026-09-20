@@ -31,7 +31,7 @@ struct MediaTrack: Equatable, Hashable {
     init(trackInfo: TrackInfo) {
         let payload = trackInfo.payload
         self.id = payload.uniqueIdentifier
-        self.isMusicApp = true
+        self.isMusicApp = payload.bundleIdentifier == "com.apple.Music"
         self.title = payload.title
         self.album = payload.album
         self.artist = payload.artist

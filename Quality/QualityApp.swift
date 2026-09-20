@@ -12,7 +12,7 @@ struct QualityApp: App {
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    @State private var controller = MenuBarController()
+    @State private var controller = MenuBarController.shared
     @ObservedObject private var defaults = Defaults.shared
     
     var body: some Scene {

@@ -16,6 +16,21 @@ struct CMPlayerStats {
     let priority: Int
 }
 
+// Decoder logs do not carry a reliable public track identifier. Use a bounded
+// transition window instead of blindly taking the newest (possibly preloaded) track.
+struct RateSelection {
+    static func candidate(_ stats: [CMPlayerStats], near event: Date) -> CMPlayerStats? {
+        stats.filter {
+            let offset = $0.date.timeIntervalSince(event)
+            return offset >= -1.5 && offset <= 2.0 && $0.sampleRate > 0
+        }.min {
+            let left = abs($0.date.timeIntervalSince(event))
+            let right = abs($1.date.timeIntervalSince(event))
+            return left == right ? $0.date < $1.date : left < right
+        }
+    }
+}
+
 class CMPlayerParser {
     static func parseMusicConsoleLogs(_ entries: [SimpleConsole]) -> [CMPlayerStats] {
         let kTimeDifferenceAcceptance = 5.0 // seconds
@@ -69,50 +84,19 @@ class CMPlayerParser {
     }
     
     static func parseCoreAudioConsoleLogs(_ entries: [SimpleConsole]) -> [CMPlayerStats] {
-        let kTimeDifferenceAcceptance = 5.0 // seconds
-        var lastDate: Date?
-        var sampleRate: Double?
-        var bitDepth: Int?
-        
-        var stats = [CMPlayerStats]()
-        
-        for entry in entries {
-            let date = entry.date
-            let rawMessage = entry.message
-
-            if let lastDate = lastDate, date.timeIntervalSince(lastDate) > kTimeDifferenceAcceptance {
-                sampleRate = nil
-                bitDepth = nil
-            }
-            
-            if rawMessage.contains("ACAppleLosslessDecoder.cpp") && rawMessage.contains("Input format:") {
-                if let subSampleRate = rawMessage.firstSubstring(between: "ch, ", and: " Hz") {
-                    let strSampleRate = String(subSampleRate).trimmingCharacters(in: .whitespacesAndNewlines)
-                    sampleRate = Double(strSampleRate)
-                }
-                
-                if let subBitDepth = rawMessage.firstSubstring(between: "from ", and: "-bit source") {
-                    let strBitDepth = String(subBitDepth).trimmingCharacters(in: .whitespacesAndNewlines)
-                    bitDepth = Int(strBitDepth)
-                }
-            }
-            
-            if let sr = sampleRate,
-               let bd = bitDepth {
-                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date, priority: 5)
-                stats.append(stat)
-                sampleRate = nil
-                bitDepth = nil
-                print("detected stat \(stat)")
-                break
-            }
-            
-            lastDate = date
-            
+        entries.compactMap { entry in
+            let message = entry.message
+            guard message.contains("ACAppleLosslessDecoder.cpp"),
+                  message.contains("Input format:"),
+                  let rateText = message.firstSubstring(between: "ch, ", and: " Hz"),
+                  let depthText = message.firstSubstring(between: "from ", and: "-bit source"),
+                  let rate = Double(String(rateText).trimmingCharacters(in: .whitespacesAndNewlines)),
+                  let depth = Int(String(depthText).trimmingCharacters(in: .whitespacesAndNewlines))
+            else { return nil }
+            return CMPlayerStats(sampleRate: rate, bitDepth: depth, date: entry.date, priority: 5)
         }
-        return stats
     }
-    
+
     static func parseCoreMediaConsoleLogs(_ entries: [SimpleConsole]) -> [CMPlayerStats] {
         let kTimeDifferenceAcceptance = 5.0 // seconds
         var lastDate: Date?

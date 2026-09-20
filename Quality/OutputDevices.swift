@@ -39,6 +39,10 @@ class OutputDevices: ObservableObject {
     var previousTrack: MediaTrack?
     var currentTrack: MediaTrack?
     
+    private var detectionGeneration = 0
+    private var lastPlaybackPosition: Double?
+    private var lastPlaybackObservation: Date?
+    private var wasPlaying = false
     var timerActive = false
     var timerCalls = 0
     
@@ -75,27 +79,6 @@ class OutputDevices: ObservableObject {
         timerCancellable?.cancel()
         enableBitDepthDetectionCancellable?.cancel()
         //timer.upstream.connect().cancel()
-    }
-    
-    func renewTimer() {
-        if timerCancellable != nil { return }
-        timerCancellable = Timer
-            .publish(every: 2, on: .main, in: .default)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.timerCalls += 1
-                if self.timerCalls >= 5 {
-                    self.timerCalls = 0
-                    self.timerCancellable?.cancel()
-                    self.timerCancellable = nil
-                }
-                else {
-                    self.processQueue.async {
-                        self.switchLatestSampleRate()
-                    }
-                }
-            }
     }
     
     func getDeviceSampleRate() {
@@ -153,110 +136,59 @@ class OutputDevices: ObservableObject {
         return allStats
     }
     
-    func switchLatestSampleRate(recursion: Bool = false) {
-        let allStats = self.getAllStats()
-        let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
-        
-        if let first = allStats.first, let supported = defaultDevice?.nominalSampleRates {
-            let sampleRate = Float64(first.sampleRate)
-            let bitDepth = Int32(first.bitDepth)
-            
-            if self.currentTrack == self.previousTrack, let prevSampleRate = currentSampleRate, prevSampleRate > sampleRate {
-                print("same track, prev sample rate is higher")
-                return
-            }
-            
-            if sampleRate == 48000 && !recursion {
-                processQueue.asyncAfter(deadline: .now() + 1) {
-                    self.switchLatestSampleRate(recursion: true)
-                }
-            }
-            
-            let formats = self.getFormats(bestStat: first, device: defaultDevice!)!
-            
-            // https://stackoverflow.com/a/65060134
-            var nearest = supported.min(by: {
-                abs($0 - sampleRate) < abs($1 - sampleRate)
-            })
-            
-            let nearestBitDepth = formats.min(by: {
-                abs(Int32($0.mBitsPerChannel) - bitDepth) < abs(Int32($1.mBitsPerChannel) - bitDepth)
-            })
-            
-
-            if Defaults.shared.userPreferSampleRateMultiples,
-                let nearestSampleRate = nearest,
-                nearestSampleRate != sampleRate {
-                    
-                    // Cast to Int for mathematically safe modulo operations
-                    let sourceInt = Int(sampleRate)
-                    let is44kFamily = sourceInt % 44100 == 0
-                    let baseRate = is44kFamily ? 44100 : 48000
-                    
-                    // Filter supported rates to match the family AND be strictly less than the source
-                    let familyRates = supported.filter {
-                        Int($0) % baseRate == 0 && $0 < sampleRate
-                    }
-                    
-                    // Fall back to the highest available matching rate
-                    if let bestMatch = familyRates.max() {
-                        nearest = bestMatch
-                    }
-                }
-            
-            let nearestFormat = formats.filter({
-                $0.mSampleRate == nearest && $0.mBitsPerChannel == nearestBitDepth?.mBitsPerChannel
-            })
-            
-            print("NEAREST FORMAT \(nearestFormat)")
-            
-            if let suitableFormat = nearestFormat.first {
-                if enableBitDepthDetection {
-                    self.setFormats(device: defaultDevice, format: suitableFormat)
-                }
-                else if suitableFormat.mSampleRate != previousSampleRate { // bit depth disabled
-                    defaultDevice?.setNominalSampleRate(suitableFormat.mSampleRate)
-                }
-                self.updateSampleRate(suitableFormat.mSampleRate, bitDepth: Int(suitableFormat.mBitsPerChannel))
-                if let currentTrack = currentTrack {
-                    self.trackAndSample[currentTrack] = suitableFormat.mSampleRate
-                    self.trackAndBitDepth[currentTrack] = Int(suitableFormat.mBitsPerChannel)
-                }
-            }
-
-//            if let nearest = nearest {
-//                let nearestSampleRate = nearest.element
-//                if nearestSampleRate != previousSampleRate {
-//                    defaultDevice?.setNominalSampleRate(nearestSampleRate)
-//                    self.updateSampleRate(nearestSampleRate)
-//                    if let currentTrack = currentTrack {
-//                        self.trackAndSample[currentTrack] = nearestSampleRate
-//                    }
-//                }
-//            }
-        }
-        else if !recursion {
-            processQueue.asyncAfter(deadline: .now() + 1) {
-                self.switchLatestSampleRate(recursion: true)
-            }
-        }
-        else {
-//                print("cache \(self.trackAndSample)")
-            if self.currentTrack == self.previousTrack {
-                print("same track, ignore cache")
-                return
-            }
-//            if let currentTrack = currentTrack, let cachedSampleRate = trackAndSample[currentTrack] {
-//                print("using cached data")
-//                if cachedSampleRate != previousSampleRate {
-//                    defaultDevice?.setNominalSampleRate(cachedSampleRate)
-//                    self.updateSampleRate(cachedSampleRate)
-//                }
-//            }
-        }
-
+    // All device and track state is accessed on the main queue. Only log reads
+    // run in the background; generation tokens reject results from old tracks.
+    func switchLatestSampleRate() {
+        beginDetection(at: Date())
     }
-    
+
+    private func beginDetection(at event: Date) {
+        detectionGeneration += 1
+        let generation = detectionGeneration
+        for delay in [0.35, 1.0, 2.0, 3.0] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self, self.detectionGeneration == generation else { return }
+                self.processQueue.async { [weak self] in
+                    guard let self else { return }
+                    let stats = self.getAllStats()
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self, self.detectionGeneration == generation,
+                              let stat = RateSelection.candidate(stats, near: event) else { return }
+                        self.apply(stat)
+                    }
+                }
+            }
+        }
+    }
+
+    private func apply(_ stat: CMPlayerStats) {
+        guard let device = selectedOutputDevice ?? defaultOutputDevice,
+              let supported = device.nominalSampleRates,
+              var rate = supported.min(by: { abs($0 - stat.sampleRate) < abs($1 - stat.sampleRate) })
+        else { return }
+        if Defaults.shared.userPreferSampleRateMultiples, rate != stat.sampleRate {
+            let sourceInt = Int(stat.sampleRate)
+            let baseRate = sourceInt % 44100 == 0 ? 44100 : 48000
+            let familyRates = supported.filter {
+                Int($0) % baseRate == 0 && $0 < stat.sampleRate
+            }
+            if let bestMatch = familyRates.max() { rate = bestMatch }
+        }
+        if enableBitDepthDetection {
+            guard let formats = getFormats(bestStat: stat, device: device),
+                  let format = formats.filter({ $0.mSampleRate == rate }).min(by: {
+                      abs(Int($0.mBitsPerChannel) - stat.bitDepth) < abs(Int($1.mBitsPerChannel) - stat.bitDepth)
+                  }) else { return }
+            setFormats(device: device, format: format)
+        } else if device.nominalSampleRate != rate {
+            device.setNominalSampleRate(rate)
+        }
+        // Display the hardware readback, not the requested rate.
+        if let actualRate = device.nominalSampleRate {
+            updateSampleRate(actualRate, bitDepth: device.streams(scope: .output)?.first?.physicalFormat.map { Int($0.mBitsPerChannel) })
+        }
+    }
+
     func getFormats(bestStat: CMPlayerStats, device: AudioDevice) -> [AudioStreamBasicDescription]? {
         // new sample rate + bit depth detection route
         let streams = device.streams(scope: .output)
@@ -317,14 +249,24 @@ class OutputDevices: ObservableObject {
         }
     }
     
-    func trackDidChange(_ newTrack: TrackInfo) {
-        self.previousTrack = self.currentTrack
-        self.currentTrack = MediaTrack(trackInfo: newTrack)
-        if self.previousTrack != self.currentTrack {
-            self.renewTimer()
+    func trackDidChange(_ newTrack: TrackInfo, observedAt: Date) {
+        let track = MediaTrack(trackInfo: newTrack)
+        guard track.isMusicApp, newTrack.payload.isPlaying == true else {
+            detectionGeneration += 1
+            wasPlaying = false
+            return
         }
-        processQueue.async { [unowned self] in
-            self.switchLatestSampleRate()
+        let position = newTrack.payload.elapsedTimeMicros.map { $0 / 1_000_000 }
+        var didSeek = false
+        if let position, let previous = lastPlaybackPosition, let date = lastPlaybackObservation {
+            didSeek = abs(position - previous - observedAt.timeIntervalSince(date)) > 1.0
         }
+        let shouldDetect = track != currentTrack || !wasPlaying || didSeek
+        previousTrack = currentTrack
+        currentTrack = track
+        lastPlaybackPosition = position
+        lastPlaybackObservation = observedAt
+        wasPlaying = true
+        if shouldDetect { beginDetection(at: observedAt) }
     }
 }
