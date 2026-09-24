@@ -20,7 +20,7 @@ Version 1.x also works up to macOS Sequoia 15.3.1.
 You can find the latest stable release of the version 1.x branch here: [Link to v1.1](https://github.com/vincentneo/LosslessSwitcher/releases/tag/1.1.0)
 
 ### For macOS Sequoia 15.4 onwards
-Support for this is still in beta. You can try the latest version 2.0 beta here: [Link to v2.0 Beta 1](https://github.com/vincentneo/LosslessSwitcher/releases/tag/2.0-beta1) 
+You can find the latest stable release of the version 2.0 branch here: [Link to v2.0](https://github.com/vincentneo/LosslessSwitcher/releases/tag/2.0) 
 
 #### Steps
 1. Download the `.zip` file of the preferred version.
@@ -151,6 +151,7 @@ Regardless, you are still reminded to use LosslessSwitcher at your own risk.
 |  Apple Silicon  | Mac mini (M1, 2020)                                  | 26.1               | No          | Ayre QB-9 Twenty                   | 2.0 Beta 2 |
 |  Apple Silicon  | MacBook Air 13 inch (M3, 2024)                       | 26.3               | No          | Fiio K17                           | 2.0 Beta 3 |
 |  Apple Silicon  | MacBook Air 13 inch (M1, 2020)                       | 26.3.1             | No          | Fosi Audio K5 Pro                  | 2.0        |
+|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 26.6.2             | No          | Topping DX5 II                     | 2.0        |
 
 
 You can add to this list by modifying this README and opening a new pull request!
