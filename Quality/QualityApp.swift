@@ -19,6 +19,7 @@ struct QualityApp: App {
         MenuBarExtra {
             MenuView()
                 .environmentObject(controller.outputDevices)
+                .environmentObject(controller.bitPerfectCheck)
                 .environmentObject(defaults)
         } label: {
             if defaults.userPreferIconStatusBarItem {

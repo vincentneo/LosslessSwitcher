@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */; };
 		1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */; };
+		12AA10C52E90000100C0FFEE /* BitPerfectCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10C42E90000100C0FFEE /* BitPerfectCheck.swift */; };
 		1234F508281E8372007EC9F5 /* PrivateMediaRemote in Frameworks */ = {isa = PBXBuildFile; productRef = 1234F507281E8372007EC9F5 /* PrivateMediaRemote */; };
 		1234F50A281E83D1007EC9F5 /* MediaRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1234F509281E83D1007EC9F5 /* MediaRemote.framework */; };
 		1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1234F50D281E8F07007EC9F5 /* MediaTrack.swift */; };
@@ -51,6 +52,7 @@
 
 /* Begin PBXFileReference section */
 		1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputDevices.swift; sourceTree = "<group>"; };
+		12AA10C42E90000100C0FFEE /* BitPerfectCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitPerfectCheck.swift; sourceTree = "<group>"; };
 		1234F509281E83D1007EC9F5 /* MediaRemote.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaRemote.framework; path = ../../../../../System/Library/PrivateFrameworks/MediaRemote.framework; sourceTree = "<group>"; };
 		1234F50D281E8F07007EC9F5 /* MediaTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTrack.swift; sourceTree = "<group>"; };
 		1234F50F281E9520007EC9F5 /* MediaRemoteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRemoteController.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				1272AAAB280DC5E900FD72BA /* Console.swift */,
 				1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */,
 				1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */,
+				12AA10C42E90000100C0FFEE /* BitPerfectCheck.swift */,
 				1293436A28131591002E19A8 /* CurrentUser.swift */,
 				1254A79B2813FB9400241107 /* Defaults.swift */,
 				1234F50D281E8F07007EC9F5 /* MediaTrack.swift */,
@@ -247,6 +250,7 @@
 				12F1AA572868639A006C1AD8 /* DeviceMenuItem.swift in Sources */,
 				BF342D822E0948730032F398 /* MenuView.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
+				12AA10C52E90000100C0FFEE /* BitPerfectCheck.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
 				1234F510281E9520007EC9F5 /* MediaRemoteController.swift in Sources */,
@@ -391,7 +395,7 @@
 				INFOPLIST_FILE = Quality/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
+				INFOPLIST_KEY_NSAppleEventsUsageDescription = "LosslessSwitcher asks Music about the current track and its playback settings.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "2022-2025 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -427,7 +431,7 @@
 				INFOPLIST_FILE = Quality/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSAppleEventsUsageDescription = "This permission is required for local file sample rate detection.";
+				INFOPLIST_KEY_NSAppleEventsUsageDescription = "LosslessSwitcher asks Music about the current track and its playback settings.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "2022-2025 Vincent Neo";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
