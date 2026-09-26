@@ -271,7 +271,12 @@ class OutputDevices: ObservableObject {
     func getFormats(bestStat: CMPlayerStats, device: AudioDevice) -> [AudioStreamBasicDescription]? {
         // new sample rate + bit depth detection route
         let streams = device.streams(scope: .output)
-        let availableFormats = streams?.first?.availablePhysicalFormats?.compactMap({$0.mFormat})
+        // Non-mixable formats (what "integer mode" players use while hogging the device) would stop
+        // Music, a mixing client, from reaching the device. Some devices, e.g. a Neumann MT 48, list
+        // one next to each mixable format with the same rate and bit depth.
+        let availableFormats = streams?.first?.availablePhysicalFormats?
+            .compactMap({$0.mFormat})
+            .filter({ $0.mFormatFlags & kAudioFormatFlagIsNonMixable == 0 })
         return availableFormats
     }
     
