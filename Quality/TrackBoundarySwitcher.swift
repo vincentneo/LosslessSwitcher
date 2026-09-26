@@ -96,7 +96,17 @@ class TrackBoundarySwitcher {
         let persistentID = (info["PersistentID"] as? NSNumber)?.int64Value
         noteUserAction(state: state, persistentID: persistentID)
 
-        guard state == "Playing", let persistentID else { return }
+        guard state == "Playing" else { return }
+        guard let persistentID else {
+            // Apple Music streams that aren't in the library (stations, Browse) have no PersistentID.
+            // Local files are always library tracks, so this is a stream: leave it to the regular path.
+            if lastPersistentID != nil || Self.currentTrackKind != .notLocal {
+                print("[TrackBoundary] stream without PersistentID; leaving it to the regular path")
+            }
+            lastPersistentID = nil
+            Self.setCurrentTrackKind(.notLocal)
+            return
+        }
         // the notification repeats for the same track, and fires again when we resume
         guard persistentID != lastPersistentID else { return }
         lastPersistentID = persistentID
