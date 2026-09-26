@@ -15,9 +15,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // https://stackoverflow.com/a/66160164
     static private(set) var instance: AppDelegate! = nil
-    var outputDevices: OutputDevices!
+    // The menu's instance; a second OutputDevices here ran every detection twice and ignored the selected device.
+    var outputDevices: OutputDevices! { MenuBarController.shared.outputDevices }
     private let defaults = Defaults.shared
-    private var mrController: MediaRemoteController!
     private var devicesMenu: NSMenu!
     
     var statusItem: NSStatusItem?
@@ -58,8 +58,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
-        outputDevices = OutputDevices()
-        mrController = MediaRemoteController(outputDevices: outputDevices)
         
         checkPermissions()
 //        

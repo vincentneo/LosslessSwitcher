@@ -14,18 +14,44 @@ class Defaults: ObservableObject {
     private let kUserPreferBitDepthDetection = "com.vincent-neo.LosslessSwitcher-Key-BitDepthDetection"
     private let kShellScriptPath = "KeyShellScriptPath"
     private let kUserPreferSampleRateMultiples = "PreferSampleRateMultiples"
+    private let kUserPreferLocalFileDetection = "PreferLocalFileDetection"
+    private let kUserPreferPauseWhileSwitching = "PreferPauseWhileSwitching"
+    private let kSwitchGap = "SwitchGap"
     
     private init() {
         UserDefaults.standard.register(defaults: [
             kUserPreferIconStatusBarItem : true,
             kUserPreferBitDepthDetection : false,
-            kUserPreferSampleRateMultiples : false
+            kUserPreferSampleRateMultiples : false,
+            kUserPreferLocalFileDetection : false,
+            kUserPreferPauseWhileSwitching : false
         ])
         
         self.shellScriptPath = UserDefaults.standard.string(forKey: kShellScriptPath)
         self.userPreferIconStatusBarItem = UserDefaults.standard.bool(forKey: kUserPreferIconStatusBarItem)
         self.userPreferBitDepthDetection = UserDefaults.standard.bool(forKey: kUserPreferBitDepthDetection)
         self.userPreferSampleRateMultiples = UserDefaults.standard.bool(forKey: kUserPreferSampleRateMultiples)
+        self.userPreferLocalFileDetection = UserDefaults.standard.bool(forKey: kUserPreferLocalFileDetection)
+        self.userPreferPauseWhileSwitching = UserDefaults.standard.bool(forKey: kUserPreferPauseWhileSwitching)
+        self.switchGap = SwitchGap(rawValue: UserDefaults.standard.string(forKey: kSwitchGap) ?? "") ?? .normal
+    }
+
+    @Published var switchGap: SwitchGap {
+        willSet {
+            UserDefaults.standard.set(newValue.rawValue, forKey: kSwitchGap)
+        }
+    }
+    
+    @Published var userPreferPauseWhileSwitching: Bool {
+        willSet {
+            UserDefaults.standard.set(newValue, forKey: kUserPreferPauseWhileSwitching)
+        }
+    }
+    
+    @Published var userPreferLocalFileDetection: Bool {
+        willSet {
+            UserDefaults.standard.set(newValue, forKey: kUserPreferLocalFileDetection)
+        }
     }
     
     @Published var userPreferSampleRateMultiples: Bool {

@@ -46,6 +46,44 @@ struct MenuView: View {
                 }
             }
             
+            Button {
+                defaults.userPreferLocalFileDetection.toggle()
+            } label: {
+                HStack {
+                    Text("Detect Local Files")
+                    if defaults.userPreferLocalFileDetection {
+                        Image(systemName: "checkmark")
+                    }
+                }
+            }
+            
+            Button {
+                defaults.userPreferPauseWhileSwitching.toggle()
+            } label: {
+                HStack {
+                    Text("Pause While Switching (Local Files)")
+                    if defaults.userPreferPauseWhileSwitching {
+                        Image(systemName: "checkmark")
+                    }
+                }
+            }
+
+            Menu {
+                ForEach(SwitchGap.allCases, id: \.self) { gap in
+                    Button {
+                        defaults.switchGap = gap
+                    } label: {
+                        Text(gap.rawValue)
+                        if defaults.switchGap == gap {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            } label: {
+                Text("Gap After Switching")
+            }
+            .disabled(!defaults.userPreferPauseWhileSwitching)
+            
             Menu {
                 Button {
                     outputDevices.selectedOutputDevice = nil
