@@ -331,9 +331,11 @@ class OutputDevices: ObservableObject {
     func trackDidChange(_ newTrack: TrackInfo) {
         self.previousTrack = self.currentTrack
         self.currentTrack = MediaTrack(trackInfo: newTrack)
-        if self.previousTrack != self.currentTrack {
-            self.renewTimer()
-        }
+        // Music also posts now-playing updates mid-track, e.g. when a station queues its next item.
+        // By then the newest decoder log line can belong to that prefetched next track, so only a
+        // real track change (and the timer it starts) triggers detection.
+        guard self.previousTrack != self.currentTrack else { return }
+        self.renewTimer()
         processQueue.async { [unowned self] in
             self.switchLatestSampleRate()
         }
