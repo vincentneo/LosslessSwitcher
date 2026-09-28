@@ -6,8 +6,8 @@
 //  then reads the sample rate and bit depth from the file itself.
 //
 //  Discussion #74 removed this because Music used to resample local files to the device
-//  rate captured at launch. That no longer reproduces on macOS 26.6.2; see
-//  research/local-file-resampling/log.md.
+//  rate captured at launch. That no longer reproduces on macOS 26.6.2 (tested with local files at
+//  rates other than the device's).
 //
 
 import AVFoundation

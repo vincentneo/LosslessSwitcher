@@ -7,14 +7,23 @@
 
 import SwiftUI
 
+/// A menu-style MenuBarExtra is a native NSMenu: an Image(systemName: "checkmark") inside a Button's
+/// label is not drawn there (on the Babyface bench, macOS 27, no option showed as selected). Toggles
+/// get the menu's own check mark.
 struct MenuView: View {
     
     @EnvironmentObject private var outputDevices: OutputDevices
     @EnvironmentObject private var defaults: Defaults
     @EnvironmentObject private var bitPerfectCheck: BitPerfectCheck
+    @ObservedObject private var virtualOutput = VirtualOutputPlugin.shared
+    @ObservedObject private var musicSettings = MusicSettingsCheck.shared
     
     var body: some View {
         VStack {
+            if !musicSettings.problems.isEmpty {
+                Text("Music settings: " + musicSettings.problems.map(\.what).joined(separator: "; "))
+                Divider()
+            }
             ContentView()
             
             Divider()
@@ -25,65 +34,53 @@ struct MenuView: View {
                 Text(defaults.statusBarItemTitle)
             }
             
-            Button {
-                defaults.userPreferBitDepthDetection.toggle()
-            } label: {
-                HStack {
-                    Text("Bit Depth Switching")
-                    if defaults.userPreferBitDepthDetection {
-                        Image(systemName: "checkmark")
-                    }
-                }
-            }
+            Toggle("Prefer Closest Sample Rate Multiple", isOn: $defaults.userPreferSampleRateMultiples)
+
+            // With the Renderer Engine on these do nothing: it always pauses and rewinds at a rate change,
+            // for local files and streams, reads local files itself and takes the DAC's deepest format.
+            // They stay for the regular path. (Selected Device stays: the engine plays to it.)
+            if !defaults.userPreferRendererEngine {
+            Toggle("Bit Depth Switching", isOn: $defaults.userPreferBitDepthDetection)
             
-            Button {
-                defaults.userPreferSampleRateMultiples.toggle()
-            } label: {
-                HStack {
-                    Text("Prefer Closest Sample Rate Multiple")
-                    if defaults.userPreferSampleRateMultiples {
-                        Image(systemName: "checkmark")
-                    }
-                }
-            }
+            Toggle("Detect Local Files", isOn: $defaults.userPreferLocalFileDetection)
             
-            Button {
-                defaults.userPreferLocalFileDetection.toggle()
-            } label: {
-                HStack {
-                    Text("Detect Local Files")
-                    if defaults.userPreferLocalFileDetection {
-                        Image(systemName: "checkmark")
-                    }
-                }
-            }
-            
-            Button {
-                defaults.userPreferPauseWhileSwitching.toggle()
-            } label: {
-                HStack {
-                    Text("Pause While Switching (Local Files)")
-                    if defaults.userPreferPauseWhileSwitching {
-                        Image(systemName: "checkmark")
-                    }
-                }
+            Toggle("Pause While Switching (Local Files)", isOn: $defaults.userPreferPauseWhileSwitching)
             }
 
+            Toggle("Renderer Engine (Experimental)", isOn: $defaults.userPreferRendererEngine)
+
+            Menu {
+                switch virtualOutput.state {
+                case .notInstalled:
+                    Text("Not installed (the Renderer Engine uses a process tap, no hog mode)")
+                    Button("Install…") { MenuBarController.shared.changeVirtualDevice(install: true) }
+                case .installed(let version):
+                    Text("Installed (\(version))")
+                    Button("Reinstall…") { MenuBarController.shared.changeVirtualDevice(install: true) }
+                    Button("Remove…") { MenuBarController.shared.changeVirtualDevice(install: false) }
+                case .outdated(let installed, let bundled):
+                    Text("Installed \(installed), this app has \(bundled)")
+                    Button("Update…") { MenuBarController.shared.changeVirtualDevice(install: true) }
+                    Button("Remove…") { MenuBarController.shared.changeVirtualDevice(install: false) }
+                }
+                if let error = virtualOutput.lastError {
+                    Text("Last attempt failed: \(error)")
+                }
+            } label: {
+                Text(virtualOutput.busy ? "Virtual Output Device (working…)" : "Virtual Output Device")
+            }
+            .disabled(virtualOutput.busy)
+
+            if !defaults.userPreferRendererEngine {
             Menu {
                 ForEach(SwitchGap.allCases, id: \.self) { gap in
-                    Button {
-                        defaults.switchGap = gap
-                    } label: {
-                        Text(gap.rawValue)
-                        if defaults.switchGap == gap {
-                            Image(systemName: "checkmark")
-                        }
-                    }
+                    Toggle(gap.rawValue, isOn: Binding(get: { defaults.switchGap == gap }, set: { if $0 { defaults.switchGap = gap } }))
                 }
             } label: {
                 Text("Gap After Switching")
             }
             .disabled(!defaults.userPreferPauseWhileSwitching)
+            }
             
             Menu {
                 ForEach(bitPerfectCheck.items) { item in
@@ -98,26 +95,14 @@ struct MenuView: View {
             }
 
             Menu {
-                Button {
-                    outputDevices.selectedOutputDevice = nil
-                    defaults.selectedDeviceUID = nil
-                } label: {
-                    if outputDevices.selectedOutputDevice == nil {
-                        Image(systemName: "checkmark")
-                    }
-                    Text("Default Device")
-                }
+                Toggle("Default Device", isOn: Binding(get: { outputDevices.selectedOutputDevice == nil }, set: { on in
+                    if on { outputDevices.selectedOutputDevice = nil; defaults.selectedDeviceUID = nil }
+                }))
 
                 ForEach(outputDevices.outputDevices, id: \.uid) { device in
-                    Button {
-                        outputDevices.selectedOutputDevice = device
-                        defaults.selectedDeviceUID = device.uid
-                    } label: {
-                        Text(device.name)
-                        if outputDevices.selectedOutputDevice?.uid == device.uid {
-                            Image(systemName: "checkmark")
-                        }
-                    }
+                    Toggle(device.name, isOn: Binding(get: { outputDevices.selectedOutputDevice?.uid == device.uid }, set: { on in
+                        if on { outputDevices.selectedOutputDevice = device; defaults.selectedDeviceUID = device.uid }
+                    }))
                 }
             } label: {
                 Text("Selected Device")

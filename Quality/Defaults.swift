@@ -17,6 +17,7 @@ class Defaults: ObservableObject {
     private let kUserPreferLocalFileDetection = "PreferLocalFileDetection"
     private let kUserPreferPauseWhileSwitching = "PreferPauseWhileSwitching"
     private let kSwitchGap = "SwitchGap"
+    private let kUserPreferRendererEngine = "PreferRendererEngine"
     
     private init() {
         UserDefaults.standard.register(defaults: [
@@ -24,7 +25,8 @@ class Defaults: ObservableObject {
             kUserPreferBitDepthDetection : false,
             kUserPreferSampleRateMultiples : false,
             kUserPreferLocalFileDetection : false,
-            kUserPreferPauseWhileSwitching : false
+            kUserPreferPauseWhileSwitching : false,
+            kUserPreferRendererEngine : false
         ])
         
         self.shellScriptPath = UserDefaults.standard.string(forKey: kShellScriptPath)
@@ -34,6 +36,14 @@ class Defaults: ObservableObject {
         self.userPreferLocalFileDetection = UserDefaults.standard.bool(forKey: kUserPreferLocalFileDetection)
         self.userPreferPauseWhileSwitching = UserDefaults.standard.bool(forKey: kUserPreferPauseWhileSwitching)
         self.switchGap = SwitchGap(rawValue: UserDefaults.standard.string(forKey: kSwitchGap) ?? "") ?? .normal
+        self.userPreferRendererEngine = UserDefaults.standard.bool(forKey: kUserPreferRendererEngine)
+    }
+
+    /// Experimental: RendererEngine owns rate switching and plays Music's audio through a process tap.
+    @Published var userPreferRendererEngine: Bool {
+        willSet {
+            UserDefaults.standard.set(newValue, forKey: kUserPreferRendererEngine)
+        }
     }
 
     @Published var switchGap: SwitchGap {

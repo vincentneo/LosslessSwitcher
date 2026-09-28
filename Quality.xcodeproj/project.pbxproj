@@ -10,8 +10,11 @@
 		1221F3F9280F10A3003E8B77 /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 1221F3F8280F10A3003E8B77 /* SimplyCoreAudio */; };
 		1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */; };
 		12AA10C12E90000100C0FFEE /* LocalTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10C02E90000100C0FFEE /* LocalTrack.swift */; };
-		12AA10C32E90000100C0FFEE /* TrackBoundarySwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10C22E90000100C0FFEE /* TrackBoundarySwitcher.swift */; };
+		12AA10C72E90000100C0FFEE /* RendererEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10C62E90000100C0FFEE /* RendererEngine.swift */; };
+		12AA10C92E90000100C0FFEE /* VirtualDeviceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10C82E90000100C0FFEE /* VirtualDeviceEngine.swift */; };
+		12AA10CB2E90000100C0FFEE /* VirtualOutputPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10CA2E90000100C0FFEE /* VirtualOutputPlugin.swift */; };
 		12AA10C52E90000100C0FFEE /* BitPerfectCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10C42E90000100C0FFEE /* BitPerfectCheck.swift */; };
+		12AA10C32E90000100C0FFEE /* TrackBoundarySwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA10C22E90000100C0FFEE /* TrackBoundarySwitcher.swift */; };
 		1234F508281E8372007EC9F5 /* PrivateMediaRemote in Frameworks */ = {isa = PBXBuildFile; productRef = 1234F507281E8372007EC9F5 /* PrivateMediaRemote */; };
 		1234F50A281E83D1007EC9F5 /* MediaRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1234F509281E83D1007EC9F5 /* MediaRemote.framework */; };
 		1234F50E281E8F07007EC9F5 /* MediaTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1234F50D281E8F07007EC9F5 /* MediaTrack.swift */; };
@@ -55,8 +58,11 @@
 /* Begin PBXFileReference section */
 		1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputDevices.swift; sourceTree = "<group>"; };
 		12AA10C02E90000100C0FFEE /* LocalTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTrack.swift; sourceTree = "<group>"; };
-		12AA10C22E90000100C0FFEE /* TrackBoundarySwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackBoundarySwitcher.swift; sourceTree = "<group>"; };
+		12AA10C62E90000100C0FFEE /* RendererEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererEngine.swift; sourceTree = "<group>"; };
+		12AA10C82E90000100C0FFEE /* VirtualDeviceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualDeviceEngine.swift; sourceTree = "<group>"; };
+		12AA10CA2E90000100C0FFEE /* VirtualOutputPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualOutputPlugin.swift; sourceTree = "<group>"; };
 		12AA10C42E90000100C0FFEE /* BitPerfectCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitPerfectCheck.swift; sourceTree = "<group>"; };
+		12AA10C22E90000100C0FFEE /* TrackBoundarySwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackBoundarySwitcher.swift; sourceTree = "<group>"; };
 		1234F509281E83D1007EC9F5 /* MediaRemote.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaRemote.framework; path = ../../../../../System/Library/PrivateFrameworks/MediaRemote.framework; sourceTree = "<group>"; };
 		1234F50D281E8F07007EC9F5 /* MediaTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTrack.swift; sourceTree = "<group>"; };
 		1234F50F281E9520007EC9F5 /* MediaRemoteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRemoteController.swift; sourceTree = "<group>"; };
@@ -140,8 +146,11 @@
 				1272AAAD280DC68A00FD72BA /* CMPlayerStuff.swift */,
 				1221F3FA280F1EEF003E8B77 /* OutputDevices.swift */,
 				12AA10C02E90000100C0FFEE /* LocalTrack.swift */,
-				12AA10C22E90000100C0FFEE /* TrackBoundarySwitcher.swift */,
 				12AA10C42E90000100C0FFEE /* BitPerfectCheck.swift */,
+				12AA10CA2E90000100C0FFEE /* VirtualOutputPlugin.swift */,
+				12AA10C82E90000100C0FFEE /* VirtualDeviceEngine.swift */,
+				12AA10C62E90000100C0FFEE /* RendererEngine.swift */,
+				12AA10C22E90000100C0FFEE /* TrackBoundarySwitcher.swift */,
 				1293436A28131591002E19A8 /* CurrentUser.swift */,
 				1254A79B2813FB9400241107 /* Defaults.swift */,
 				1234F50D281E8F07007EC9F5 /* MediaTrack.swift */,
@@ -174,6 +183,7 @@
 				1272AA91280DBB4900FD72BA /* Frameworks */,
 				1272AA92280DBB4900FD72BA /* Resources */,
 				BF342D7E2E0937D20032F398 /* Embed Frameworks */,
+				12AA10CC2E90000100C0FFEE /* Bundle HAL plug-in */,
 			);
 			buildRules = (
 			);
@@ -242,6 +252,23 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		12AA10CC2E90000100C0FFEE /* Bundle HAL plug-in */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Bundle HAL plug-in";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/HALPlugin/build.sh\" && rm -rf \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/LSOutput.driver\" && cp -R \"$SRCROOT/HALPlugin/LSOutput.driver\" \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		1272AA90280DBB4900FD72BA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -257,8 +284,11 @@
 				BF342D822E0948730032F398 /* MenuView.swift in Sources */,
 				1221F3FB280F1EEF003E8B77 /* OutputDevices.swift in Sources */,
 				12AA10C12E90000100C0FFEE /* LocalTrack.swift in Sources */,
-				12AA10C32E90000100C0FFEE /* TrackBoundarySwitcher.swift in Sources */,
 				12AA10C52E90000100C0FFEE /* BitPerfectCheck.swift in Sources */,
+				12AA10CB2E90000100C0FFEE /* VirtualOutputPlugin.swift in Sources */,
+				12AA10C92E90000100C0FFEE /* VirtualDeviceEngine.swift in Sources */,
+				12AA10C72E90000100C0FFEE /* RendererEngine.swift in Sources */,
+				12AA10C32E90000100C0FFEE /* TrackBoundarySwitcher.swift in Sources */,
 				1272AAAE280DC68A00FD72BA /* CMPlayerStuff.swift in Sources */,
 				1272AAAC280DC5E900FD72BA /* Console.swift in Sources */,
 				1234F510281E9520007EC9F5 /* MediaRemoteController.swift in Sources */,

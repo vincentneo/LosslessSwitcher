@@ -42,14 +42,25 @@ class OutputDevices: ObservableObject {
     var timerActive = false
     var timerCalls = 0
     
+    /// Not the engine's own devices: the "LosslessSwitcher" virtual output (LSOutput_UID) and the
+    /// process-tap engine's private aggregate "LosslessSwitcher renderer" (visible to this process
+    /// only). Selecting either would point the app at itself.
+    static func selectable(_ devices: [AudioDevice]) -> [AudioDevice] {
+        devices.filter { $0.uid != VirtualDeviceEngine.deviceUID && !$0.name.hasPrefix("LosslessSwitcher") }
+    }
+
     init() {
-        self.outputDevices = self.coreAudio.allOutputDevices
+        self.outputDevices = Self.selectable(self.coreAudio.allOutputDevices)
+        // the saved Selected Device (AppDelegate.handleDevicesMenu restored it before the SwiftUI menu)
+        if let uid = Defaults.shared.selectedDeviceUID {
+            self.selectedOutputDevice = self.outputDevices.first { $0.uid == uid }
+        }
         self.defaultOutputDevice = self.coreAudio.defaultOutputDevice
         self.getDeviceSampleRate()
         
         changesCancellable =
             NotificationCenter.default.publisher(for: .deviceListChanged).sink(receiveValue: { _ in
-                self.outputDevices = self.coreAudio.allOutputDevices
+                self.outputDevices = Self.selectable(self.coreAudio.allOutputDevices)
             })
         
         defaultChangesCancellable =
@@ -106,7 +117,11 @@ class OutputDevices: ObservableObject {
     
     func getAllStats() -> [CMPlayerStats] {
         var allStats = [CMPlayerStats]()
-        
+
+        // RendererEngine owns rate switching; a rate set from here would land mid-track.
+        if Defaults.shared.userPreferRendererEngine {
+            return []
+        }
         if Defaults.shared.userPreferPauseWhileSwitching {
             // TrackBoundarySwitcher owns local tracks (switching here would change the rate mid-track)
             // and has already asked Music; asking again from this timer competes with Music's controls.
@@ -164,6 +179,9 @@ class OutputDevices: ObservableObject {
                 // The track may have changed while the logs were read; if TrackBoundarySwitcher now
                 // owns it, a stale rate applied here would land in the middle of its wait.
                 if Defaults.shared.userPreferPauseWhileSwitching, TrackBoundarySwitcher.currentTrackKind != .notLocal {
+                    return
+                }
+                if Defaults.shared.userPreferRendererEngine {
                     return
                 }
                 self.apply(suitableFormat, device: defaultDevice)
@@ -309,7 +327,11 @@ class OutputDevices: ObservableObject {
                 delegate?.statusItemTitle = String(format: "%.1f kHz", readableSampleRate)
             }
         }
-        self.runUserScript(sampleRate, bitDepth: bitDepth)
+        // With the Renderer Engine on the default output is its virtual device, and the engine runs
+        // the script itself with the DAC's rate and bit depth (VirtualDeviceEngine.runUserScript).
+        if !Defaults.shared.userPreferRendererEngine {
+            self.runUserScript(sampleRate, bitDepth: bitDepth)
+        }
     }
     
     func runUserScript(_ sampleRate: Float64, bitDepth: Int?) {

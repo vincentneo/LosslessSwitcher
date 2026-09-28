@@ -110,7 +110,8 @@ class TrackBoundarySwitcher {
         // the notification repeats for the same track, and fires again when we resume
         guard persistentID != lastPersistentID else { return }
         lastPersistentID = persistentID
-        guard Defaults.shared.userPreferPauseWhileSwitching else { return }
+        // RendererEngine does its own pause-while-switching when it is on
+        guard Defaults.shared.userPreferPauseWhileSwitching, !Defaults.shared.userPreferRendererEngine else { return }
         // until the switcher has asked Music, keep the regular path away from this track
         Self.setCurrentTrackKind(.unknown)
 
@@ -274,7 +275,7 @@ enum DeviceFormat {
         return rate
     }
 
-    // Measured on a Neumann MT 48 (research/track-boundary-switch/log.md): nominal rate and physical
+    // Measured on a Neumann MT 48: nominal rate and physical
     // format change ~60 ms after the switch, but the device stops, restarts (sometimes several
     // times) 1.1-1.7 s later, and the measured clock can start 6% off and converge over seconds.
     static let steadyRunning: TimeInterval = 0.5

@@ -58,6 +58,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
+        // Create the controller now: SwiftUI can leave its @State (and with it the renderer engine)
+        // uncreated until the menu is first drawn.
+        _ = MenuBarController.shared
         
         checkPermissions()
 //        
@@ -123,6 +126,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     }
     
+    func applicationWillTerminate(_ notification: Notification) {
+        MenuBarController.shared.stopRenderer()
+    }
+
     func handleDevicesMenu() {
         self.devicesMenu.removeAllItems()
         let autoItem = DeviceMenuItem(title: "Default Device", action: #selector(deviceSelection(_:)), keyEquivalent: "", device: nil)
