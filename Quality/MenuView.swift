@@ -11,6 +11,7 @@ struct MenuView: View {
     
     @EnvironmentObject private var outputDevices: OutputDevices
     @EnvironmentObject private var defaults: Defaults
+    @EnvironmentObject private var bitPerfectCheck: BitPerfectCheck
     
     var body: some View {
         VStack {
@@ -84,6 +85,18 @@ struct MenuView: View {
             }
             .disabled(!defaults.userPreferPauseWhileSwitching)
             
+            Menu {
+                ForEach(bitPerfectCheck.items) { item in
+                    Text("\(item.ok == false ? "⚠︎" : item.ok == true ? "✓" : "?")  \(item.text)")
+                }
+                Divider()
+                Button("Refresh") {
+                    bitPerfectCheck.refresh()
+                }
+            } label: {
+                Text(bitPerfectCheck.issueCount == 0 ? "Bit-Perfect Check" : "Bit-Perfect Check (\(bitPerfectCheck.issueCount) to review)")
+            }
+
             Menu {
                 Button {
                     outputDevices.selectedOutputDevice = nil
