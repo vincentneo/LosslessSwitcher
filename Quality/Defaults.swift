@@ -18,6 +18,7 @@ class Defaults: ObservableObject {
     private let kUserPreferPauseWhileSwitching = "PreferPauseWhileSwitching"
     private let kSwitchGap = "SwitchGap"
     private let kUserPreferRendererEngine = "PreferRendererEngine"
+    static let kRendererReleaseWhenIdle = "RendererReleaseWhenIdle"
     
     private init() {
         UserDefaults.standard.register(defaults: [
@@ -26,7 +27,8 @@ class Defaults: ObservableObject {
             kUserPreferSampleRateMultiples : false,
             kUserPreferLocalFileDetection : false,
             kUserPreferPauseWhileSwitching : false,
-            kUserPreferRendererEngine : false
+            kUserPreferRendererEngine : false,
+            Self.kRendererReleaseWhenIdle : true
         ])
         
         self.shellScriptPath = UserDefaults.standard.string(forKey: kShellScriptPath)
@@ -37,6 +39,15 @@ class Defaults: ObservableObject {
         self.userPreferPauseWhileSwitching = UserDefaults.standard.bool(forKey: kUserPreferPauseWhileSwitching)
         self.switchGap = SwitchGap(rawValue: UserDefaults.standard.string(forKey: kSwitchGap) ?? "") ?? .normal
         self.userPreferRendererEngine = UserDefaults.standard.bool(forKey: kUserPreferRendererEngine)
+        self.rendererReleaseWhenIdle = UserDefaults.standard.bool(forKey: Self.kRendererReleaseWhenIdle)
+    }
+
+    /// Renderer Engine: give the DAC and the default output back while Music is idle (engine reads
+    /// the UserDefaults key; the delay is RendererIdleSeconds, default 60).
+    @Published var rendererReleaseWhenIdle: Bool {
+        willSet {
+            UserDefaults.standard.set(newValue, forKey: Self.kRendererReleaseWhenIdle)
+        }
     }
 
     /// Experimental: RendererEngine owns rate switching and plays Music's audio through a process tap.

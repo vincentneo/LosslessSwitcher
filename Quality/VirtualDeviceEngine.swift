@@ -126,6 +126,10 @@ final class VirtualDeviceEngine {
     private var gateWaitsForMusic = false // after Music quit: the gate waits longer for its Playing
     private var regateOnSilence = false   // the gate let another sound through: close it when that ends
     private var musicPID: pid_t = 0
+    // idle step-aside: Music not playing for RendererIdleSeconds -> DAC and default output given back
+    private var steppedAside = false
+    private var idleSince: Date?
+    private var resumeInfo: (info: [AnyHashable: Any], at: Date)?
     private var musicListWrong = false
 
     /// NSRunningApplication once said Music wasn't running while it played on as the same process
@@ -301,6 +305,12 @@ final class VirtualDeviceEngine {
                 }
             }
             if now.timeIntervalSince(lastPLL) >= 0.5 { lastPLL = now; pll() }
+            if playing { idleSince = nil } else if idleSince == nil { idleSince = now }
+            if let r = resumeInfo { resumeInfo = nil; resumeFromIdle(r.info, at: r.at) }
+            if !steppedAside, !inRoutine, !playing, let since = idleSince, UserDefaults.standard.bool(forKey: Defaults.kRendererReleaseWhenIdle) {
+                let limit = max(UserDefaults.standard.double(forKey: "RendererIdleSeconds"), 0) > 0 ? UserDefaults.standard.double(forKey: "RendererIdleSeconds") : 60
+                if now.timeIntervalSince(since) >= limit { stepAside(after: limit) }
+            }
             if !inRoutine, settingsCheckDue || MusicSettingsCheck.shared.recheck.exchange(0, ordering: .acquiringAndReleasing) != 0 {
                 settingsCheckDue = false
                 MusicSettingsCheck.shared.check(scripts, musicRunning: musicRunning(), log: { [unowned self] in self.log($0) })
@@ -701,6 +711,11 @@ final class VirtualDeviceEngine {
         log("playerInfo: \(state) \(name)")
         playing = state == "Playing"
         guard !inRoutine else { return } // our own pause/play
+        if steppedAside {
+            // Music plays straight to the DAC now; the run loop takes the output back
+            if playing, resumeInfo == nil { resumeInfo = (info, at) }
+            return
+        }
         // Music can post Playing with no name and no PersistentID just before the real track's
         // (Babyface bench, before YYZ). It is not a track: taking a decoder line for it released the
         // gate, and the real track played at the old rate until its own line came. If no real one
@@ -856,6 +871,46 @@ final class VirtualDeviceEngine {
         log("gate closed again after \(silent * 1000 / max(Int(curRate), 1)) ms of silence")
     }
 
+    /// Music idle for `after` seconds: give the DAC and the default output back, as a clean stop does
+    /// (hog released, mixable, emulated mute undone, the previous default restored, the virtual
+    /// device detached), and keep listening. Other apps then play to the DAC directly and the Sound
+    /// menu works (picking a hogged DAC there hangs Control Center).
+    private func stepAside(after: TimeInterval) {
+        if armAt != nil || armedAt != nil || latchedAt != nil || latchZeros.load(ordering: .acquiring) > 0 { disarm("stepping aside") }
+        lateArmAt = nil; awaiting = nil; pendingUpgrade = nil
+        log("Music idle \(Int(after)) s: stepping aside (DAC and default output given back)")
+        tearDown(restoreDefault: true, resumeMusic: false)
+        procA = nil
+        steppedAside = true
+    }
+
+    /// Music started playing while stepped aside (straight to the DAC): pause it, take the output
+    /// back, then the switch routine sets the track's rate, rewinds to where the play began and plays.
+    private func resumeFromIdle(_ info: [AnyHashable: Any], at: Date) {
+        let name = info["Name"] as? String ?? "(current track)"
+        log("playback began while stepped aside (\(name)); taking the output back")
+        inRoutine = true
+        _ = scripts.pause()
+        let pausedAt = Date()
+        _ = wait(1) { !self.playing }
+        inRoutine = false
+        steppedAside = false
+        guard setUp() else {
+            log("setup failed; staying stepped aside")
+            steppedAside = true
+            _ = scripts.play()
+            return
+        }
+        // the rate this track needs: its newest decoder line (Music decoded it before pausing), else
+        // the local file's header; the DAC's current rate if neither says
+        let recent = decoderRates.last.flatMap { Date().timeIntervalSince($0.date) < 30 ? $0.rate : nil }
+        let rate = recent ?? LocalTrack.currentStats(attempts: 2)?.sampleRate
+        let target = rate.flatMap { neededRate($0) } ?? curRate
+        lastTrackID = (info["PersistentID"] as? NSNumber)?.int64Value ?? (name.isEmpty ? nil : Int64(truncatingIfNeeded: name.hashValue))
+        lastNewTrackAt = at
+        switchRate(target, name: name, tPlay: at, pausedAt: pausedAt)
+    }
+
     private func disarm(_ why: String) {
         let wasLatched = latchedAt != nil || marker.load(ordering: .acquiring) >= 0
         armAt = nil; armedAt = nil; latchedAt = nil; lateArmAt = nil
@@ -898,11 +953,13 @@ final class VirtualDeviceEngine {
 
     // MARK: - The switch routine
 
-    private func switchRate(_ r: Float64, name: String, tPlay: Date) {
+    /// `pausedAt`: when Music was paused, if a caller paused it already (resume from idle).
+    private func switchRate(_ r: Float64, name: String, tPlay: Date, pausedAt: Date? = nil) {
         inRoutine = true
         defer { inRoutine = false }
         switches += 1
         let t = Date()
+        let pauseTime = pausedAt ?? t // Music's position stops here; what it played is measured to here
         // Music can start playing before it posts Playing (after a relaunch): the gate saw the first
         // frame earlier, and that is where the play began
         let tPlay = gatePending ? min(tPlay, gateMarkedAt ?? tPlay) : tPlay
@@ -936,7 +993,9 @@ final class VirtualDeviceEngine {
         recorder?.segmentOut(seg >= 0 ? seg : outFrames.load(ordering: .acquiring), r)
         resetLock()
         let pos = scripts.position() ?? 0
-        let played = Date().timeIntervalSince(tPlay) + 0.05
+        // measured to the pause, not to now: the paused position doesn't advance during the switch (it
+        // was measured to now, so a mid-track switch replayed the switch's own duration, ~1.5 s)
+        let played = pauseTime.timeIntervalSince(tPlay) + 0.05
         var startPos = pos - played - 0.1
         // near the start is the start: the estimate can come up short (0.530 on the Babyface bench),
         // and a restart that skips a track's first half-second is heard
@@ -951,6 +1010,10 @@ final class VirtualDeviceEngine {
 
     private func checkDevicesAndMusic() {
         guard !inRoutine else { return }
+        if steppedAside {
+            if lastTrackID != nil, !musicRunning() { log("Music quit (engine stepped aside)"); lastTrackID = nil }
+            return
+        }
         if lastTrackID != nil, !musicRunning() {
             log("Music quit; the next play waits at the gate for its own decoder line")
             lastTrackID = nil

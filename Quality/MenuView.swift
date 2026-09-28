@@ -48,6 +48,9 @@ struct MenuView: View {
             }
 
             Toggle("Renderer Engine (Experimental)", isOn: $defaults.userPreferRendererEngine)
+            if defaults.userPreferRendererEngine {
+                Toggle("Release DAC When Music Is Idle", isOn: $defaults.rendererReleaseWhenIdle)
+            }
 
             Menu {
                 switch virtualOutput.state {
