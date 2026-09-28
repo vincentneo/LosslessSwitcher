@@ -116,7 +116,7 @@ final class RendererEngine {
 
     func start() {
         guard thread == nil else { return }
-        print("[Renderer] start requested")
+        print("[Exclusive Mode] start requested")
         inboxLock.lock(); stopRequested = false; infoInbox = []; lineInbox = []; inboxLock.unlock()
         observer = DistributedNotificationCenter.default().addObserver(forName: NSNotification.Name("com.apple.Music.playerInfo"), object: nil, queue: .main) { [weak self] note in
             guard let self else { return }
@@ -145,7 +145,7 @@ final class RendererEngine {
                 NSAppleScript(source: "tell application \"Music\" to set sound volume to \(v)")?.executeAndReturnError(nil)
                 UserDefaults.standard.removeObject(forKey: Self.savedVolumeKey)
             }
-            print("[Renderer] engine thread did not stop within 15 s")
+            print("[Exclusive Mode] engine thread did not stop within 15 s")
         }
         thread = nil
         finished = nil
@@ -173,7 +173,7 @@ final class RendererEngine {
             let now = Date()
             self.inboxLock.lock(); self.lineInbox += lines.map { (now, $0) }; self.inboxLock.unlock()
         }
-        do { try p.run(); logProcess = p } catch { print("[Renderer] could not start log stream: \(error)") }
+        do { try p.run(); logProcess = p } catch { print("[Exclusive Mode] could not start log stream: \(error)") }
     }
 
     // MARK: - Engine thread
@@ -542,6 +542,7 @@ final class RendererEngine {
         let o = od.assumingMemoryBound(to: Float.self)
         if clearDelay { ring.update(repeating: 0, count: Self.ringSize * 2); clearDelay = false }
         let mute = muteOut
+        let g: Float = OvershootProtection.shared.isOn ? OvershootProtection.gain : 1
         var latched = muteIn
         for f in 0..<n {
             let l: Float = f < tn ? td![f * tch + tl] : 0, r: Float = f < tn ? td![f * tch + tr] : 0
@@ -559,7 +560,7 @@ final class RendererEngine {
             let ri = ((ringW - delayFrames) & (Self.ringSize - 1)) * 2
             ringW += 1
             let vl: Float = mute ? 0 : ring[ri], vr: Float = mute ? 0 : ring[ri + 1]
-            o[f * och + ol] = vl; o[f * och + orr] = vr
+            if g != 1 { o[f * och + ol] = vl * g; o[f * och + orr] = vr * g } else { o[f * och + ol] = vl; o[f * och + orr] = vr }
             recorder?.frame(frames + f, l, r, vl, vr)
         }
         recorder?.cycle(cycles, frames: n, gen: gen, host: inTime.pointee.mHostTime)
@@ -643,14 +644,14 @@ final class RendererScripts {
         let s = NSAppleScript(source: source)
         var err: NSDictionary?
         s?.compileAndReturnError(&err)
-        if let err { print("[Renderer] AppleScript compile: \(err)") }
+        if let err { print("[Exclusive Mode] AppleScript compile: \(err)") }
         return s
     }
 
     private func run(_ s: NSAppleScript?) -> NSAppleEventDescriptor? {
         var err: NSDictionary?
         let d = s?.executeAndReturnError(&err)
-        if let err { print("[Renderer] AppleScript: \(err)"); return nil }
+        if let err { print("[Exclusive Mode] AppleScript: \(err)"); return nil }
         return d
     }
 
@@ -674,7 +675,7 @@ final class RendererLog {
 
     func start() {
         lock.lock(); defer { lock.unlock() }
-        let url = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/LosslessSwitcher-Renderer.log")
+        let url = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/LosslessSwitcher-ExclusiveMode.log")
         FileManager.default.createFile(atPath: url.path, contents: nil)
         handle = try? FileHandle(forWritingTo: url)
         t0 = Date()
@@ -682,7 +683,7 @@ final class RendererLog {
 
     func write(_ s: String) {
         let line = String(format: "[%7.3f] ", Date().timeIntervalSince(t0)) + s
-        print("[Renderer] \(line)")
+        print("[Exclusive Mode] \(line)")
         lock.lock(); handle?.write((line + "\n").data(using: .utf8)!); lock.unlock()
     }
 

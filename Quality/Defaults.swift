@@ -19,6 +19,7 @@ class Defaults: ObservableObject {
     private let kSwitchGap = "SwitchGap"
     private let kUserPreferRendererEngine = "PreferRendererEngine"
     static let kRendererReleaseWhenIdle = "RendererReleaseWhenIdle"
+    static let kOvershootProtection = "OvershootProtection"
     
     private init() {
         UserDefaults.standard.register(defaults: [
@@ -28,7 +29,8 @@ class Defaults: ObservableObject {
             kUserPreferLocalFileDetection : false,
             kUserPreferPauseWhileSwitching : false,
             kUserPreferRendererEngine : false,
-            Self.kRendererReleaseWhenIdle : true
+            Self.kRendererReleaseWhenIdle : true,
+            Self.kOvershootProtection : false
         ])
         
         self.shellScriptPath = UserDefaults.standard.string(forKey: kShellScriptPath)
@@ -40,9 +42,19 @@ class Defaults: ObservableObject {
         self.switchGap = SwitchGap(rawValue: UserDefaults.standard.string(forKey: kSwitchGap) ?? "") ?? .normal
         self.userPreferRendererEngine = UserDefaults.standard.bool(forKey: kUserPreferRendererEngine)
         self.rendererReleaseWhenIdle = UserDefaults.standard.bool(forKey: Self.kRendererReleaseWhenIdle)
+        self.overshootProtection = UserDefaults.standard.bool(forKey: Self.kOvershootProtection)
+        OvershootProtection.shared.set(self.overshootProtection)
     }
 
-    /// Renderer Engine: give the DAC and the default output back while Music is idle (engine reads
+    /// Exclusive Mode, Advanced: Inter-sample Overshoot Protection (a fixed -3.0 dB on the output).
+    @Published var overshootProtection: Bool {
+        willSet {
+            UserDefaults.standard.set(newValue, forKey: Self.kOvershootProtection)
+            OvershootProtection.shared.set(newValue)
+        }
+    }
+
+    /// Exclusive Mode: give the DAC and the default output back while Music is idle (engine reads
     /// the UserDefaults key; the delay is RendererIdleSeconds, default 60).
     @Published var rendererReleaseWhenIdle: Bool {
         willSet {

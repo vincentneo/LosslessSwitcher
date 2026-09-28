@@ -112,6 +112,9 @@ final class BitPerfectCheck: ObservableObject {
         items.append(Item(id: "atmos", ok: atmosOff, text: atmosOff ? "Dolby Atmos off" : "Dolby Atmos not Off (can play the Atmos mix instead of lossless stereo)"))
         // Neither leaves a trace in Music's preferences, and AppleScript's "EQ enabled" reads false while it's on.
         items.append(Item(id: "manual", ok: nil, text: "Check in Music: Equalizer and Crossfade off"))
+        if UserDefaults.standard.bool(forKey: "PreferRendererEngine"), UserDefaults.standard.bool(forKey: Defaults.kOvershootProtection) {
+            items.append(Item(id: "overshoot", ok: false, text: "Inter-sample Overshoot Protection on (output -3.0 dB, not bit-perfect)"))
+        }
 
         if let outputDevice, let alertDevice = systemOutputDevice() {
             let separate = alertDevice != outputDevice

@@ -2,7 +2,7 @@
 //  VirtualDeviceEngine.swift
 //  LosslessSwitcher
 //
-//  Renderer Engine, virtual-device path. Music plays to "LosslessSwitcher" (the virtual device), a HAL plug-in
+//  Exclusive Mode, virtual-device path. Music plays to "LosslessSwitcher" (the virtual device), a HAL plug-in
 //  (LSOutput.driver in /Library/Audio/Plug-Ins/HAL) that loops its output mix back to its input.
 //  IOProc A reads that input into a ring; IOProc B plays the ring directly on the DAC, which this
 //  engine hogs and puts in a non-mixable (integer) format. The virtual device's clock is steered to
@@ -65,12 +65,12 @@ final class VirtualDeviceEngine {
         let ls = findDevice()
         let current = CA.defaultOutput()
         guard unclean || (ls != nil && current == ls) else {
-            if let volumeNote { UserDefaults.standard.set("[Renderer] " + volumeNote, forKey: recoveryNoteKey) }
+            if let volumeNote { UserDefaults.standard.set("[Exclusive Mode] " + volumeNote, forKey: recoveryNoteKey) }
             return
         }
         let saved = UserDefaults.standard.string(forKey: dacUIDKey).flatMap { uid in CA.devices().first { CA.string($0, kAudioDevicePropertyDeviceUID) == uid } }
         guard let dac = saved ?? ls.flatMap({ fallbackOutput(excluding: $0) }) else { return }
-        var msg = "[Renderer] recovering the output after \(unclean ? "an unclean exit" : "a default left on the virtual device"): DAC \(CA.string(dac, kAudioObjectPropertyName))"
+        var msg = "[Exclusive Mode] recovering the output after \(unclean ? "an unclean exit" : "a default left on the virtual device"): DAC \(CA.string(dac, kAudioObjectPropertyName))"
         if CA.hogOwner(dac) == -1 { msg += ", mixable \(CA.setMixable(dac))" }
         if current != dac { msg += ", default output (was \(CA.string(current, kAudioObjectPropertyName))) \(CA.setDefaultOutput(dac))" }
         if let volumeNote { msg += "; " + volumeNote }
@@ -160,6 +160,7 @@ final class VirtualDeviceEngine {
     private var waitingForScalar = false
     private var refillAsked = false
     private var scriptRate: Float64 = 0 // the rate the user's script (Scripting menu) last heard
+    private var overshootLogged: Bool?
     private var ticksPerSec = 0.0
 
     // shared with the IO threads
@@ -207,7 +208,7 @@ final class VirtualDeviceEngine {
 
     func start() {
         guard thread == nil else { return }
-        print("[Renderer] virtual-device engine: start requested")
+        print("[Exclusive Mode] virtual-device engine: start requested")
         inboxLock.lock(); stopRequested = false; infoInbox = []; lineInbox = []; inboxLock.unlock()
         observer = DistributedNotificationCenter.default().addObserver(forName: NSNotification.Name("com.apple.Music.playerInfo"), object: nil, queue: .main) { [weak self] note in
             guard let self else { return }
@@ -232,7 +233,7 @@ final class VirtualDeviceEngine {
         guard thread != nil else { return }
         inboxLock.lock(); stopRequested = true; inboxLock.unlock()
         if finished?.wait(timeout: .now() + 20) == .timedOut {
-            print("[Renderer] engine thread did not stop within 20 s")
+            print("[Exclusive Mode] engine thread did not stop within 20 s")
             Self.recoverOutput()
         }
         thread = nil
@@ -259,7 +260,7 @@ final class VirtualDeviceEngine {
             let now = Date()
             self.inboxLock.lock(); self.lineInbox += lines.map { (now, $0) }; self.inboxLock.unlock()
         }
-        do { try p.run(); logProcess = p } catch { print("[Renderer] could not start log stream: \(error)") }
+        do { try p.run(); logProcess = p } catch { print("[Exclusive Mode] could not start log stream: \(error)") }
     }
 
     // MARK: - Engine thread
@@ -270,7 +271,7 @@ final class VirtualDeviceEngine {
         log.start()
         log("engine started (virtual device)")
         if let note = UserDefaults.standard.string(forKey: Self.recoveryNoteKey) {
-            log(note.replacingOccurrences(of: "[Renderer] ", with: "at launch: "))
+            log(note.replacingOccurrences(of: "[Exclusive Mode] ", with: "at launch: "))
             UserDefaults.standard.removeObject(forKey: Self.recoveryNoteKey)
         }
         var tb = mach_timebase_info_data_t(); mach_timebase_info(&tb)
@@ -306,6 +307,11 @@ final class VirtualDeviceEngine {
             }
             if now.timeIntervalSince(lastPLL) >= 0.5 { lastPLL = now; pll() }
             if playing { idleSince = nil } else if idleSince == nil { idleSince = now }
+            let isp = OvershootProtection.shared.isOn
+            if isp != overshootLogged {
+                if overshootLogged != nil || isp { log("inter-sample overshoot protection \(isp ? "on: output -3.0 dB, not bit-perfect" : "off: output unchanged")") }
+                overshootLogged = isp
+            }
             if let r = resumeInfo { resumeInfo = nil; resumeFromIdle(r.info, at: r.at) }
             if !steppedAside, !inRoutine, !playing, let since = idleSince, UserDefaults.standard.bool(forKey: Defaults.kRendererReleaseWhenIdle) {
                 let limit = max(UserDefaults.standard.double(forKey: "RendererIdleSeconds"), 0) > 0 ? UserDefaults.standard.double(forKey: "RendererIdleSeconds") : 60
@@ -1253,6 +1259,18 @@ final class VirtualDeviceEngine {
 // MARK: - Output format for B
 
 /// How B writes a stereo float frame into the DAC's buffers, packed into one Int for the IO thread.
+/// Advanced > Inter-sample Overshoot Protection: a fixed -3.0 dB (x0.7079) on Exclusive Mode's output
+/// to the DAC, for loud masters whose reconstructed waveform peaks above full scale between samples
+/// (clipping in the DAC's filter). Off by default; when on, the output is no longer bit-perfect.
+/// Off, nothing is multiplied. Read by both engines' IO threads.
+final class OvershootProtection: @unchecked Sendable {
+    static let shared = OvershootProtection()
+    static let gain: Float = 0.70794578 // 10^(-3/20)
+    private let on = Atomic<Int>(0)
+    var isOn: Bool { on.load(ordering: .relaxed) != 0 }
+    func set(_ value: Bool) { on.store(value ? 1 : 0, ordering: .relaxed) }
+}
+
 struct OutFormat: CustomStringConvertible {
     var isFloat = true
     var bytes = 4          // per sample
@@ -1292,6 +1310,7 @@ struct OutFormat: CustomStringConvertible {
     func write(_ outs: UnsafeMutableAudioBufferListPointer, _ src: UnsafePointer<Float>, _ n: Int) {
         let scale = isFloat || bits < 2 ? 1 : Double(Int64(1) << (bits - 1))
         let lo = -scale, hi = scale - 1
+        let reduce = OvershootProtection.shared.isOn, gain = OvershootProtection.gain
         let shift = alignedHigh ? bytes * 8 - bits : 0
         var base = 0
         for buf in outs {
@@ -1305,10 +1324,12 @@ struct OutFormat: CustomStringConvertible {
                 let s = g == left ? 0 : 1
                 if isFloat {
                     let o = d.assumingMemoryBound(to: Float.self)
-                    for k in 0..<frames { o[k * ch + c] = src[k * 2 + s] }
+                    if reduce { for k in 0..<frames { o[k * ch + c] = src[k * 2 + s] * gain } }
+                    else { for k in 0..<frames { o[k * ch + c] = src[k * 2 + s] } }
                 } else {
                     for k in 0..<frames {
-                        let v = Int64(min(hi, max(lo, (Double(src[k * 2 + s]) * scale).rounded()))) << shift
+                        let x = reduce ? src[k * 2 + s] * gain : src[k * 2 + s]
+                        let v = Int64(min(hi, max(lo, (Double(x) * scale).rounded()))) << shift
                         let at = d + (k * ch + c) * bytes
                         switch bytes {
                         case 2: at.storeBytes(of: Int16(truncatingIfNeeded: v), as: Int16.self)
@@ -1937,7 +1958,7 @@ struct MusicSettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("The Renderer Engine plays Music's output bit-perfect only when Music doesn't change it. Fix these in Music:")
+            Text("Exclusive Mode plays Music's output bit-perfect only when Music doesn't change it. Fix these in Music:")
                 .fixedSize(horizontal: false, vertical: true)
             ForEach(check.problems) { p in
                 VStack(alignment: .leading, spacing: 4) {

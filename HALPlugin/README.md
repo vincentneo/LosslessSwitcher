@@ -1,4 +1,4 @@
-# LSOutput.driver: the Renderer Engine's virtual output device
+# LSOutput.driver: Exclusive Mode's virtual output device
 
 An AudioServerPlugIn (HAL plug-in) based on Apple's NullAudio sample (MIT, LICENSE-NullAudio.txt).
 It shows up as **LosslessSwitcher** in Audio MIDI Setup: a 2-channel output whose mix is looped

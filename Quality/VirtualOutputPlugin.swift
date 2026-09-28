@@ -2,7 +2,7 @@
 //  VirtualOutputPlugin.swift
 //  LosslessSwitcher
 //
-//  Install, update and remove the Renderer Engine's virtual output device: the HAL plug-in
+//  Install, update and remove Exclusive Mode's virtual output device: the HAL plug-in
 //  LSOutput.driver (source: HALPlugin/), shipped in the app's Resources and installed to
 //  /Library/Audio/Plug-Ins/HAL. Both need an administrator password (one prompt) and restart
 //  coreaudiod, which interrupts all audio for a moment. The caller stops the engine first so the

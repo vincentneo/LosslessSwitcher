@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSAudioCaptureUsageDescription</key>
-	<string>The Renderer Engine takes Music's audio from the output device and plays it back unchanged, so it can switch the sample rate without cutting tracks.</string>
+	<string>Exclusive Mode takes Music's audio from the output device and plays it back unchanged, so it can switch the sample rate without cutting tracks.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>The Renderer Engine reads Music's audio back from the LosslessSwitcher Output virtual device (its loopback input) to play it to your DAC unchanged.</string>
+	<string>Exclusive Mode reads Music's audio back from the LosslessSwitcher Output virtual device (its loopback input) to play it to your DAC unchanged.</string>
 	<key>NSAppleScriptEnabled</key>
 	<true/>
 	<key>OSAScriptingDefinition</key>
