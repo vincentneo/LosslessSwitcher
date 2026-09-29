@@ -28,7 +28,16 @@ struct MenuView: View {
             
             Divider()
 
+            // Exclusive Mode needs the driver (the virtual output device); until it's installed the
+            // toggle is unavailable and the install is offered right here (it turns Exclusive Mode on)
             Toggle("Exclusive Mode (Experimental)", isOn: $defaults.userPreferRendererEngine)
+                .disabled(virtualOutput.state == .notInstalled && !defaults.userPreferRendererEngine)
+            if virtualOutput.state == .notInstalled {
+                Button(virtualOutput.busy ? "Installing Exclusive Mode Driver…" : "Install Exclusive Mode Driver…") {
+                    MenuBarController.shared.changeVirtualDevice(install: true, enableAfter: true)
+                }
+                .disabled(virtualOutput.busy)
+            }
 
             Menu {
                 Toggle("Default Device", isOn: Binding(get: { outputDevices.selectedOutputDevice == nil }, set: { on in
@@ -93,7 +102,7 @@ struct MenuView: View {
                 Menu {
                     switch virtualOutput.state {
                     case .notInstalled:
-                        Text("Not installed (Exclusive Mode uses a process tap, no hog mode)")
+                        Text("Not installed (Exclusive Mode needs it)")
                         Button("Install…") { MenuBarController.shared.changeVirtualDevice(install: true) }
                     case .installed(let version):
                         Text("Installed (\(version))")

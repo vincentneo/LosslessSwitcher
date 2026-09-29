@@ -64,17 +64,37 @@ class MenuBarController {
             }
     }
 
-    /// The virtual device (HAL plug-in) allows hog mode and integer output on the DAC; without it
-    /// the engine takes Music's audio with a process tap.
+    /// Exclusive Mode needs the virtual output device (HAL plug-in): it's what allows hog mode and
+    /// integer output on the DAC. Without the plug-in nothing starts and the setting goes off (the
+    /// menu only offers Exclusive Mode once the driver is installed). The process-tap engine is a
+    /// developer path only (RendererForceTapEngine).
     private func startRenderer() {
         if UserDefaults.standard.bool(forKey: "RendererForceTapEngine") {
             rendererEngine.startupNote = "RendererForceTapEngine is set; using the process-tap engine"
             rendererEngine.start()
-        } else if VirtualDeviceEngine.findDevice() != nil {
+            return
+        }
+        if VirtualDeviceEngine.findDevice() != nil {
             virtualEngine.start()
-        } else {
-            rendererEngine.startupNote = "LosslessSwitcher virtual output device not installed (\(VirtualDeviceEngine.pluginPath)); using the process-tap engine (no hog mode)"
-            rendererEngine.start()
+            return
+        }
+        guard VirtualOutputPlugin.shared.isInstalledOnDisk else {
+            print("[Exclusive Mode] the virtual output device isn't installed; Exclusive Mode stays off")
+            Defaults.shared.userPreferRendererEngine = false
+            return
+        }
+        // installed, but the HAL lists the device a moment later (login, coreaudiod restarting)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let end = Date().addingTimeInterval(10)
+            while Date() < end, VirtualDeviceEngine.findDevice() == nil { Thread.sleep(forTimeInterval: 0.25) }
+            let found = VirtualDeviceEngine.findDevice() != nil
+            DispatchQueue.main.async {
+                guard let self, Defaults.shared.userPreferRendererEngine else { return }
+                if found { self.virtualEngine.start() } else {
+                    print("[Exclusive Mode] the virtual output device is installed but coreaudiod doesn't list it; Exclusive Mode stays off")
+                    Defaults.shared.userPreferRendererEngine = false
+                }
+            }
         }
     }
 
@@ -85,13 +105,19 @@ class MenuBarController {
 
     /// Install/update (true) or remove (false) the virtual output device. The engine is stopped
     /// first (it hands the DAC and the default output back) and started again afterwards.
-    func changeVirtualDevice(install: Bool) {
+    /// `enableAfter`: turn Exclusive Mode on when the install succeeds (the menu's "Install Exclusive
+    /// Mode Driver…"). Removing the driver turns Exclusive Mode off (startRenderer finds no device).
+    func changeVirtualDevice(install: Bool, enableAfter: Bool = false) {
         let wasOn = Defaults.shared.userPreferRendererEngine
         stopRendererEngines()
         let plugin = VirtualOutputPlugin.shared
-        let after: (Bool) -> Void = { [weak self] _ in
+        let after: (Bool) -> Void = { [weak self] ok in
             VirtualDeviceEngine.recoverOutput()
-            if wasOn { self?.startRenderer() }
+            if install, ok, enableAfter, !wasOn {
+                Defaults.shared.userPreferRendererEngine = true // the sink starts it
+            } else if wasOn {
+                self?.startRenderer()
+            }
         }
         if install { plugin.install(done: after) } else { plugin.remove(done: after) }
     }

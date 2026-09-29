@@ -41,6 +41,9 @@ final class VirtualOutputPlugin: ObservableObject {
         AudioObjectAddPropertyListenerBlock(AudioObjectID(kAudioObjectSystemObject), &a, .main, block)
     }
 
+    /// The plug-in's bundle is in /Library/Audio/Plug-Ins/HAL (readable), whatever its version.
+    var isInstalledOnDisk: Bool { Self.version(of: URL(fileURLWithPath: Self.installPath)) != nil }
+
     var bundledURL: URL? { Bundle.main.url(forResource: "LSOutput", withExtension: "driver") }
 
     /// CFBundleShortVersionString (CFBundleVersion) of a plug-in bundle.
