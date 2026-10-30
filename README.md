@@ -39,6 +39,60 @@ It also has the following requirements:
 
 Other than that, it should run on any Mac running macOS 11.4 or later.
 
+## How It Works & Core Architecture
+
+Unlike iOS, macOS does not automatically switch your audio output device's hardware sample rate to match the currently playing song in Apple Music. Instead, Apple Music forces CoreAudio to resample (SRC) the audio stream to whatever fixed rate is set in Audio MIDI Setup.
+
+LosslessSwitcher bridges this gap with an event-driven architecture that coordinates Apple Music, CoreAudio HAL, and macOS Unified Logging.
+
+```mermaid
+flowchart TD
+    subgraph AppleMusicProcess["Apple Music (com.apple.Music)"]
+        ALAC["ALAC Decoder (ACAppleLosslessDecoder)"]
+        MR["MediaRemote (Now Playing & Track Events)"]
+        AS["AppleScript Interface"]
+    end
+
+    subgraph LosslessSwitcher["LosslessSwitcher Core"]
+        LogListener["LogStreamListener (log stream)"]
+        MRController["MediaRemoteController"]
+        StateEngine["OutputDevices (State & Decision Engine)"]
+        AudioCtrl["CoreAudio Controller (SimplyCoreAudio)"]
+    end
+
+    subgraph Hardware["Audio Hardware Layer"]
+        HAL["CoreAudio HAL"]
+        DAC["Physical DAC / Audio Interface"]
+    end
+
+    ALAC -->|"1. Raw Decoder Log (w/ Pointer)"| LogListener
+    MR -->|"2. Track Change Notification"| MRController
+    AS <-->|"3. Immediate Metadata Query"| StateEngine
+
+    LogListener --> StateEngine
+    MRController --> StateEngine
+
+    StateEngine -->|"4. Mute / Rewind Commands"| AppleMusicProcess
+    StateEngine -->|"5. Clock / Format Switch"| AudioCtrl
+    AudioCtrl --> HAL --> DAC
+```
+
+### The Three Core Pillars
+
+1. **4-Tier Fast Detection Pipeline**
+   - **Tier 1: Pre-buffer Pending (0ms)**: Applies the pre-buffered format immediately at the exact instant of track transition.
+   - **Tier 2: Memory Cache (0ms)**: Recalls known format from in-memory cache for previously played songs.
+   - **Tier 3: AppleScript Fast Query (~50–100ms)**: Queries track metadata immediately upon track change when no pre-buffer exists (e.g. manual track skipping).
+   - **Tier 4: Real-time Decoder Logging (OSLog)**: Captures exact bit depth (e.g., 24-bit source) and handles adaptive streaming upgrades.
+
+2. **Decoder Instance Tracking (Next-Track Isolation)**
+   - Apple Music pre-buffers upcoming tracks in the background. LosslessSwitcher tracks the memory address (pointer) of the active `ACAppleLosslessDecoder` instance.
+   - Incoming formats from separate decoder instances are automatically identified as upcoming tracks and deferred to `pendingTargetSampleRate` without interrupting the current track.
+
+3. **Mute-Sync-Rewind Sequence**
+   - DAC clock re-locking often produces physical relay clicks or pop noises.
+   - LosslessSwitcher executes a synchronized sequence: **Mute Music app ➔ Switch DAC clock ➔ Wait for hardware lock (polling every 20ms) ➔ Rewind to 00:00 (if within 5s) ➔ Unmute**. This guarantees pop-free transitions and zero audio cutoff.
+
 ## App details
 
 LosslessSwitcher runs quietly in your menu bar. The main mechanisms of the app are:

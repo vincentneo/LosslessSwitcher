@@ -11,6 +11,7 @@ struct MenuView: View {
     
     @EnvironmentObject private var outputDevices: OutputDevices
     @EnvironmentObject private var defaults: Defaults
+    @ObservedObject private var updateChecker = UpdateChecker.shared
     
     var body: some View {
         VStack {
@@ -46,15 +47,30 @@ struct MenuView: View {
                 }
             }
             
-            Button {
-                defaults.userPreferMidSongUpgrades.toggle()
-            } label: {
-                HStack {
-                    Text("Follow Quality Upgrades Mid-Song (Causes Interruption)".localized)
-                    if defaults.userPreferMidSongUpgrades {
-                        Image(systemName: "checkmark")
+            Menu {
+                Button {
+                    defaults.userPreferMidSongUpgrades = false
+                } label: {
+                    HStack {
+                        Text("Wait Until Next Track (Recommended)".localized)
+                        if !defaults.userPreferMidSongUpgrades {
+                            Image(systemName: "checkmark")
+                        }
                     }
                 }
+                
+                Button {
+                    defaults.userPreferMidSongUpgrades = true
+                } label: {
+                    HStack {
+                        Text("Switch Immediately (Causes Interruption)".localized)
+                        if defaults.userPreferMidSongUpgrades {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            } label: {
+                Text(String(format: "%@: %@", "Mid-Song Quality".localized, defaults.userPreferMidSongUpgrades ? "Immediate (Interrupts)".localized : "Wait (Recommended)".localized))
             }
             
             Menu {
@@ -93,8 +109,15 @@ struct MenuView: View {
             Button {
                 UpdateChecker.shared.checkForUpdates(manually: true)
             } label: {
-                Text("Check for Updates...".localized)
+                if UpdateChecker.shared.isUpdating {
+                    Text("Installing update and restarting...".localized)
+                } else if UpdateChecker.shared.isChecking {
+                    Text("Checking for updates...".localized)
+                } else {
+                    Text("Check for Updates...".localized)
+                }
             }
+            .disabled(UpdateChecker.shared.isChecking || UpdateChecker.shared.isUpdating)
             
             Menu {
                 Button("Select Script...".localized) {

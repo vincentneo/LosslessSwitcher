@@ -14,6 +14,7 @@ struct CMPlayerStats {
     let bitDepth: Int
     let date: Date
     let priority: Int
+    var decoderAddress: String? = nil
 }
 
 class CMPlayerParser {
@@ -54,7 +55,7 @@ class CMPlayerParser {
             
             if let sr = sampleRate,
                let bd = bitDepth {
-                let stat = CMPlayerStats(sampleRate: sr * 1000, bitDepth: bd, date: date, priority: 1)
+                let stat = CMPlayerStats(sampleRate: sr * 1000, bitDepth: bd, date: date, priority: 1, decoderAddress: nil)
                 stats.append(stat)
                 sampleRate = nil
                 bitDepth = nil
@@ -85,7 +86,11 @@ class CMPlayerParser {
                 bitDepth = nil
             }
             
+            var decoderAddress: String?
             if rawMessage.contains("ACAppleLosslessDecoder.cpp") && rawMessage.contains("Input format:") {
+                if let subPtr = rawMessage.firstSubstring(between: "(0x", and: ") Input format:") {
+                    decoderAddress = "0x" + String(subPtr)
+                }
                 if let subSampleRate = rawMessage.firstSubstring(between: "ch, ", and: " Hz") {
                     let strSampleRate = String(subSampleRate).trimmingCharacters(in: .whitespacesAndNewlines)
                     sampleRate = Double(strSampleRate)
@@ -99,7 +104,7 @@ class CMPlayerParser {
             
             if let sr = sampleRate,
                let bd = bitDepth {
-                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date, priority: 5)
+                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date, priority: 5, decoderAddress: decoderAddress)
                 stats.append(stat)
                 sampleRate = nil
                 bitDepth = nil
@@ -137,7 +142,7 @@ class CMPlayerParser {
             }
             
             if let sr = sampleRate {
-                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bitDepth, date: date, priority: 2)
+                let stat = CMPlayerStats(sampleRate: sr, bitDepth: bitDepth, date: date, priority: 2, decoderAddress: nil)
                 stats.append(stat)
                 sampleRate = nil
                 print("detected stat \(stat)")
@@ -185,6 +190,9 @@ class LogStreamListener {
                 if let output = String(data: data, encoding: .utf8) {
                     let lines = output.components(separatedBy: "\n")
                     for line in lines {
+                        if line.contains("ACAppleLosslessDecoder.cpp") && line.contains("Input format:") {
+                            self?.log("Apple Music Log: \(line)")
+                        }
                         if let stat = self?.parseLogStreamLine(line) {
                             self?.onLogReceived?(stat)
                         }
@@ -229,6 +237,11 @@ class LogStreamListener {
         
         var sampleRate: Double?
         var bitDepth: Int?
+        var decoderAddress: String?
+        
+        if let subPtr = line.firstSubstring(between: "(0x", and: ") Input format:") {
+            decoderAddress = "0x" + String(subPtr)
+        }
         
         if let subSampleRate = line.firstSubstring(between: "ch, ", and: " Hz") {
             let strSampleRate = String(subSampleRate).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -241,7 +254,7 @@ class LogStreamListener {
         }
         
         if let sr = sampleRate, let bd = bitDepth {
-            return CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date, priority: 5)
+            return CMPlayerStats(sampleRate: sr, bitDepth: bd, date: date, priority: 5, decoderAddress: decoderAddress)
         }
         return nil
     }

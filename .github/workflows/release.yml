@@ -23,7 +23,7 @@ jobs:
         run: |
           VERSION=$(grep -m1 "MARKETING_VERSION" Quality.xcodeproj/project.pbxproj | awk -F '=' '{print $2}' | tr -d ' ;"')
           if [ -z "$VERSION" ]; then
-            VERSION="4.4"
+            VERSION="4.5"
           fi
           TAG_NAME="v${VERSION}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -42,11 +42,16 @@ jobs:
         run: |
           xcodebuild -project Quality.xcodeproj -scheme LosslessSwitcher -configuration Release -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      - name: Package App into DMG
+      - name: Package App into DMG and ZIP
         run: |
           APP_PATH="build/Build/Products/Release/LosslessSwitcher.app"
           DMG_NAME="LosslessSwitcher-${TAG_NAME}.dmg"
+          ZIP_NAME="LosslessSwitcher-${TAG_NAME}.zip"
           
+          # Create ZIP for in-app updates
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_NAME"
+          
+          # Create DMG
           create-dmg \
             --volname "LosslessSwitcher" \
             --window-pos 200 120 \
@@ -60,12 +65,13 @@ jobs:
             "$APP_PATH"
             
           echo "DMG_NAME=$DMG_NAME" >> $GITHUB_ENV
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
 
-      - name: Create GitHub Release and Upload DMG Asset
+      - name: Create GitHub Release and Upload Assets
         run: |
-          gh release create "${TAG_NAME}" "${DMG_NAME}" \
+          gh release create "${TAG_NAME}" "${DMG_NAME}" "${ZIP_NAME}" \
             --title "${TAG_NAME}" \
             --notes "Release ${TAG_NAME}" || \
-          gh release upload "${TAG_NAME}" "${DMG_NAME}" --clobber
+          gh release upload "${TAG_NAME}" "${DMG_NAME}" "${ZIP_NAME}" --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

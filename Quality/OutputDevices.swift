@@ -28,6 +28,8 @@ class OutputDevices: ObservableObject {
     private var pendingTargetSampleRate: Float64?
     private var pendingTargetBitDepth: Int?
     private var initialFormatSetForCurrentTrack: Bool = false
+    private var activeDecoderAddress: String?
+    private var pendingDecoderAddress: String?
     
     private let pauseScript = NSAppleScript(source: "tell application \"Music\" to pause")
     private let playScript = NSAppleScript(source: "tell application \"Music\" to play")
@@ -79,7 +81,7 @@ class OutputDevices: ObservableObject {
         
         processQueue.async { [weak self] in
             guard let self = self else { return }
-            let stat = CMPlayerStats(sampleRate: targetSR, bitDepth: targetBD, date: Date(), priority: 5)
+            let stat = CMPlayerStats(sampleRate: targetSR, bitDepth: targetBD, date: Date(), priority: 5, decoderAddress: self.activeDecoderAddress)
             self.switchSampleRateWithStat(stat, onDevice: defaultDevice, isDeviceChange: true)
         }
     }
@@ -270,6 +272,20 @@ class OutputDevices: ObservableObject {
                 }
             }
             
+            // 1. Separate decoder instance detection: next-track pre-buffering
+            if self.isPlaying && self.initialFormatSetForCurrentTrack {
+                if let activeAddr = self.activeDecoderAddress,
+                   let incomingAddr = first.decoderAddress,
+                   activeAddr != incomingAddr {
+                    self.log("Pre-buffer detected from separate decoder instance (\(incomingAddr) != active \(activeAddr)). Deferring \(sampleRate)Hz/\(bitDepth)bit for next track.")
+                    self.pendingTargetSampleRate = sampleRate
+                    self.pendingTargetBitDepth = Int(bitDepth)
+                    self.pendingDecoderAddress = incomingAddr
+                    return
+                }
+            }
+            
+            // 2. Format change evaluation during current track
             if self.isPlaying && self.initialFormatSetForCurrentTrack {
                 let curSR = self.targetSampleRate ?? (defaultDevice.nominalSampleRate ?? 0.0)
                 let curBD = self.targetBitDepth ?? 16
@@ -280,9 +296,16 @@ class OutputDevices: ObservableObject {
                     let isDowngrade = (sampleRate < curSR) || (sampleRate == curSR && inBD < curBD)
                     let isUpgrade = (sampleRate > curSR) || (sampleRate == curSR && inBD > curBD)
                     
-                    if isDowngrade || (isUpgrade && !Defaults.shared.userPreferMidSongUpgrades) {
+                    // If more than 5.0s into playback, defer format changes to prevent interrupting listening
+                    let isPastInitialPlayback = self.currentPlaybackTime > 5.0
+                    
+                    if isDowngrade || (isUpgrade && (!Defaults.shared.userPreferMidSongUpgrades || isPastInitialPlayback)) {
+                        self.log("Mid-song format change deferred (SR: \(sampleRate) vs \(curSR), elapsed: \(String(format: "%.1f", self.currentPlaybackTime))s). Storing as pending.")
                         self.pendingTargetSampleRate = sampleRate
                         self.pendingTargetBitDepth = inBD
+                        if let addr = first.decoderAddress {
+                            self.pendingDecoderAddress = addr
+                        }
                         return
                     }
                 }
@@ -320,28 +343,40 @@ class OutputDevices: ObservableObject {
             
             let streams = defaultDevice.streams(scope: .output)
             let currentFormat = streams?.first?.physicalFormat
-            let currentSampleRateVal = defaultDevice.nominalSampleRate
+            let currentSampleRateVal = defaultDevice.nominalSampleRate ?? (currentFormat?.mSampleRate ?? 0.0)
             
+            let isSampleRateDifferent = abs(currentSampleRateVal - targetSR) >= 1.0
             let isDifferent: Bool
             if enableBitDepthDetection {
-                let currentBD = currentFormat.map { Int($0.mBitsPerChannel) }
-                isDifferent = (currentFormat?.mSampleRate != targetSR) || (currentBD != targetBD)
+                let currentBD = currentFormat.map { Int($0.mBitsPerChannel) } ?? 0
+                isDifferent = isSampleRateDifferent || (currentBD != targetBD)
             } else {
-                isDifferent = (currentSampleRateVal != targetSR)
+                isDifferent = isSampleRateDifferent
             }
             
             if !isDifferent {
                 self.targetSampleRate = targetSR
                 self.targetBitDepth = targetBD
+                if let addr = first.decoderAddress {
+                    self.activeDecoderAddress = addr
+                }
                 self.updateSampleRate(targetSR, bitDepth: targetBD)
                 self.initialFormatSetForCurrentTrack = true
+                if let currentTrack = self.currentTrack {
+                    self.trackAndSample[currentTrack] = targetSR
+                    self.trackAndBitDepth[currentTrack] = targetBD
+                }
                 return
             }
             
             self.targetSampleRate = targetSR
             self.targetBitDepth = targetBD
+            if let addr = first.decoderAddress {
+                self.activeDecoderAddress = addr
+            }
             self.pendingTargetSampleRate = nil
             self.pendingTargetBitDepth = nil
+            self.pendingDecoderAddress = nil
             self.initialFormatSetForCurrentTrack = true
             
             Task {
@@ -354,12 +389,14 @@ class OutputDevices: ObservableObject {
                 var rewindTime: Date?
                 
                 if wasPlaying {
+                    self.log("Muting Apple Music")
                     self.muteMusicApp()
                     muteTime = Date()
                     try? await Task.sleep(nanoseconds: 10_000_000) // 10ms wait for mute to process
                 }
                 
                 let dacStartTime = Date()
+                self.log("Changing DAC format to \(targetSR) Hz / \(targetBD) bit")
                 if self.enableBitDepthDetection {
                     self.setFormats(device: defaultDevice, format: suitableFormat)
                 } else {
@@ -383,6 +420,7 @@ class OutputDevices: ObservableObject {
                     try? await Task.sleep(nanoseconds: 20_000_000) // Poll every 20ms
                 }
                 let dacEndTime = Date()
+                self.log("DAC change completed: \(isComplete)")
                 
                 try? await Task.sleep(nanoseconds: 20_000_000) // 20ms stabilizer sleep
                 
@@ -507,17 +545,42 @@ class OutputDevices: ObservableObject {
             self.trackChangeTime = Date()
             self.currentPlaybackTime = 0.0
             self.initialFormatSetForCurrentTrack = false
+            self.activeDecoderAddress = nil
             
-            if let pendingSR = self.pendingTargetSampleRate {
-                let pendingBD = self.pendingTargetBitDepth ?? 24
-                self.pendingTargetSampleRate = nil
-                self.pendingTargetBitDepth = nil
-                
-                self.log("Applying pending pre-buffered format (\(pendingSR)Hz/\(pendingBD)bit) for new track")
-                let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
-                if let defaultDevice = defaultDevice {
-                    let stat = CMPlayerStats(sampleRate: pendingSR, bitDepth: pendingBD, date: Date(), priority: 5)
+            let defaultDevice = self.selectedOutputDevice ?? self.defaultOutputDevice
+            if let defaultDevice = defaultDevice {
+                // 1. Pending (Pre-buffered format from previous track) - 0ms
+                if let pendingSR = self.pendingTargetSampleRate {
+                    let pendingBD = self.pendingTargetBitDepth ?? 24
+                    let pendingAddr = self.pendingDecoderAddress
+                    self.pendingTargetSampleRate = nil
+                    self.pendingTargetBitDepth = nil
+                    self.pendingDecoderAddress = nil
+                    self.activeDecoderAddress = pendingAddr
+                    
+                    self.log("Applying pending pre-buffered format (\(pendingSR)Hz/\(pendingBD)bit) for new track (decoder: \(pendingAddr ?? "nil"))")
+                    let stat = CMPlayerStats(sampleRate: pendingSR, bitDepth: pendingBD, date: Date(), priority: 5, decoderAddress: pendingAddr)
                     self.switchSampleRateWithStat(stat, onDevice: defaultDevice)
+                }
+                // 2. Memory Cache (Previously played track) - 0ms
+                else if let cachedSR = self.trackAndSample[incomingTrack] {
+                    let cachedBD = self.trackAndBitDepth[incomingTrack] ?? 24
+                    self.log("Applying cached format (\(cachedSR)Hz/\(cachedBD)bit) for known track")
+                    let stat = CMPlayerStats(sampleRate: cachedSR, bitDepth: cachedBD, date: Date(), priority: 4, decoderAddress: nil)
+                    self.switchSampleRateWithStat(stat, onDevice: defaultDevice)
+                }
+                // 3. AppleScript Metadata Immediate Query - ~50-100ms
+                else {
+                    self.processQueue.async { [weak self] in
+                        guard let self = self else { return }
+                        if let appleScriptSR = self.getSampleRateFromAppleScript() {
+                            if !self.initialFormatSetForCurrentTrack {
+                                self.log("Applying AppleScript detected sample rate (\(appleScriptSR)Hz) immediately on track change")
+                                let stat = CMPlayerStats(sampleRate: appleScriptSR, bitDepth: 24, date: Date(), priority: 3, decoderAddress: nil)
+                                self.switchSampleRateWithStat(stat, onDevice: defaultDevice)
+                            }
+                        }
+                    }
                 }
             }
         }

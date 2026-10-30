@@ -382,7 +382,7 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -398,7 +398,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 4.4.2;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -418,7 +418,7 @@
 				CODE_SIGN_ENTITLEMENTS = Quality/Quality.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				DEVELOPMENT_ASSET_PATHS = "\"Quality/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -434,7 +434,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 4.4.2;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vincent-neo.LosslessSwitcher";
 				PRODUCT_NAME = LosslessSwitcher;
 				SWIFT_EMIT_LOC_STRINGS = YES;

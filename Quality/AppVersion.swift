@@ -104,6 +104,26 @@ func localizedString(_ key: String) -> String {
             .en: "A new version (%@) is available. Your current version is %@. Would you like to download it?",
             .ja: "新しいバージョン (%@) が利用可能です。現在のバージョンは %@ です。ダウンロードしますか？"
         ],
+        "Update Now": [
+            .en: "Update Now",
+            .ja: "今すぐアップデート"
+        ],
+        "View on GitHub": [
+            .en: "View on GitHub",
+            .ja: "GitHubで確認"
+        ],
+        "Downloading update...": [
+            .en: "Downloading update...",
+            .ja: "アップデートをダウンロード中..."
+        ],
+        "Installing update and restarting...": [
+            .en: "Installing update and restarting...",
+            .ja: "アップデートを適用して再起動中..."
+        ],
+        "Update Failed": [
+            .en: "Update Failed",
+            .ja: "アップデートに失敗しました"
+        ],
         "Download": [
             .en: "Download",
             .ja: "ダウンロード"
@@ -111,6 +131,30 @@ func localizedString(_ key: String) -> String {
         "Later": [
             .en: "Later",
             .ja: "後で"
+        ],
+        "Mid-Song Quality Switching": [
+            .en: "Mid-Song Quality Switching",
+            .ja: "曲中の音質変更（ストリーミング昇格）"
+        ],
+        "Wait Until Next Track (Recommended)": [
+            .en: "Wait Until Next Track (Recommended)",
+            .ja: "次の曲まで待機（推奨・音切れ防止）"
+        ],
+        "Switch Immediately (Causes Interruption)": [
+            .en: "Switch Immediately (Causes Interruption)",
+            .ja: "即時切り替え（再生中に音切れ・巻き戻し発生）"
+        ],
+        "Mid-Song Quality": [
+            .en: "Mid-Song Quality",
+            .ja: "曲中音質変更"
+        ],
+        "Wait (Recommended)": [
+            .en: "Wait (Recommended)",
+            .ja: "次曲まで待機（推奨）"
+        ],
+        "Immediate (Interrupts)": [
+            .en: "Immediate (Interrupts)",
+            .ja: "即時追従（音切れあり）"
         ],
         "Up to Date": [
             .en: "Up to Date",
@@ -165,25 +209,38 @@ extension String {
 
 // MARK: - Update Checker
 
+struct GitHubAsset: Codable {
+    let name: String
+    let browserDownloadUrl: String
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case browserDownloadUrl = "browser_download_url"
+    }
+}
+
 struct GitHubRelease: Codable {
     let tagName: String
     let htmlUrl: String
+    let assets: [GitHubAsset]?
     
     enum CodingKeys: String, CodingKey {
         case tagName = "tag_name"
         case htmlUrl = "html_url"
+        case assets
     }
 }
 
 class UpdateChecker: ObservableObject {
     @Published var isChecking = false
+    @Published var isUpdating = false
     
     static let shared = UpdateChecker()
     
     private init() {}
     
     func checkForUpdates(manually: Bool = false) {
-        guard !isChecking else { return }
+        guard !isChecking && !isUpdating else { return }
         isChecking = true
         
         guard let url = URL(string: "https://api.github.com/repos/horikei525/LosslessSwitcher/releases/latest") else {
@@ -232,7 +289,7 @@ class UpdateChecker: ObservableObject {
                 let hasUpdate = self.isVersion(latest, newerThan: current)
                 
                 if hasUpdate {
-                    self.showUpdateAlert(latest: latest, urlString: release.htmlUrl)
+                    self.showUpdateAlert(latest: latest, release: release)
                 } else if manually {
                     self.showUpToDateAlert()
                 }
@@ -277,18 +334,158 @@ class UpdateChecker: ObservableObject {
         return version1.compare(version2, options: .numeric) == .orderedDescending
     }
     
-    private func showUpdateAlert(latest: String, urlString: String) {
+    private func showUpdateAlert(latest: String, release: GitHubRelease) {
         DispatchQueue.main.async {
             let alert = NSAlert()
             alert.messageText = "Update Available".localized
             alert.informativeText = String(format: "A new version (%@) is available. Your current version is %@. Would you like to download it?".localized, latest, currentVersion)
-            alert.addButton(withTitle: "Download".localized)
+            
+            alert.addButton(withTitle: "Update Now".localized)
+            alert.addButton(withTitle: "View on GitHub".localized)
             alert.addButton(withTitle: "Later".localized)
+            
             let response = alert.runModal()
             if response == .alertFirstButtonReturn {
-                if let url = URL(string: urlString) {
+                // Find matching asset: prefer .zip, then .dmg
+                if let assets = release.assets,
+                   let chosenAsset = assets.first(where: { $0.name.hasSuffix(".zip") }) ?? assets.first(where: { $0.name.hasSuffix(".dmg") }) {
+                    self.performInAppUpdate(asset: chosenAsset)
+                } else if let url = URL(string: release.htmlUrl) {
                     NSWorkspace.shared.open(url)
                 }
+            } else if response == .alertSecondButtonReturn {
+                if let url = URL(string: release.htmlUrl) {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        }
+    }
+    
+    private func performInAppUpdate(asset: GitHubAsset) {
+        guard let downloadUrl = URL(string: asset.browserDownloadUrl) else { return }
+        
+        DispatchQueue.main.async {
+            self.isUpdating = true
+        }
+        
+        let task = URLSession.shared.downloadTask(with: downloadUrl) { [weak self] tempLocalUrl, response, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.isUpdating = false
+                    self.showErrorAlert(error: error.localizedDescription)
+                }
+                return
+            }
+            
+            guard let tempLocalUrl = tempLocalUrl else {
+                DispatchQueue.main.async {
+                    self.isUpdating = false
+                    self.showErrorAlert(error: "Downloaded file not found".localized)
+                }
+                return
+            }
+            
+            // Move downloaded file to /tmp
+            let ext = asset.name.hasSuffix(".dmg") ? "dmg" : "zip"
+            let targetDownloadPath = "/tmp/LosslessSwitcher_Update.\(ext)"
+            let targetUrl = URL(fileURLWithPath: targetDownloadPath)
+            try? FileManager.default.removeItem(at: targetUrl)
+            
+            do {
+                try FileManager.default.moveItem(at: tempLocalUrl, to: targetUrl)
+            } catch {
+                DispatchQueue.main.async {
+                    self.isUpdating = false
+                    self.showErrorAlert(error: error.localizedDescription)
+                }
+                return
+            }
+            
+            let isDMG = (ext == "dmg")
+            self.runUpdaterScriptAndRelaunch(archivePath: targetDownloadPath, isDMG: isDMG)
+        }
+        
+        task.resume()
+    }
+    
+    private func runUpdaterScriptAndRelaunch(archivePath: String, isDMG: Bool) {
+        let currentPid = ProcessInfo.processInfo.processIdentifier
+        let bundlePath = Bundle.main.bundleURL.path
+        let updaterScriptPath = "/tmp/lossless_switcher_updater.sh"
+        
+        let scriptContent = """
+        #!/bin/bash
+        PID=\(currentPid)
+        ARCHIVE_PATH="\(archivePath)"
+        TARGET_APP_PATH="\(bundlePath)"
+        IS_DMG="\(isDMG ? "true" : "false")"
+        
+        # Wait for caller application to exit
+        for i in {1..30}; do
+            if ! kill -0 "$PID" 2>/dev/null; then
+                break
+            fi
+            sleep 0.5
+        done
+        
+        TEMP_DIR=$(mktemp -d /tmp/ls_update_XXXXXX)
+        EXTRACTED_APP=""
+        
+        if [ "$IS_DMG" = "true" ]; then
+            MOUNT_DIR=$(mktemp -d /tmp/ls_mount_XXXXXX)
+            hdiutil attach "$ARCHIVE_PATH" -mountpoint "$MOUNT_DIR" -nobrowse -quiet -noautoopen 2>/dev/null || true
+            FOUND_APP=$(find "$MOUNT_DIR" -maxdepth 2 -name "LosslessSwitcher.app" -o -name "*.app" | head -n 1)
+            if [ -n "$FOUND_APP" ]; then
+                cp -R "$FOUND_APP" "$TEMP_DIR/"
+                EXTRACTED_APP="$TEMP_DIR/$(basename "$FOUND_APP")"
+            fi
+            hdiutil detach "$MOUNT_DIR" -quiet -force 2>/dev/null || true
+            rm -rf "$MOUNT_DIR"
+        else
+            ditto -xk "$ARCHIVE_PATH" "$TEMP_DIR"
+            FOUND_APP=$(find "$TEMP_DIR" -maxdepth 2 -name "LosslessSwitcher.app" -o -name "*.app" | head -n 1)
+            if [ -n "$FOUND_APP" ]; then
+                EXTRACTED_APP="$FOUND_APP"
+            fi
+        fi
+        
+        # Replace existing app bundle
+        if [ -n "$EXTRACTED_APP" ] && [ -d "$EXTRACTED_APP" ]; then
+            rm -rf "$TARGET_APP_PATH"
+            cp -R "$EXTRACTED_APP" "$TARGET_APP_PATH"
+        fi
+        
+        # Cleanup
+        rm -rf "$TEMP_DIR"
+        rm -f "$ARCHIVE_PATH"
+        
+        # Relaunch
+        open "$TARGET_APP_PATH"
+        rm -f "$0"
+        """
+        
+        do {
+            try scriptContent.write(toFile: updaterScriptPath, atomically: true, encoding: .utf8)
+            let chmodProcess = Process()
+            chmodProcess.executableURL = URL(fileURLWithPath: "/bin/chmod")
+            chmodProcess.arguments = ["+x", updaterScriptPath]
+            try chmodProcess.run()
+            chmodProcess.waitUntilExit()
+            
+            let updaterProcess = Process()
+            updaterProcess.executableURL = URL(fileURLWithPath: "/bin/bash")
+            updaterProcess.arguments = [updaterScriptPath]
+            try updaterProcess.run()
+            
+            DispatchQueue.main.async {
+                NSApp.terminate(nil)
+            }
+        } catch {
+            DispatchQueue.main.async {
+                self.isUpdating = false
+                self.showErrorAlert(error: error.localizedDescription)
             }
         }
     }
