@@ -1,6 +1,5 @@
 <p align="center">
   <img width="550" alt="header image with app icon" src="https://user-images.githubusercontent.com/23420208/164895903-1c95fe89-6198-433a-9100-8d9af32ca24f.png">
-
 </p>
 
 #  
@@ -19,11 +18,11 @@ Version 1.x also works up to macOS Sequoia 15.3.1.
 
 You can find the latest stable release of the version 1.x branch here: [Link to v1.1](https://github.com/vincentneo/LosslessSwitcher/releases/tag/1.1.0)
 
-### For macOS Sequoia 15.4 onwards
-Support for this is still in beta. You can try the latest version 2.0 beta here: [Link to v2.0 Beta 1](https://github.com/vincentneo/LosslessSwitcher/releases/tag/2.0-beta1) 
+### For macOS Sequoia 15.4 and macOS Tahoe (macOS 26+) onwards
+Please use version 4.0 or later. It is fully updated with support for macOS Sequoia and macOS Tahoe, featuring a highly optimized event-driven core.
 
 #### Steps
-1. Download the `.zip` file of the preferred version.
+1. Download the preferred version release.
 2. Drag the app to your Applications folder.
 
 If you wish to have it running when logging in, you should be able to add LosslessSwitcher in System Settings:
@@ -31,24 +30,87 @@ If you wish to have it running when logging in, you should be able to add Lossle
 > User & Groups > Login Items > Add LosslessSwitcher app
 ```
 
+## Prerequisites
+Due to how the app works, this app is not, and cannot be sandboxed.
+It also has the following requirements:
+- The user running LosslessSwitcher must be an **admin** (required to read the system log stream).
+- Apple Music app must have Lossless mode enabled.
+- Apple Music's **Crossfade** (under Music > Settings > Playback) must be turned **off** (blending songs will conflict with the physical DAC clock switching and mute-sync logic).
+
+Other than that, it should run on any Mac running macOS 11.4 or later.
+
+## How It Works & Core Architecture
+
+Unlike iOS, macOS does not automatically switch your audio output device's hardware sample rate to match the currently playing song in Apple Music. Instead, Apple Music forces CoreAudio to resample (SRC) the audio stream to whatever fixed rate is set in Audio MIDI Setup.
+
+LosslessSwitcher bridges this gap with an event-driven architecture that coordinates Apple Music, CoreAudio HAL, and macOS Unified Logging.
+
+```mermaid
+flowchart TD
+    subgraph AppleMusicProcess["Apple Music (com.apple.Music)"]
+        ALAC["ALAC Decoder (ACAppleLosslessDecoder)"]
+        MR["MediaRemote (Now Playing & Track Events)"]
+        AS["AppleScript Interface"]
+    end
+
+    subgraph LosslessSwitcher["LosslessSwitcher Core"]
+        LogListener["LogStreamListener (log stream)"]
+        MRController["MediaRemoteController"]
+        StateEngine["OutputDevices (State & Decision Engine)"]
+        AudioCtrl["CoreAudio Controller (SimplyCoreAudio)"]
+    end
+
+    subgraph Hardware["Audio Hardware Layer"]
+        HAL["CoreAudio HAL"]
+        DAC["Physical DAC / Audio Interface"]
+    end
+
+    ALAC -->|"1. Raw Decoder Log (w/ Pointer)"| LogListener
+    MR -->|"2. Track Change Notification"| MRController
+    AS <-->|"3. Immediate Metadata Query"| StateEngine
+
+    LogListener --> StateEngine
+    MRController --> StateEngine
+
+    StateEngine -->|"4. Mute / Rewind Commands"| AppleMusicProcess
+    StateEngine -->|"5. Clock / Format Switch"| AudioCtrl
+    AudioCtrl --> HAL --> DAC
+```
+
+### The Three Core Pillars
+
+1. **4-Tier Fast Detection Pipeline**
+   - **Tier 1: Pre-buffer Pending (0ms)**: Applies the pre-buffered format immediately at the exact instant of track transition.
+   - **Tier 2: Memory Cache (0ms)**: Recalls known format from in-memory cache for previously played songs.
+   - **Tier 3: AppleScript Fast Query (~50–100ms)**: Queries track metadata immediately upon track change when no pre-buffer exists (e.g. manual track skipping).
+   - **Tier 4: Real-time Decoder Logging (OSLog)**: Captures exact bit depth (e.g., 24-bit source) and handles adaptive streaming upgrades.
+
+2. **Decoder Instance Tracking (Next-Track Isolation)**
+   - Apple Music pre-buffers upcoming tracks in the background. LosslessSwitcher tracks the memory address (pointer) of the active `ACAppleLosslessDecoder` instance.
+   - Incoming formats from separate decoder instances are automatically identified as upcoming tracks and deferred to `pendingTargetSampleRate` without interrupting the current track.
+
+3. **Mute-Sync-Rewind Sequence**
+   - DAC clock re-locking often produces physical relay clicks or pop noises.
+   - LosslessSwitcher executes a synchronized sequence: **Mute Music app ➔ Switch DAC clock ➔ Wait for hardware lock (polling every 20ms) ➔ Rewind to 00:00 (if within 5s) ➔ Unmute**. This guarantees pop-free transitions and zero audio cutoff.
+
 ## App details
 
-There isn't much going on, when it comes to the UI of the app, as most of the logic is to:
-1. Read Apple Music's logs to know the song's sample rate.
-2. Set the sample rate to the device that you are currently playing to.
+LosslessSwitcher runs quietly in your menu bar. The main mechanisms of the app are:
+1. **Real-time Log Monitoring**: The app monitors system log events to detect the active song's sample rate and bit depth immediately when it starts loading.
+2. **Audio Output Synchronization**: Sets the matching sample rate on your active audio output device.
+3. **Mute/Rewind Logic**: Automatically silences the audio output during physical DAC format switching to prevent pops or clicks, and ensures the song starts playing from the very beginning.
 
+As such, the app is extremely lightweight and operates with minimal CPU usage.
 
-As such, the app lives on your menu bar. The screenshot above shows it's only UI component that it offers, which is to show the sample rate that it has parsed from Apple Music's logs.
-
-<img width="252" alt="app screenshot, with music note icon shown as UI button" src="https://user-images.githubusercontent.com/23420208/164895657-35a6d8a3-7e85-4c7c-bcba-9d03bfd88b4d.png">
+<img width="252" alt="app screenshot, with music note icon shown as UI button" src="https://github.com/user-attachments/assets/0d6e62e6-bc52-4748-8d32-31de582799a1">
 
 If you wish, the sample rate can also be directly visible as the menu bar item.
 
-<img width="252" alt="app screenshot with sample rate shown as UI button" src="https://user-images.githubusercontent.com/23420208/164896404-c6d27328-47e5-4eb3-bd8b-71e3c9013c46.png">
+<img width="252" alt="app screenshot with sample rate shown as UI button" src="https://github.com/user-attachments/assets/77bf7ebf-4053-43f9-9ce1-07cc8f4e94fa">
 
 Do also note that:
-- There may be short interuptions to your audio playback, during the time where the app attempts to switch the sample rates.
-- Prolonged use on MacBooks may accelerate battery usages, due to the frequent querying of the latest sample rate.
+- There may be a short silent pause during track transitions as the DAC reconfigures its clocks.
+- Battery impact is negligible starting from version 4.0, as all periodic log database querying has been replaced with event-driven streaming.
 
 Bit Depth switching is also supported, although, enabling it will reduce detection accuracy, hence, it is not recommended.
 
@@ -58,102 +120,8 @@ This still happens today, with macOS 12.3.1, despite iOS's Music app having such
 
 I think this improvement might be well appreciated by many, hence this project is here, free and open source.
 
-## Prerequisites
-Due to how the app works, this app is not, and cannot be sandboxed.
-It also has the following requirement, due to the use of `OSLog` API: 
-- The user running LosslessSwitcher must be an **admin**. This is not tested and assumed due to this [Apple Developer Forums thread](https://developer.apple.com/forums/thread/677068).
-- Apple Music app must have Lossless mode on. (well, of course)
-
-Other than that, it should run on any Mac running macOS 11.4 or later.
-
 ## Disclaimer
 By using LosslessSwitcher, you agree that under no circumstances will the developer or any contributors be held responsible or liable in any way for any claims, damages, losses, expenses, costs or liabilities whatsoever or any other consequences suffered by you or incurred by you directly or indirectly in connection with any form of usages of LosslessSwitcher.
-
-## Devices tested
-
-Here are some device combinations tested to be working, by users of LosslessSwitcher.
-Regardless, you are still reminded to use LosslessSwitcher at your own risk.
-
-
-### Version 1.x
-| CPU             | Mac Model                                            | macOS Version      | Beta macOS? | Audio Device                                                 |
-| --------------- | ---------------------------------------------------- | ------------------ | ----------- | ------------------------------------------------------------ |
-|      Intel      | MacBook Pro 13 inch (Early 2015, Dual Core i5)       | 11.6.2             | No          | Denon AVR-X4400H                                             |
-|      Intel      | Mac mini (2018)                                      | 12.2<br/>12.4      | No          | Denon PMA-50                                                 |
-|      Intel      | MacBook Pro 13 inch (2018)                           | 12.3.1             | No          | Denon PMA-50                                                 |
-|      Intel      | MacBook Pro 13 inch, four Thunderbolt 3 ports (2016) | 12.3.1             | No          | Topping DX7 Pro                                              |
-|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 12.3.1             | No          | FX Audio DAC-X6                                              |
-|      Intel      | MacBook Pro 15 inch (2016)                           | 12.4               | No          | Topping D30Pro                                               |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4               | No          | Meridian Explorer 2                                          |
-|      Intel      | Hackintosh (XPS 9570, i7-8750H)                      | 12.4               | No          | Universal Audio Apollo X4<br/>FiiO Q3<br/>FiiO M5 (DAC mode) |
-|      Intel      | MacBook Pro 13 inch (2016)                           | 12.4<br/>12.6.1    | No          | AudioQuest Dragonfly Cobalt                                  |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 12.4               | No          | iFi Zen DAC V2                                               |
-|      Intel      | MacBook Pro 15 inch (2018)                           | 12.4               | No          | PS Audio Sprout                                              |
-|  Apple Silicon  | MacBook Air 13 inch (2020)                           | 12.5.1             | No          | Shanling M8                                                  |
-|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 12.6               | No          | Focusrite Scarlett 18i8 (2nd Gen)                            | 
-|      Intel      | MacBook Pro 16 inch (2019)                           | 12.6               | No          | Mytek Brooklyn+ DAC                                          |
-|      Intel      | Mac mini (Late 2014)                                 | 12.6.3             | No          | NAD C658                                                     |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0               | 22A5286j    | Topping D50s                                                 |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0               | No          | iBasso DC06<br/>Khadass Tone 2 Pro                           |
-|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.0<br/>13.0.1    | No          | Topping D10 Balanced                                         |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.0.1             | No          | Fiio K7<br/>Fiio K5 Pro (AKM DAC)<br/>Topping EX5            |
-|  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.0.1             | No          | AudioQuest Dragonfly Black v1.5                              |
-|  Apple Silicon  | MacBook Air (M1, 2020)                               | 13.1               | No          | Schiit Bifrost 2                                             |
-|      Intel      | MacBook Pro 15 inch (2018)                           | 13.1               | No          | Apogee Groove                                                |
-|  Apple Silicon  | iMac 24 inch (M1, 2021)                              | 13.1               | No          | SMSL PO100                                                   |
-|  Apple Silicon  | MacBook Pro 14 inch (2021)                           | 13.1               | No          | Chord Mojo                                                   |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2               | No          | RME ADI-2 DAC FS                                             |
-|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 13.2               | No          | M-Audio Fast Track                                           |
-|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 13.2               | No          | Topping D10s                                                 |
-|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 13.2.1             | No          | RME ADI-2 PRO FS R (Black Edition)                           |
-|      Intel      | 27-inch iMac (2017)                                  | 13.2.1             | No          | Chord Hugo M Scaler + TT2 Combo                              |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 13.2.1             | No          | Moondrop Moonriver 2                                         |
-|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 13.3.1             | No          | Gustard X18                                                  |
-|      Intel      | 27-inch iMac (Late 2014)                             | 13.3.1 (a)         | No          | SMSL M500                                                    |
-|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5               | No          | FiiO K5 Pro                                                  |
-|  Apple Silicon  | Mac mini (M2 Pro, 2023)                              | 13.5               | No          | JDS Labs Element III MK 2                                    |  
-|      Intel      | Mac mini (Late 2014)                                 | 13.5 (Opencore)    | No          | VLink192 to Rega DAC                                         |
-|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4             | No          | VMV D1SE                                                     |
-|      Intel      | MacBook Pro 16 inch (2019)                           | 13.6.4             | No          | Denon AVR-X6700H                                             |
-|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 14.0               | 23A5328b    | Focusrite Scarlett 2i2 3rd Gen, Internal MacBook DAC         |
-|      Intel      | MacBook Air 13 inch (2020 i5 1.1 Ghz Quad-Core)      | 14.0               | 23A5328d    | PreSonus Studio 1810c                                        |
-|  Apple Silicon  | MacBoox Air 13 inch (M1, 2020)                       | 14.0               | No          | Cambridge Audio DacMagic 100                                 |
-|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 14.4.1             | No          | Hidizs S9 PRO                                                |
-|  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.4.1             | No          | Cambridge Audio DacMagic XS                                  |
-|  Apple Silicon  | MacBook Pro 14 inch (M3 Pro, 2024)                   | 14.4.1             | No          | RME ADI-2 PRO FS R (Black Edition)                           |
-|      Intel      | Mac Pro 6.1 (2013)                                   | 14.4.1 (Opencore)  | No          | Cambridge Audio Edge NQ                                      |
-|  Apple Silicon  | MacBook Air 13 inch (M2, 2022)                       | 14.5               | No          | HiBy FD3                                                     |
-|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 14.6.1             | No          | FiiO BTR15                                                   |
-|  Apple Silicon  | MacBook Air 13 inch (M3, 2024)                       | 14.6.1             | No          | iBasso DC03 Pro                                              |
-|      Intel      | MacBook Pro 16 inch (i7, 2019)                       | 14.6.1             | No          | Fiio KA17                                                    |
-|  Apple Silicon  | MacBook Pro 16 inch (M1 Max, 2021)                   | 15.0               | 24A5264n    | Internal Soundcard<br/>Focusrite 2i2 3rd Gen<br/>M-Track 2x2 |
-|      Intel      | MacBook Pro 15 inch (2012)                           | 15.1 (Opencore)    | 24B5035e    | Fiio KA3<br/>Fiio KB3                                        |
-|  Apple Silicon  | Mac mini (M2, 2023)                                  | 15.1.1             | No          | Sony NW-A55 (USB DAC mode)                                   |
-|  Apple Silicon  | Mac mini (M4, 2024)                                  | 15.3.1             | No          | MOTU M2                                                      |
-
-
-### Version 2.x
-| CPU             | Mac Model                                            | macOS Version      | Beta macOS? | Audio Device                       | Version    |
-| --------------- | ---------------------------------------------------- | ------------------ | ----------- | -----------------------------------|------------|
-|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 15.4.1             | No          | Cambridge Audio CXA81              | 2.0 Beta 1 | 
-|  Apple Silicon  | Mac Studio (M1 Max, 2022)                            | 15.4.1             | No          | Denon PMA-150H                     | 2.0 Beta 1 |
-|  Apple Silicon  | MacBook Pro 13 inch (M1, 2020)                       | 15.5               | No          | Cambridge Audio CXA81              | 2.0 Beta 2 | 
-|  Apple Silicon  | MacBook Pro 14 inch (M1 Max, 2021)                   | 15.5               | No          | Cambridge Audio DacMagic 200M      | 2.0 Beta 2 |
-|  Apple Silicon  | MacBook Pro 14 inch (M4 Pro, 2024)                   | 15.5               | No          | Cambridge Audio CXA81              | 2.0 Beta 2 |
-|      Intel      | Mac Pro 6.1 (2013) with OpenCore Patcher             | 15.5               | No          | Cambridge Audio Edge NQ            | 2.0 Beta 2 |
-|  Apple Silicon  | MacBook Air 13 inch (M4, 2025)                       | 15.6.1             | No          | Akliam PD5                         | 2.0 Beta 2 |
-|  Apple Silicon  | Mac mini (M4, 2024)                                  | 15.6.1             | No          | Focusrite Scarlett 2i2 Gen4        | 2.0 Beta 2 |
-|      Intel      | MacBook Pro 15 inch (2.3GHz i9, 2019)                | 15.7.3             | No          | Fiio KA3                           | 2.0 Beta 2 |
-|  Apple Silicon  | MacBook Pro 14 inch (M2 Pro, 2023)                   | 26.0               | Pub. beta 2 | AudioQuest Dragonfly Red           | 2.0 Beta 2 |
-|  Apple Silicon  | MacBook Pro 14 inch (M3 Pro, 2023)                   | 26.0.1             | No          | Fiio K11                           | 2.0 Beta 2 |
-|  Apple Silicon  | MacBook Pro 14 inch (M1 Pro, 2021)                   | 26.1               | Dev. Beta 2 | iBasso DC Elite                    | 2.0 Beta 2 |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 26.1               | No          | Fiio K11                           | 2.0 Beta 2 |
-|  Apple Silicon  | Mac mini (M1, 2020)                                  | 26.1               | No          | Ayre QB-9 Twenty                   | 2.0 Beta 2 |
-|  Apple Silicon  | MacBook Air 13 inch (M3, 2024)                       | 26.3               | No          | Fiio K17                           | 2.0 Beta 3 |
-|  Apple Silicon  | MacBook Air 13 inch (M1, 2020)                       | 26.3.1             | No          | Fosi Audio K5 Pro                  | 2.0        |
-
-
-You can add to this list by modifying this README and opening a new pull request!
 
 Do note that Steven Slate Audio VSX software may not be fully compatible with LosslessSwitcher, and both software may interfere with each other. Please refer to discussion https://github.com/vincentneo/LosslessSwitcher/discussions/100 for more information.
 

@@ -49,6 +49,8 @@ xcuserdata/
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
-**/xcshareddata/WorkspaceSettings.xcsettings
-
 # End of https://www.toptal.com/developers/gitignore/api/macos,xcode
+
+# Ignore local logs folder
+log/
+dmg/

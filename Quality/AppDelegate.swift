@@ -40,8 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             if try !User.current.isAdmin() {
                 let alert = NSAlert()
-                alert.messageText = "Requires Privileges"
-                alert.informativeText = "LosslessSwitcher requires Administrator privileges in order to detect each song's lossless sample rate in the Music app."
+                alert.messageText = "Requires Privileges".localized
+                alert.informativeText = "LosslessSwitcher requires Administrator privileges in order to detect each song's lossless sample rate in the Music app.".localized
                 alert.alertStyle = .critical
                 alert.runModal()
                 NSApp.terminate(self)
@@ -49,8 +49,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         catch {
             let alert = NSAlert()
-            alert.messageText = "Requires Privileges"
-            alert.informativeText = "LosslessSwitcher could not check if your account has Administrator privileges. If your account lacks Administrator privileges, sample rate detection will not work."
+            alert.messageText = "Requires Privileges".localized
+            alert.informativeText = "LosslessSwitcher could not check if your account has Administrator privileges. If your account lacks Administrator privileges, sample rate detection will not work.".localized
             alert.alertStyle = .warning
             alert.runModal()
         }
@@ -58,10 +58,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.instance = self
-        outputDevices = OutputDevices()
-        mrController = MediaRemoteController(outputDevices: outputDevices)
+        // Core components are initialized by MenuBarController in QualityApp.swift.
+        // We comment them out here to prevent duplicate initialization and race conditions.
+        // outputDevices = OutputDevices()
+        // mrController = MediaRemoteController(outputDevices: outputDevices)
         
         checkPermissions()
+        UpdateChecker.shared.checkForUpdates(manually: false)
 //        
 //        let menu = NSMenu()
 //        

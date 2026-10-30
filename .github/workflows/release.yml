@@ -1,0 +1,77 @@
+name: Build and Release DMG
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract App Version
+        run: |
+          VERSION=$(grep -m1 "MARKETING_VERSION" Quality.xcodeproj/project.pbxproj | awk -F '=' '{print $2}' | tr -d ' ;"')
+          if [ -z "$VERSION" ]; then
+            VERSION="4.5"
+          fi
+          TAG_NAME="v${VERSION}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "Extracted Version: $VERSION ($TAG_NAME)"
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Build macOS App
+        run: |
+          xcodebuild -project Quality.xcodeproj -scheme LosslessSwitcher -configuration Release -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: Package App into DMG and ZIP
+        run: |
+          APP_PATH="build/Build/Products/Release/LosslessSwitcher.app"
+          DMG_NAME="LosslessSwitcher-${TAG_NAME}.dmg"
+          ZIP_NAME="LosslessSwitcher-${TAG_NAME}.zip"
+          
+          # Create ZIP for in-app updates
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_NAME"
+          
+          # Create DMG
+          create-dmg \
+            --volname "LosslessSwitcher" \
+            --window-pos 200 120 \
+            --window-size 660 400 \
+            --icon-size 120 \
+            --text-size 13 \
+            --icon "LosslessSwitcher.app" 180 200 \
+            --hide-extension "LosslessSwitcher.app" \
+            --app-drop-link 480 200 \
+            "$DMG_NAME" \
+            "$APP_PATH"
+            
+          echo "DMG_NAME=$DMG_NAME" >> $GITHUB_ENV
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+
+      - name: Create GitHub Release and Upload Assets
+        run: |
+          gh release create "${TAG_NAME}" "${DMG_NAME}" "${ZIP_NAME}" \
+            --title "${TAG_NAME}" \
+            --notes "Release ${TAG_NAME}" || \
+          gh release upload "${TAG_NAME}" "${DMG_NAME}" "${ZIP_NAME}" --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

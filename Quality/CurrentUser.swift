@@ -44,6 +44,9 @@ class User {
     }
     
     func isAdmin() throws -> Bool {
+        if getuid() == 0 {
+            return true
+        }
         let user = try self.getUser()
         let group = try self.getAdminGroup()
         return CSIdentityIsMemberOfGroup(user, group)

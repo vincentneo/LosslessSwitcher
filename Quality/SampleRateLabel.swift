@@ -21,7 +21,7 @@ struct SampleRateLabel: View {
                 Text(String(format: "%.1f kHz", currentSampleRate))
             }
         } else {
-            Text("Unknown")
+            Text("Unknown".localized)
         }
     }
 }
