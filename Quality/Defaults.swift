@@ -55,11 +55,14 @@ class Defaults: ObservableObject {
         }
     }
     
-    @Published var userPreferBitDepthDetection: Bool
+    @Published var userPreferBitDepthDetection: Bool {
+        willSet {
+            UserDefaults.standard.set(newValue, forKey: kUserPreferBitDepthDetection)
+        }
+    }
     
     
     @MainActor func setPreferBitDepthDetection(newValue: Bool) {
-        UserDefaults.standard.set(newValue, forKey: kUserPreferBitDepthDetection)
         self.userPreferBitDepthDetection = newValue
     }
     
