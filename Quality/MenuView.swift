@@ -27,27 +27,9 @@ struct MenuView: View {
                 Text(defaults.statusBarItemTitle)
             }
             
-            Button {
-                defaults.userPreferBitDepthDetection.toggle()
-            } label: {
-                HStack {
-                    Text("Bit Depth Switching")
-                    if defaults.userPreferBitDepthDetection {
-                        Image(systemName: "checkmark")
-                    }
-                }
-            }
+            Toggle("Bit Depth Switching", isOn: $defaults.userPreferBitDepthDetection)
             
-            Button {
-                defaults.userPreferSampleRateMultiples.toggle()
-            } label: {
-                HStack {
-                    Text("Prefer Closest Sample Rate Multiple")
-                    if defaults.userPreferSampleRateMultiples {
-                        Image(systemName: "checkmark")
-                    }
-                }
-            }
+            Toggle("Prefer Closest Sample Rate Multiple", isOn: $defaults.userPreferSampleRateMultiples)
             
             Menu {
                 Button {
