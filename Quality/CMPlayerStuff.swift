@@ -17,6 +17,18 @@ struct CMPlayerStats {
 }
 
 class CMPlayerParser {
+    /// Parses an Apple Lossless decoder line such as
+    /// `ACAppleLosslessDecoder.cpp:681 (0x…) Input format:  2 ch,  96000 Hz, alac (0x00000001) from 24-bit source, 4096 frames/packet`.
+    static func parseAppleLosslessInputFormat(_ message: String) -> (sampleRate: Double, bitDepth: Int)? {
+        guard message.contains("ACAppleLosslessDecoder"), message.contains("Input format:") else { return nil }
+        guard let subSampleRate = message.firstSubstring(between: "ch, ", and: " Hz"),
+              let sampleRate = Double(String(subSampleRate).trimmingCharacters(in: .whitespacesAndNewlines)),
+              let subBitDepth = message.firstSubstring(between: "from ", and: "-bit source"),
+              let bitDepth = Int(String(subBitDepth).trimmingCharacters(in: .whitespacesAndNewlines))
+        else { return nil }
+        return (sampleRate, bitDepth)
+    }
+
     static func parseMusicConsoleLogs(_ entries: [SimpleConsole]) -> [CMPlayerStats] {
         let kTimeDifferenceAcceptance = 5.0 // seconds
         var lastDate: Date?
@@ -85,16 +97,9 @@ class CMPlayerParser {
                 bitDepth = nil
             }
             
-            if rawMessage.contains("ACAppleLosslessDecoder.cpp") && rawMessage.contains("Input format:") {
-                if let subSampleRate = rawMessage.firstSubstring(between: "ch, ", and: " Hz") {
-                    let strSampleRate = String(subSampleRate).trimmingCharacters(in: .whitespacesAndNewlines)
-                    sampleRate = Double(strSampleRate)
-                }
-                
-                if let subBitDepth = rawMessage.firstSubstring(between: "from ", and: "-bit source") {
-                    let strBitDepth = String(subBitDepth).trimmingCharacters(in: .whitespacesAndNewlines)
-                    bitDepth = Int(strBitDepth)
-                }
+            if let format = parseAppleLosslessInputFormat(rawMessage) {
+                sampleRate = format.sampleRate
+                bitDepth = format.bitDepth
             }
             
             if let sr = sampleRate,
