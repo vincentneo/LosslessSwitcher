@@ -24,10 +24,13 @@ class MediaRemoteController {
         
         controller.onTrackInfoReceived = { [weak outputDevices] trackInfo in
             print("track \(trackInfo.payload.uniqueIdentifier) \(trackInfo.payload.title ?? "nil")")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                guard let outputDevices else { return }
-                outputDevices.trackDidChange(trackInfo)
+            // Only the Music app's playback matters; other players would just trigger needless work.
+            if let bundle = trackInfo.payload.bundleIdentifier, bundle != kMusicAppBundle {
+                return
             }
+            // No artificial delay: OutputDevices reacts to the live decoder log stream,
+            // so it can switch as soon as the new track's format is known.
+            outputDevices?.trackDidChange(trackInfo)
         }
         
     }

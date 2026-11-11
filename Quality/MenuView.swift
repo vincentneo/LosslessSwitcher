@@ -6,109 +6,147 @@
 //
 
 import SwiftUI
+import SimplyCoreAudio
 
 struct MenuView: View {
-    
+
     @EnvironmentObject private var outputDevices: OutputDevices
     @EnvironmentObject private var defaults: Defaults
-    
-    var body: some View {
-        VStack {
-            ContentView()
-            
-            Divider()
-            
-            Button {
-                defaults.userPreferIconStatusBarItem.toggle()
-            } label: {
-                Text(defaults.statusBarItemTitle)
-            }
-            
-            Button {
-                defaults.userPreferBitDepthDetection.toggle()
-            } label: {
-                HStack {
-                    Text("Bit Depth Switching")
-                    if defaults.userPreferBitDepthDetection {
-                        Image(systemName: "checkmark")
-                    }
-                }
-            }
-            
-            Button {
-                defaults.userPreferSampleRateMultiples.toggle()
-            } label: {
-                HStack {
-                    Text("Prefer Closest Sample Rate Multiple")
-                    if defaults.userPreferSampleRateMultiples {
-                        Image(systemName: "checkmark")
-                    }
-                }
-            }
-            
-            Menu {
-                Button {
-                    outputDevices.selectedOutputDevice = nil
-                    defaults.selectedDeviceUID = nil
-                } label: {
-                    if outputDevices.selectedOutputDevice == nil {
-                        Image(systemName: "checkmark")
-                    }
-                    Text("Default Device")
-                }
 
-                ForEach(outputDevices.outputDevices, id: \.uid) { device in
-                    Button {
-                        outputDevices.selectedOutputDevice = device
-                        defaults.selectedDeviceUID = device.uid
-                    } label: {
-                        Text(device.name)
-                        if outputDevices.selectedOutputDevice?.uid == device.uid {
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
-            } label: {
-                Text("Selected Device")
+    var body: some View {
+        // 1. What's happening right now
+        Section {
+            Text(currentFormatText)
+            Text(currentDeviceText)
+        }
+
+        Divider()
+
+        // 2. Which device to control
+        Picker(selection: deviceSelection) {
+            Text(systemDefaultTitle).tag(String?.none)
+            Divider()
+            ForEach(namedDevices, id: \.uid) { device in
+                Text(device.name).tag(device.uid)
             }
-            
-            Menu {
-                Text("Version - \(currentVersion)")
-                Text("Build - \(currentBuild)")
-            } label: {
-                Text("About")
+        } label: {
+            Label("Output Device", systemImage: "hifispeaker")
+        }
+        .pickerStyle(.menu)
+
+        Divider()
+
+        // 3. How switching behaves
+        Section("Switching") {
+            Toggle("Match Bit Depth", isOn: $defaults.userPreferBitDepthDetection)
+            Toggle("Prefer Sample Rate Multiples", isOn: $defaults.userPreferSampleRateMultiples)
+        }
+
+        Divider()
+
+        // 4. Appearance & automation
+        Picker(selection: $defaults.userPreferIconStatusBarItem) {
+            Text("Icon").tag(true)
+            Text("Sample Rate").tag(false)
+        } label: {
+            Label("Menu Bar Shows", systemImage: "menubar.rectangle")
+        }
+        .pickerStyle(.menu)
+
+        scriptMenu
+
+        Divider()
+
+        // 5. App
+        Text("LosslessSwitcher \(currentVersion) (\(currentBuild))")
+        Button("Quit LosslessSwitcher") {
+            NSApp.terminate(nil)
+        }
+        .keyboardShortcut("q")
+    }
+
+    // MARK: - Status
+
+    private var currentFormatText: String {
+        guard let rate = outputDevices.currentSampleRate else { return "No format detected yet" }
+        let rateText = String(format: "%.1f kHz", rate)
+        if outputDevices.enableBitDepthDetection, let bitDepth = outputDevices.currentBitDepth {
+            return "\(rateText) · \(bitDepth)-bit"
+        }
+        return rateText
+    }
+
+    private var currentDeviceText: String {
+        guard let device = outputDevices.selectedOutputDevice ?? outputDevices.defaultOutputDevice else {
+            return "No output device"
+        }
+        return "on \(device.name)"
+    }
+
+    // MARK: - Device selection
+
+    private var namedDevices: [AudioDevice] {
+        outputDevices.outputDevices.filter { $0.uid != nil }
+    }
+
+    private var systemDefaultTitle: String {
+        if let name = outputDevices.defaultOutputDevice?.name {
+            return "System Default (\(name))"
+        }
+        return "System Default"
+    }
+
+    private var deviceSelection: Binding<String?> {
+        Binding(
+            get: { outputDevices.selectedOutputDevice?.uid },
+            set: { uid in
+                let device = uid.flatMap { uid in outputDevices.outputDevices.first(where: { $0.uid == uid }) }
+                outputDevices.select(device: device)
             }
-            
-            Menu {
-                Button("Select Script...") {
-                    let panel = NSOpenPanel()
-                    panel.canChooseFiles = true
-                    panel.canChooseDirectories = false
-                    panel.allowsMultipleSelection = false
-                    panel.message = "Select a script that should be invoked when sample rate changes."
-                    
-                    panel.begin { response in
-                        let path = panel.url?.path
-                        DispatchQueue.main.async { [weak defaults] in
-                            defaults?.shellScriptPath = path
-                        }
-                    }
+        )
+    }
+
+    // MARK: - Script
+
+    @ViewBuilder
+    private var scriptMenu: some View {
+        Menu {
+            if let path = defaults.shellScriptPath {
+                Text(URL(fileURLWithPath: path).lastPathComponent)
+                Button("Show in Finder") {
+                    NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
                 }
-                
-                Button("Clear Selection") {
+                Divider()
+                Button("Choose Different Script…", action: chooseScript)
+                Button("Remove Script") {
                     defaults.shellScriptPath = nil
                 }
-                
-                Text(defaults.shellScriptPath ?? "No selection")
-                
-            } label: {
-                Text("Scripting")
             }
-            
-            Button {
-                NSApp.terminate(self)
-            } label: {
-                Text("Quit LosslessSwitcher")
+            else {
+                Button("Choose Script…", action: chooseScript)
+                Divider()
+                Text("Called with sample rate (Hz) and bit depth")
+            }
+        } label: {
+            Label("Run Script on Change",
+                  systemImage: "terminal")
+        }
+    }
+
+    private func chooseScript() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.message = "Select a script to run whenever the sample rate changes."
+        panel.prompt = "Use Script"
+        // Menu bar apps aren't active by default; bring the panel to the front.
+        NSApp.activate()
+
+        panel.begin { response in
+            guard response == .OK, let path = panel.url?.path else { return }
+            DispatchQueue.main.async { [weak defaults] in
+                defaults?.shellScriptPath = path
             }
         }
     }

@@ -16,7 +16,11 @@ class MenuBarController {
     @ObservationIgnored
     private var mrController: MediaRemoteController!
     
-    init() {
+    /// The single owner of detection/switching. AppDelegate and AppleScript read from this
+    /// instance instead of creating their own (two instances used to fight over the device).
+    static let shared = MenuBarController()
+    
+    private init() {
         let outputDevices = OutputDevices()
         self.outputDevices = outputDevices
         self.mrController = MediaRemoteController(outputDevices: outputDevices)
